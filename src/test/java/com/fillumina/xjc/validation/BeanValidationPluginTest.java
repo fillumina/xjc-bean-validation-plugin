@@ -63,6 +63,27 @@ class BeanValidationPluginTest {
     }
 
     /**
+     * The plugin answers to the name it had in the old line as well, and a build migrating from it
+     * keeps working until it is changed.
+     */
+    @Test
+    void theOldNameOfTheOptionStillWorks() throws Exception {
+        Path output = Files.createDirectories(outputDirectory.resolve("old-name"));
+        List<String> arguments = List.of("-quiet", "-extension", "-XJsr303Annotations",
+                "-d", output.toString(), SCHEMA.toAbsolutePath().toString());
+
+        ByteArrayOutputStream messages = new ByteArrayOutputStream();
+        try (PrintStream stream = new PrintStream(messages, true, StandardCharsets.UTF_8)) {
+            assertEquals(0, Driver.run(arguments.toArray(String[]::new), stream, stream),
+                    () -> "xjc failed: " + messages);
+        }
+
+        String generated = Files.readString(generatedSource(output, "Order.java"))
+                .replaceAll("\\s+", " ");
+        assertTrue(generated.contains("@NotNull protected String code;"), generated);
+    }
+
+    /**
      * Runs XJC once over the schema and returns the generated class with its whitespace collapsed.
      *
      * @param extraArguments further arguments, such as an option of the plugin
@@ -92,13 +113,17 @@ class BeanValidationPluginTest {
     }
 
     private Path generatedSource(String name) throws Exception {
-        try (Stream<Path> files = Files.walk(outputDirectory)) {
+        return generatedSource(outputDirectory, name);
+    }
+
+    private Path generatedSource(Path directory, String name) throws Exception {
+        try (Stream<Path> files = Files.walk(directory)) {
             return files
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().equals(name))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("no " + name + " generated in "
-                            + outputDirectory));
+                            + directory));
         }
     }
 }
