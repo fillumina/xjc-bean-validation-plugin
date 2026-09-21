@@ -1,0 +1,16 @@
+NumericBounds
+    boundedIntList
+        @NotNull
+        @Size(min = 2, max = 4)
+        items
+            @DecimalMax(value = "9999", inclusive = true)
+            @DecimalMin(value = "0", inclusive = true)
+    decimalList
+        @Size(max = 3)
+        items
+            @DecimalMax(value = "100", inclusive = true)
+            @DecimalMin(value = "0", inclusive = true)
+    plainInt
+        @NotNull
+    plainIntList
+        @Size(max = 5)

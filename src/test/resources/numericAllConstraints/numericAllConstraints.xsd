@@ -1,0 +1,28 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="numeric" type="a:NumericAllConstraints"/>
+
+    <xsd:complexType name="NumericAllConstraints">
+        <xsd:sequence>
+            <xsd:element name="abyte" type="xsd:byte"/>
+            <xsd:element name="adecimal" type="xsd:decimal"/>
+            <xsd:element name="aint" type="xsd:int"/>
+            <xsd:element name="ainteger" type="xsd:integer"/>
+            <xsd:element name="along" type="xsd:long"/>
+            <xsd:element name="anegativeInteger" type="xsd:negativeInteger"/>
+            <xsd:element name="anonNegativeInteger" type="xsd:nonNegativeInteger"/>
+            <xsd:element name="anonPositiveInteger" type="xsd:nonPositiveInteger"/>
+            <xsd:element name="apositiveInteger" type="xsd:positiveInteger"/>
+            <xsd:element name="ashort" type="xsd:short"/>
+            <xsd:element name="aunsignedLong" type="xsd:unsignedLong"/>
+            <xsd:element name="aunsignedInt" type="xsd:unsignedInt"/>
+            <xsd:element name="aunsignedShort" type="xsd:unsignedShort"/>
+            <xsd:element name="aunsignedByte" type="xsd:unsignedByte"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,77 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="numbers" type="a:Numbers"/>
+
+    <xsd:complexType name="Numbers">
+        <xsd:sequence>
+            <xsd:element name="decimalValue" type="xsd:decimal"/>
+            <xsd:element name="integerValue" type="xsd:integer"/>
+            
+            <xsd:element name="negativeIntegerValue" type="xsd:negativeInteger"/>
+            <xsd:element name="nonPositiveIntegerValue" type="xsd:nonPositiveInteger"/>
+            <xsd:element name="nonNegativeIntegerValue" type="xsd:nonNegativeInteger"/>
+            <xsd:element name="positiveIntegerValue" type="xsd:positiveInteger"/>
+
+            <xsd:element name="valueDimension" type="a:Dimension"/>
+            <xsd:element name="valuePositiveDimension" type="a:PositiveDimension"/>
+            <xsd:element name="valuePositiveNonZeroDimension" type="a:PositiveNonZeroDimension"/>
+            <xsd:element name="valueFourPositiveNonZeroDecimal" type="a:FourPositiveNonZeroDecimal"/>
+            <xsd:element name="valueSixDigitDecimalFractionOne" type="a:SixDigitDecimalFractionOne"/>
+            
+            <xsd:element name="valueFourDigitYear" type="a:FourDigitYear"/>
+            
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="Dimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <!-- fixed attribute cannot be translated into a meaningful Validation -->
+            <xsd:fractionDigits value="2" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PositiveDimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+            <xsd:minInclusive value="0.00"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PositiveNonZeroDimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+            <xsd:minExclusive value="0.00"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="4" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourPositiveNonZeroDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="4" fixed="true"/>
+            <xsd:minExclusive value="0.0000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SixDigitDecimalFractionOne">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="6"/>
+            <xsd:fractionDigits value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="FourDigitYear">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="4"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
