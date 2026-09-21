@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:t="http://example.com/validation"
+           targetNamespace="http://example.com/validation"
+           elementFormDefault="qualified">
+
+  <xs:element name="order" type="t:Order"/>
+
+  <xs:complexType name="Order">
+    <xs:sequence>
+      <xs:element name="name" type="t:ShortText" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="code" type="xs:string"/>
+      <xs:element name="tag" type="t:Tag" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="note" type="t:Note" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ShortText">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="5"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Tag">
+    <xs:sequence>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Note">
+    <xs:sequence>
+      <xs:element name="text" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
