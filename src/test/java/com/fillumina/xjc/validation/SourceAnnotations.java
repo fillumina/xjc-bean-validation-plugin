@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import javax.lang.model.element.Modifier;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -69,7 +70,7 @@ final class SourceAnnotations {
     private static void appendClass(StringBuilder text, ClassTree type) {
         List<VariableTree> fields = new ArrayList<>();
         for (Tree member : type.getMembers()) {
-            if (member instanceof VariableTree field) {
+            if (member instanceof VariableTree field && isAProperty(field)) {
                 fields.add(field);
             }
         }
@@ -92,6 +93,16 @@ final class SourceAnnotations {
                 }
             }
         }
+    }
+
+    /**
+     * Whether this member is one of the properties XJC generates, which are {@code protected}. The
+     * old line's extraction looked for lines starting with {@code protected}, so an enumeration's
+     * constants and the {@code value} field JAXB puts in a generated enum were not part of the
+     * expectations, and they are not part of them here either.
+     */
+    private static boolean isAProperty(VariableTree field) {
+        return field.getModifiers().getFlags().contains(Modifier.PROTECTED);
     }
 
     /**
@@ -154,10 +165,13 @@ final class SourceAnnotations {
         return expression.toString();
     }
 
-    /** @return the name of the annotation as it was written, without its package. */
+    /**
+     * @return the name of the annotation as it was written: {@code Pattern.List} keeps its
+     *     qualifier, since a nested annotation is not the same as a top level one of the same name
+     */
     private static String nameOf(Tree type) {
         if (type instanceof MemberSelectTree select) {
-            return select.getIdentifier().toString();
+            return select.getExpression() + "." + select.getIdentifier();
         }
         return type.toString();
     }

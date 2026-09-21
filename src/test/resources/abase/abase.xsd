@@ -1,0 +1,2194 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <!--
+    ##################################################
+    # Address element
+    ##################################################
+    -->
+    <xsd:element name="Address" type="AddressType"/>
+    <xsd:complexType name="AddressType">
+        <xsd:sequence>
+            <xsd:element name="Name" type="String"/>
+            <xsd:element name="FormalTitle" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>e.g.  Mr., Ms., etc.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:normalizedString">
+                        <xsd:maxLength value="10"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="GivenName" type="String" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Usually the customer's first name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="FamilyName" type="String" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Usually the customer's last name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="AddressFieldOne" type="AddressLine"/>
+            <xsd:element name="AddressFieldTwo" type="AddressLine" minOccurs="0"/>
+            <xsd:element name="AddressFieldThree" type="AddressLine" minOccurs="0"/>
+            <xsd:element name="City" type="String" minOccurs="0"/>
+            <xsd:element name="County" type="String" minOccurs="0"/>
+            <xsd:element name="StateOrRegion" type="String" minOccurs="0"/>
+            <xsd:element name="PostalCode" type="String" minOccurs="0"/>
+            <xsd:element name="CountryCode">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="2"/>
+                        <xsd:maxLength value="2"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="PhoneNumber" type="PhoneNumberType" minOccurs="0" maxOccurs="3"/>
+            <xsd:element name="isDefaultShipping" type="xsd:boolean" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Only one default shipping address can exist at any given
+                        time. If more than one address has this set to "true," then the last one
+                        will become the default.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="isDefaultBilling" type="xsd:boolean" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Only one default billing address can exist at any given time.
+                        If more than one address has this set to "true," then the last one will
+                        become the default.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="isDefaultOneClick" type="xsd:boolean" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Only one default OneClick address can exist at any given
+                        time. If more than one address has this set to "true," then the last one
+                        will become the default.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!--
+    ##################################################
+    # Address element, support non-city. Used by FBA.
+    ##################################################
+    -->
+    <xsd:complexType name="AddressTypeSupportNonCity">
+        <xsd:sequence>
+            <xsd:element name="Name" type="String"/>
+            <xsd:element name="AddressFieldOne" type="AddressLine"/>
+            <xsd:element name="AddressFieldTwo" type="AddressLine" minOccurs="0"/>
+            <xsd:element name="AddressFieldThree" type="AddressLine" minOccurs="0"/>
+            <xsd:element name="City" type="String" minOccurs="0"/>
+            <xsd:element name="DistrictOrCounty" type="String" minOccurs="0"/>
+            <xsd:element name="County" type="String" minOccurs="0"/>
+            <xsd:element name="StateOrRegion" type="String" minOccurs="0"/>
+            <xsd:element name="PostalCode" type="String" minOccurs="0"/>
+            <xsd:element name="CountryCode">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="2"/>
+                        <xsd:maxLength value="2"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="PhoneNumber" type="String" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="AddressLine">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="60"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PhoneNumberType">
+        <xsd:simpleContent>
+            <xsd:extension base="String">
+                <xsd:attribute name="Type" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Defaults to "Voice." Currently, only two voice numbers
+                            and one fax number are stored.</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="Voice"/>
+                            <xsd:enumeration value="Fax"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+                <xsd:attribute name="Description" use="optional">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:maxLength value="30"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <!--
+
+    ##################################################
+    # Email Address Type
+    ##################################################
+
+    -->
+    <xsd:complexType name="EmailAddressType">
+        <xsd:simpleContent>
+            <xsd:extension base="EmailBase">
+                <xsd:attribute name="PreferredFormat" use="optional">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="TextOnly"/>
+                            <xsd:enumeration value="HTML"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="EmailBase">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:pattern value="[^@]+@[^@\.]+(\.[^@\.]+)+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+    ##################################################
+    # Battery type
+    ##################################################
+    -->
+    <xsd:element name="Battery">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AreBatteriesIncluded" type="xsd:boolean" minOccurs="0"/>
+                <xsd:element name="AreBatteriesRequired" type="xsd:boolean" minOccurs="0"/>
+                <xsd:element name="BatterySubgroup" minOccurs="0" maxOccurs="3">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="BatteryType">
+                                <xsd:simpleType>
+                                    <xsd:restriction base="StringNotNull">
+                                        <xsd:enumeration value="battery_type_2/3A"/>
+                                        <xsd:enumeration value="battery_type_4/3A"/>
+                                        <xsd:enumeration value="battery_type_4/5A"/>
+                                        <xsd:enumeration value="battery_type_9v"/>
+                                        <xsd:enumeration value="battery_type_12v"/>
+                                        <xsd:enumeration value="battery_type_a"/>
+                                        <xsd:enumeration value="battery_type_a76"/>
+                                        <xsd:enumeration value="battery_type_aa"/>
+                                        <xsd:enumeration value="battery_type_aaa"/>
+                                        <xsd:enumeration value="battery_type_aaaa"/>
+                                        <xsd:enumeration value="battery_type_c"/>
+                                        <xsd:enumeration value="battery_type_cr123a"/>
+                                        <xsd:enumeration value="battery_type_cr2"/>
+                                        <xsd:enumeration value="battery_type_cr5"/>
+                                        <xsd:enumeration value="battery_type_d"/>
+                                        <xsd:enumeration value="battery_type_lithium_ion"/>
+                                        <xsd:enumeration value="battery_type_lithium_metal"/>
+                                        <xsd:enumeration value="battery_type_L-SC"/>
+                                        <xsd:enumeration value="battery_type_p76"/>
+                                        <xsd:enumeration value="battery_type_product_specific"/>
+                                        <xsd:enumeration value="battery_type_SC"/>
+                                        <xsd:enumeration value="nonstandard_battery"/>
+                                        <xsd:enumeration value="lr44"/>
+                                        <xsd:enumeration value="unknown"/>
+                                        <xsd:enumeration value="cr2032"/>
+                                        <xsd:enumeration value="lr41"/>
+                                    </xsd:restriction>
+                                </xsd:simpleType>
+                            </xsd:element>
+                            <xsd:element name="NumberOfBatteries" type="xsd:positiveInteger"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!--
+            
+##################################################
+# Currency amount type
+##################################################
+
+    -->
+    <xsd:complexType name="CurrencyAmount">
+        <xsd:simpleContent>
+            <xsd:extension base="BaseCurrencyAmount">
+                <xsd:attribute name="currency" type="BaseCurrencyCode"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="PositiveCurrencyAmount">
+        <xsd:simpleContent>
+            <xsd:extension base="BasePositiveCurrencyAmount">
+                <xsd:attribute name="currency" type="BaseCurrencyCode" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="BaseCurrencyCode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PLN"/>
+            <xsd:enumeration value="AED"/>
+            <xsd:enumeration value="SAR"/>
+            <xsd:enumeration value="EGP"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="GlobalCurrencyCode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="UYU"/>
+            <xsd:enumeration value="VEF"/>
+            <xsd:enumeration value="VND"/>
+            <xsd:enumeration value="YER"/>
+            <xsd:enumeration value="ZAR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="EnergyUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="BTU"/>
+            <xsd:enumeration value="watts"/>
+            <xsd:enumeration value="joules"/>
+            <xsd:enumeration value="kilojoules"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BaseCurrencyAmount">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="20"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BasePositiveCurrencyAmount">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:maxInclusive value="99999999.99"/>
+            <xsd:minInclusive value="0.00"/>
+            <xsd:totalDigits value="10"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BasePriceCurrencyAmount">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="20"/>
+            <xsd:fractionDigits value="4" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+	
+    <xsd:simpleType name="StringBasePriceCurrencyAmount">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="24"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="DatedPrice">
+        <xsd:sequence>
+            <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="EndDate" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:choice>
+                <xsd:element name="Price" type="CurrencyAmount"/>
+                <xsd:element name="PreviousPrice" type="CurrencyAmount"/>
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attribute name="delete" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    <xsd:complexType name="DatedCompareAtPrice">
+        <xsd:sequence>
+            <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="EndDate" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="CompareAtPrice" type="CurrencyAmount"/>
+        </xsd:sequence>
+        <xsd:attribute name="delete" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    <!--
+                            
+##################################################
+# String types
+##################################################
+
+    -->
+    <xsd:simpleType name="SevenString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="7"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TenString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwentyString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ThirtyString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="30"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FortyString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="40"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FiveStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="5"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TenStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwentyStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="20"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ThirtyStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="30"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FortyStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="40"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PARTSLINK">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="9"/>
+            <xsd:maxLength value="9"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="String">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="50"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="StringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="50"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="HundredString">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="HundredFiftyStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="150"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MediumString">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="200"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MediumStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="200"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwoFiftyStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="250"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="LongString">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="500"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="LongStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="500"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SuperLongString">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SuperLongStringNotNull">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwoThousandString">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:maxLength value="2000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+            
+##################################################
+# Order ID element
+##################################################
+
+    -->
+    <xsd:element name="OrderID">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+                <xsd:pattern value="\w{3}-\w{7}-\w{7}"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:element>
+    <!--
+            
+            
+
+##################################################
+# Standard Product ID element
+##################################################
+
+    -->
+    <xsd:element name="StandardProductID">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Type">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="ISBN"/>
+                            <xsd:enumeration value="UPC"/>
+                            <xsd:enumeration value="EAN"/>
+                            <xsd:enumeration value="ASIN"/>
+                            <xsd:enumeration value="GTIN"/>
+                            <xsd:enumeration value="GCID"/>
+                            <xsd:enumeration value="PZN"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+                <xsd:element name="Value">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:minLength value="8"/>
+                            <xsd:maxLength value="16"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!--
+    
+    ##################################################
+# Related Product ID element
+##################################################
+
+    -->
+    <xsd:element name="RelatedProductID">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Type">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="UPC"/>
+                            <xsd:enumeration value="EAN"/>
+                            <xsd:enumeration value="GTIN"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+                <xsd:element name="Value">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:minLength value="8"/>
+                            <xsd:maxLength value="16"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+	
+    <!--
+            
+##################################################
+# Product tax code element
+##################################################
+
+    -->
+    <xsd:element name="ProductTaxCode" type="StringNotNull"/>
+    <!--
+            
+##################################################
+# Promotion application type
+##################################################
+
+    -->
+    <xsd:simpleType name="PromotionApplicationType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Principal"/>
+            <xsd:enumeration value="Shipping"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+            
+##################################################
+# Promotion claim code
+##################################################
+
+    -->
+    <xsd:element name="PromotionClaimCode">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+                <xsd:minLength value="6"/>
+                <xsd:maxLength value="12"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:element>
+    <!--
+            
+##################################################
+# Promotion data type
+##################################################
+
+    -->
+    <xsd:complexType name="PromotionDataType">
+        <xsd:sequence>
+            <xsd:element ref="PromotionClaimCode"/>
+            <xsd:element name="Component" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Type" type="PromotionApplicationType"/>
+                        <xsd:element name="Amount" type="CurrencyAmount"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!--
+            
+##################################################
+# SKU element
+##################################################
+    
+    -->
+    <xsd:element name="SKU" type="SKUType"/>
+    <xsd:simpleType name="SKUType">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="40"/>
+            <!-- This is removed because it was deleting spaces in the middle of the SKU, 
+            whitespace in SKU will now be ignored -->
+            <!-- <xsd:whiteSpace value="collapse"/>  -->
+            <!-- <xsd:pattern value="[\p{IsBasicLatin}\p{IsLatin-1Supplement}]*"/> -->
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+            
+##################################################
+# Condition Info
+##################################################
+
+    -->
+    <xsd:complexType name="ConditionInfo">
+        <xsd:sequence>
+            <xsd:element ref="ConditionType"/>
+            <xsd:element name="ConditionNote" type="TwoThousandString" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="ConditionType">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="New"/>
+                <xsd:enumeration value="UsedLikeNew"/>
+                <xsd:enumeration value="UsedVeryGood"/>
+                <xsd:enumeration value="UsedGood"/>
+                <xsd:enumeration value="UsedAcceptable"/>
+                <xsd:enumeration value="CollectibleLikeNew"/>
+                <xsd:enumeration value="CollectibleVeryGood"/>
+                <xsd:enumeration value="CollectibleGood"/>
+                <xsd:enumeration value="CollectibleAcceptable"/>
+                <xsd:enumeration value="Club"/>
+                <xsd:enumeration value="NewOpenBox"/>
+                <xsd:enumeration value="NewOem"/>
+                <xsd:enumeration value="Refurbished"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:element>
+    <!--
+            
+##################################################
+# Customization Info
+##################################################
+
+    -->
+    <xsd:complexType name="CustomizationInfoType">
+        <xsd:sequence>
+            <xsd:element name="Type" type="StringNotNull"/>
+            <xsd:element name="Data" type="LongString"/>
+        </xsd:sequence>
+    </xsd:complexType>
+		
+    <!--
+            
+##################################################
+# Denomination Type
+##################################################
+
+    -->
+    <xsd:element name="Denomination">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:decimal">
+                <xsd:totalDigits value="6"/>
+                <xsd:fractionDigits value="2"/>
+                <xsd:minInclusive value=".01"/>
+                <xsd:maxInclusive value="2500.00"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:element>
+    <!--
+            
+##################################################
+# Integer Types
+##################################################
+
+    -->
+    <xsd:simpleType name="PositiveInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="12"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwoDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ThreeDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourDigitMinimumTwoDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="4"/>
+            <xsd:minInclusive value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FiveDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="5"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SixDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SevenDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="7"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TenDigitInteger">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+	
+	
+    <!--
+            
+##################################################
+# Energy Dimension Types
+##################################################
+
+    -->	
+    <xsd:complexType name="EnergyDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="EnergyUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>	
+	
+    <!--
+            
+##################################################
+# Percentage Types
+##################################################
+
+    -->
+    <xsd:simpleType name="PercentageType">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:fractionDigits value="2"/>
+            <xsd:minExclusive value="0"/>
+            <xsd:maxInclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="IntegerPercentageType">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+            
+##################################################
+# Decimal Types
+##################################################
+
+    -->
+    <xsd:simpleType name="Dimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PositiveDimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+            <xsd:minInclusive value="0.00"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PositiveNonZeroDimension">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="2" fixed="true"/>
+            <xsd:minExclusive value="0.00"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="4" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourPositiveNonZeroDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="12"/>
+            <xsd:fractionDigits value="4" fixed="true"/>
+            <xsd:minExclusive value="0.0000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SixDigitDecimalFractionOne">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="6"/>
+            <xsd:fractionDigits value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TwoDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="2"/>
+            <xsd:fractionDigits value=" 1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ThreeDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="3"/>
+            <xsd:fractionDigits value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="4"/>
+            <xsd:fractionDigits value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FiveDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="5"/>
+            <xsd:fractionDigits value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SixDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="6"/>
+            <xsd:fractionDigits value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SevenDigitDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="7"/>
+            <xsd:fractionDigits value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+            
+##################################################
+# Date Types
+##################################################
+
+    -->
+    <xsd:simpleType name="FourDigitYear">
+        <xsd:restriction base="xsd:positiveInteger">
+            <xsd:totalDigits value="4"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FourDigitYearPlusNV">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{4}|NV|nv"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+
+##################################################
+# Dimension Types
+##################################################
+
+    -->
+    <xsd:complexType name="AreaDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="AreaUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="AreaDimensionOptionalUnit">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="AreaUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="AirFlowDisplacementDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="AirFlowDisplacementUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="BurnTimeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="BurnTimeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="CurencyDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="GlobalCurrencyCode" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LengthDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LensFixedFocalLengthDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="FocalLengthDimension" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LengthDimensionOptionalUnit">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LengthIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="OptionalLengthIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LuminancePositiveIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="LuminanceUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LuminanceIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:nonNegativeInteger">
+                <xsd:attribute name="unitOfMeasure" type="LuminanceUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LuminanceDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="LuminanceUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VolumeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="VolumeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VolumeIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="VolumeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VolumeRateDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="VolumeRateUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WeightDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="WeightUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WeightIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="WeightUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="JewelryLengthDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="FourDecimal">
+                <xsd:attribute name="unitOfMeasure" type="JewelryLengthUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="JewelryWeightDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="FourDecimal">
+                <xsd:attribute name="unitOfMeasure" type="JewelryWeightUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="PositiveWeightDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveDimension">
+                <xsd:attribute name="unitOfMeasure" type="WeightUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="PositiveNonZeroWeightDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveNonZeroDimension">
+                <xsd:attribute name="unitOfMeasure" type="WeightUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="DegreeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="DegreeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="MemorySizeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="MemorySizeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="MemorySizeIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="MemorySizeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="FrequencyDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="FrequencyUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="FrequencyIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="FrequencyUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="AmperageDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="AmperageUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ResistanceDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="ResistanceUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="TimeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="TimeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="StringTimeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="StringNotNull">
+                <xsd:attribute name="unitOfMeasure" type="TimeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>	
+    <xsd:complexType name="BatteryLifeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="BatteryAverageLifeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="TimeIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="TimeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="DateIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="DateUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="SubscriptionTermDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="DateUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="SunProtectionDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="SunProtectionUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>	
+    <xsd:complexType name="AssemblyTimeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="AssemblyTimeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="AgeRecommendedDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="AgeRecommendedUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="MinimumAgeRecommendedDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:nonNegativeInteger">
+                <xsd:attribute name="unitOfMeasure" type="AgeRecommendedUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="BatteryPowerIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="BatteryPowerUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="BatteryPowerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="BatteryPowerUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="LuminiousIntensityDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="LuminousIntensityUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VoltageDecimalDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveDimension">
+                <xsd:attribute name="unitOfMeasure" type="VoltageUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VoltageIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="VoltageUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VoltageIntegerDimensionOptionalUnit">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="VoltageUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WattageIntegerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="WattageUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WattageDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="WattageUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WattageDimensionOptionalUnit">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="WattageUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="MillimeterDecimalDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveDimension">
+                <xsd:attribute name="unitOfMeasure" type="MillimeterUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="NoiseLevelDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="NoiseLevelUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="TemperatureDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="TemperatureUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="StringTemperatureDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="StringNotNull">
+                <xsd:attribute name="unitOfMeasure" type="TemperatureUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>	
+    <xsd:complexType name="TemperatureRatingDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="TemperatureRatingUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ClothingSizeDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="ClothingSizeUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="StringLengthOptionalDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="StringNotNull">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+            <!-- If using a numeric measurement, please include the units of measurement. -->
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="StringLengthDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="StringNotNull">
+                <xsd:attribute name="unitOfMeasure" type="LengthUnitOfMeasure" use="required"/>
+            </xsd:extension>	
+        </xsd:simpleContent>
+    </xsd:complexType>	
+    <xsd:complexType name="CurrentDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="CurrentUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="GraduationInterval">
+        <xsd:simpleContent>
+            <xsd:extension base="PositiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="GraduationIntervalUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="VolumeAndVolumeRateDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="VolumeAndVolumeRateUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ForceDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="ForceUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="HardnessDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="HardnessUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <!--
+            
+##################################################
+# Unit of Measure Types
+##################################################
+
+    -->
+    <xsd:simpleType name="AreaUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="square-in"/>
+            <xsd:enumeration value="square-ft"/>
+            <xsd:enumeration value="square-cm"/>
+            <xsd:enumeration value="square-m"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AirFlowDisplacementUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="cubic_feet_per_minute"/>
+            <xsd:enumeration value="cubic_feet_per_hour"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BurnTimeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="minutes"/>
+            <xsd:enumeration value="hours"/>
+            <xsd:enumeration value="cycles"/>			
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="LengthUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MM"/>
+            <xsd:enumeration value="CM"/>
+            <xsd:enumeration value="M"/>
+            <xsd:enumeration value="IN"/>
+            <xsd:enumeration value="FT"/>
+            <xsd:enumeration value="inches"/>
+            <xsd:enumeration value="feet"/>
+            <xsd:enumeration value="meters"/>
+            <xsd:enumeration value="decimeters"/>
+            <xsd:enumeration value="centimeters"/>
+            <xsd:enumeration value="millimeters"/>
+            <xsd:enumeration value="micrometers"/>
+            <xsd:enumeration value="nanometers"/>
+            <xsd:enumeration value="picometers"/>
+            <xsd:enumeration value="hundredths_inches"/>
+            <xsd:enumeration value="yards"/>
+            <xsd:enumeration value="angstrom"/>
+            <xsd:enumeration value="mils"/>
+            <xsd:enumeration value="miles"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FocalLengthDimension">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MM"/>
+            <xsd:enumeration value="CM"/>
+            <xsd:enumeration value="M"/>
+            <xsd:enumeration value="meters"/>
+            <xsd:enumeration value="centimeters"/>
+            <xsd:enumeration value="millimeters"/>
+            <xsd:enumeration value="angstrom"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="LuminanceUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="lumens"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="LuminousIntensityUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="candela"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="VolumeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="cubic-cm"/>
+            <xsd:enumeration value="cubic-ft"/>
+            <xsd:enumeration value="cubic-in"/>
+            <xsd:enumeration value="cubic-m"/>
+            <xsd:enumeration value="cubic-yd"/>
+            <xsd:enumeration value="cup"/>
+            <xsd:enumeration value="fluid-oz"/>
+            <xsd:enumeration value="gallon"/>
+            <xsd:enumeration value="liter"/>
+            <xsd:enumeration value="milliliter"/>
+            <xsd:enumeration value="ounce"/>
+            <xsd:enumeration value="pint"/>
+            <xsd:enumeration value="quart"/>
+            <xsd:enumeration value="liters"/>
+            <xsd:enumeration value="deciliters"/>
+            <xsd:enumeration value="centiliters"/>
+            <xsd:enumeration value="milliliters"/>
+            <xsd:enumeration value="microliters"/>
+            <xsd:enumeration value="nanoliters"/>
+            <xsd:enumeration value="picoliters"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="WeightUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="GR"/>
+            <xsd:enumeration value="KG"/>
+            <xsd:enumeration value="OZ"/>
+            <xsd:enumeration value="LB"/>
+            <xsd:enumeration value="MG"/>			
+            <xsd:enumeration value="hundredths_pounds"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="JewelryLengthUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MM"/>
+            <xsd:enumeration value="CM"/>
+            <xsd:enumeration value="IN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="JewelryWeightUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="GR"/>
+            <xsd:enumeration value="KG"/>
+            <xsd:enumeration value="OZ"/>
+            <xsd:enumeration value="LB"/>
+            <xsd:enumeration value="CARATS"/>
+            <xsd:enumeration value="DWT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DegreeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="degrees"/>
+            <xsd:enumeration value="microradian"/>
+            <xsd:enumeration value="arc_minute"/>			
+            <xsd:enumeration value="arc_sec"/>
+            <xsd:enumeration value="milliradian"/>
+            <xsd:enumeration value="radians"/>			
+            <xsd:enumeration value="turns"/>				
+            <xsd:enumeration value="revolutions"/>				
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MemorySizeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="TB"/>
+            <xsd:enumeration value="GB"/>
+            <xsd:enumeration value="MB"/>
+            <xsd:enumeration value="KB"/>
+            <xsd:enumeration value="KO"/>
+            <xsd:enumeration value="MO"/>
+            <xsd:enumeration value="GO"/>
+            <xsd:enumeration value="TO"/>
+            <xsd:enumeration value="bytes"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="FrequencyUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Hz"/>
+            <xsd:enumeration value="KHz"/>
+            <xsd:enumeration value="MHz"/>
+            <xsd:enumeration value="GHz"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AmperageUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="amps"/>
+            <xsd:enumeration value="kiloamps"/>
+            <xsd:enumeration value="microamps"/>
+            <xsd:enumeration value="milliamps"/>
+            <xsd:enumeration value="nanoamps"/>
+            <xsd:enumeration value="picoamps"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="GraduationIntervalUnitOfMeasure">
+        <xsd:union memberTypes="LengthUnitOfMeasure WeightUnitOfMeasure VolumeUnitOfMeasure"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="VolumeAndVolumeRateUnitOfMeasure">
+        <xsd:union memberTypes="VolumeUnitOfMeasure VolumeRateUnitOfMeasure"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="TimeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="sec"/>
+            <xsd:enumeration value="min"/>
+            <xsd:enumeration value="hr"/>
+            <xsd:enumeration value="days"/>
+            <xsd:enumeration value="hours"/>
+            <xsd:enumeration value="minutes"/>
+            <xsd:enumeration value="seconds"/>
+            <xsd:enumeration value="milliseconds"/>
+            <xsd:enumeration value="microseconds"/>
+            <xsd:enumeration value="nanoseconds"/>
+            <xsd:enumeration value="picoseconds"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BatteryAverageLifeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="minutes"/>
+            <xsd:enumeration value="hours"/>
+            <xsd:enumeration value="days"/>
+            <xsd:enumeration value="weeks"/>
+            <xsd:enumeration value="months"/>
+            <xsd:enumeration value="years"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DataTransferUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="KHz"/>
+            <xsd:enumeration value="MHz"/>
+            <xsd:enumeration value="GHz"/>
+            <xsd:enumeration value="Mbps"/>
+            <xsd:enumeration value="Gbps"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ResistanceUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ohms"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DateUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="days"/>
+            <xsd:enumeration value="weeks"/>
+            <xsd:enumeration value="months"/>
+            <xsd:enumeration value="years"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AssemblyTimeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="minutes"/>
+            <xsd:enumeration value="hours"/>
+            <xsd:enumeration value="days"/>
+            <xsd:enumeration value="weeks"/>
+            <xsd:enumeration value="months"/>
+            <xsd:enumeration value="years"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AgeRecommendedUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="months"/>
+            <xsd:enumeration value="years"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BatteryPowerUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="milliamp_hours"/>
+            <xsd:enumeration value="amp_hours"/>
+            <xsd:enumeration value="volt_amperes"/>
+            <xsd:enumeration value="watt_hours"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="VoltageUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="volts"/>
+            <xsd:enumeration value="millivolts"/>
+            <xsd:enumeration value="microvolts"/>
+            <xsd:enumeration value="nanovolts"/>
+            <xsd:enumeration value="kilovolts"/>			
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="WattageUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="watts"/>
+            <xsd:enumeration value="kilowatts"/>			
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MillimeterUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="millimeters"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TemperatureRatingUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="degrees-celsius"/>
+            <xsd:enumeration value="degrees-fahrenheit"/>
+            <xsd:enumeration value="kelvin"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ClothingSizeUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="IN"/>
+            <xsd:enumeration value="CM"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="PowerUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="watts"/>
+            <xsd:enumeration value="kilowatts"/>
+            <xsd:enumeration value="horsepower"/>
+            <xsd:enumeration value="watts-per-sec"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ResolutionUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="megapixels"/>
+            <xsd:enumeration value="pixels"/>
+            <xsd:enumeration value="lines_per_inch"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ApertureUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="f"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ContinuousShootingUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="frames"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="EnergyConsumptionUnitOfMeasure">
+        <xsd:restriction base="String">
+            <xsd:enumeration value="kilowatt_hours"/>
+            <xsd:enumeration value="btu"/>
+            <xsd:enumeration value="kilowatts"/>
+            <xsd:enumeration value="watt_hours"/>
+            <xsd:enumeration value="btus"/>
+            <xsd:enumeration value="cubic_meters"/>
+            <xsd:enumeration value="cubic_feet"/>
+            <xsd:enumeration value="joules"/>
+            <xsd:enumeration value="milliamp_hours"/>
+            <xsd:enumeration value="milliampere_hour"/>
+            <xsd:enumeration value="milliampere_second"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="CurrentUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="mA"/>
+            <xsd:enumeration value="A"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ForceUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="newtons"/>
+            <xsd:enumeration value="Newton"/>
+            <xsd:enumeration value="pounds"/>
+            <xsd:enumeration value="kilograms"/>
+            <xsd:enumeration value="PSI"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="HardnessUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="brinnell"/>
+            <xsd:enumeration value="vickers"/>
+            <xsd:enumeration value="rockwell_a"/>
+            <xsd:enumeration value="rockwell_b"/>
+            <xsd:enumeration value="rockwell_c"/>
+            <xsd:enumeration value="rockwell_d"/>
+            <xsd:enumeration value="shore_a"/>
+            <xsd:enumeration value="shore_b"/>
+            <xsd:enumeration value="shore_c"/>
+            <xsd:enumeration value="shore_d"/>
+            <xsd:enumeration value="shore_do"/>
+            <xsd:enumeration value="shore_e"/>
+            <xsd:enumeration value="shore_m"/>
+            <xsd:enumeration value="shore_o"/>
+            <xsd:enumeration value="shore_oo"/>
+            <xsd:enumeration value="shore_ooo"/>
+            <xsd:enumeration value="shore_ooo_s"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="NoiseLevelUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="dBA"/>
+            <xsd:enumeration value="decibels"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SunProtectionUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="sun_protection_factor"/>
+        </xsd:restriction>
+    </xsd:simpleType>	
+    <xsd:simpleType name="TemperatureUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="C"/>
+            <xsd:enumeration value="F"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="TorqueType">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="TorqueUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="TorqueUnitOfMeasure">
+        <xsd:restriction base="StringNotNull">
+            <xsd:enumeration value="foot-lbs"/>
+            <xsd:enumeration value="inch-lbs"/>
+            <xsd:enumeration value="centimeter_kilograms"/>
+            <xsd:enumeration value="foot_pounds"/>
+            <xsd:enumeration value="inch_ounces"/>
+            <xsd:enumeration value="inch_pounds"/>
+            <xsd:enumeration value="kilonewtons"/>
+            <xsd:enumeration value="kilograms_per_millimeter"/>
+            <xsd:enumeration value="newton_meters"/>
+            <xsd:enumeration value="newton_millimeters"/>
+            <xsd:enumeration value="newtons"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="VolumeRateUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="milliliters per second"/>
+            <xsd:enumeration value="centiliters per second"/>
+            <xsd:enumeration value="liters per second"/>
+            <xsd:enumeration value="milliliters per minute"/>
+            <xsd:enumeration value="liters per minute"/>
+            <xsd:enumeration value="microliters per second"/>
+            <xsd:enumeration value="nanoliters per second"/>
+            <xsd:enumeration value="picoliters per second"/>
+            <xsd:enumeration value="microliters per minute"/>
+            <xsd:enumeration value="nanoliters per minute"/>
+            <xsd:enumeration value="picoliters per minute"/>
+            <xsd:enumeration value="gallons_per_day"/>
+            <xsd:enumeration value="liters_per_day"/>
+            <xsd:enumeration value="liters"/>			
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+
+    ##################################################
+    # Generic Customer Type
+    ##################################################
+
+    -->
+    <xsd:complexType name="Customer">
+        <xsd:sequence>
+            <xsd:element name="Name" type="String" minOccurs="0"/>
+            <xsd:element name="FormalTitle" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>e.g. Mr., Ms., etc.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="10"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="GivenName" type="String" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Usually the customer's first name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="FamilyName" type="String" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Usually the customer's last name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Email" type="EmailAddressType" minOccurs="0"/>
+            <xsd:element name="BirthDate" type="xsd:date" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The customer's birth date</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="CustomerAddress" type="AddressType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!--
+    ####################
+    # Name - value pair
+    ####################
+    -->
+    <xsd:complexType name="NameValuePair">
+        <xsd:sequence>
+            <xsd:element name="Name" type="StringNotNull"/>
+            <xsd:element name="Value" type="LongString"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="LanguageStringType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Abkhazian"/>
+            <xsd:enumeration value="Adygei"/>
+            <xsd:enumeration value="Afar"/>
+            <xsd:enumeration value="Afrikaans"/>
+            <xsd:enumeration value="Albanian"/>
+            <xsd:enumeration value="Alsatian"/>
+            <xsd:enumeration value="Amharic"/>
+            <xsd:enumeration value="Arabic"/>
+            <xsd:enumeration value="Aramaic"/>
+            <xsd:enumeration value="Armenian"/>
+            <xsd:enumeration value="Assamese"/>
+            <xsd:enumeration value="Aymara"/>
+            <xsd:enumeration value="Azerbaijani"/>
+            <xsd:enumeration value="Bambara"/>
+            <xsd:enumeration value="Bashkir"/>
+            <xsd:enumeration value="Basque"/>
+            <xsd:enumeration value="Bengali"/>
+            <xsd:enumeration value="Berber"/>
+            <xsd:enumeration value="Bhutani"/>
+            <xsd:enumeration value="Bihari"/>
+            <xsd:enumeration value="Bislama"/>
+            <xsd:enumeration value="Breton"/>
+            <xsd:enumeration value="Bulgarian"/>
+            <xsd:enumeration value="Burmese"/>
+            <xsd:enumeration value="Buryat"/>
+            <xsd:enumeration value="Byelorussian"/>
+            <xsd:enumeration value="CantoneseChinese"/>
+            <xsd:enumeration value="Castillian"/>
+            <xsd:enumeration value="Catalan"/>
+            <xsd:enumeration value="Cayuga"/>
+            <xsd:enumeration value="Cheyenne"/>
+            <xsd:enumeration value="Chinese"/>
+            <xsd:enumeration value="ClassicalNewari"/>
+            <xsd:enumeration value="Cornish"/>
+            <xsd:enumeration value="Corsican"/>
+            <xsd:enumeration value="Creole"/>
+            <xsd:enumeration value="CrimeanTatar"/>
+            <xsd:enumeration value="Croatian"/>
+            <xsd:enumeration value="Czech"/>
+            <xsd:enumeration value="Danish"/>
+            <xsd:enumeration value="Dargwa"/>
+            <xsd:enumeration value="Dutch"/>
+            <xsd:enumeration value="English"/>
+            <xsd:enumeration value="Esperanto"/>
+            <xsd:enumeration value="Estonian"/>
+            <xsd:enumeration value="Faroese"/>
+            <xsd:enumeration value="Farsi"/>
+            <xsd:enumeration value="Fiji"/>
+            <xsd:enumeration value="Filipino"/>
+            <xsd:enumeration value="Finnish"/>
+            <xsd:enumeration value="Flemish"/>
+            <xsd:enumeration value="French"/>
+            <xsd:enumeration value="FrenchCanadian"/>
+            <xsd:enumeration value="Frisian"/>
+            <xsd:enumeration value="Galician"/>
+            <xsd:enumeration value="Georgian"/>
+            <xsd:enumeration value="German"/>
+            <xsd:enumeration value="Gibberish"/>
+            <xsd:enumeration value="Greek"/>
+            <xsd:enumeration value="Greenlandic"/>
+            <xsd:enumeration value="Guarani"/>
+            <xsd:enumeration value="Gujarati"/>
+            <xsd:enumeration value="Gullah"/>
+            <xsd:enumeration value="Hausa"/>
+            <xsd:enumeration value="Hawaiian"/>
+            <xsd:enumeration value="Hebrew"/>
+            <xsd:enumeration value="Hindi"/>
+            <xsd:enumeration value="Hmong"/>
+            <xsd:enumeration value="Hungarian"/>
+            <xsd:enumeration value="Icelandic"/>
+            <xsd:enumeration value="IndoEuropean"/>
+            <xsd:enumeration value="Indonesian"/>
+            <xsd:enumeration value="Ingush"/>
+            <xsd:enumeration value="Interlingua"/>
+            <xsd:enumeration value="Interlingue"/>
+            <xsd:enumeration value="Inuktitun"/>
+            <xsd:enumeration value="Inuktitut"/>
+            <xsd:enumeration value="Inupiak"/>
+            <xsd:enumeration value="Inupiaq"/>
+            <xsd:enumeration value="Irish"/>
+            <xsd:enumeration value="Italian"/>
+            <xsd:enumeration value="Japanese"/>
+            <xsd:enumeration value="Javanese"/>
+            <xsd:enumeration value="Kalaallisut"/>
+            <xsd:enumeration value="Kalmyk"/>
+            <xsd:enumeration value="Kannada"/>
+            <xsd:enumeration value="KarachayBalkar"/>
+            <xsd:enumeration value="Kashmiri"/>
+            <xsd:enumeration value="Kashubian"/>
+            <xsd:enumeration value="Kazakh"/>
+            <xsd:enumeration value="Khmer"/>
+            <xsd:enumeration value="Kinyarwanda"/>
+            <xsd:enumeration value="Kirghiz"/>
+            <xsd:enumeration value="Kirundi"/>
+            <xsd:enumeration value="Klingon"/>
+            <xsd:enumeration value="Korean"/>
+            <xsd:enumeration value="Kurdish"/>
+            <xsd:enumeration value="Ladino"/>
+            <xsd:enumeration value="Lao"/>
+            <xsd:enumeration value="Lapp"/>
+            <xsd:enumeration value="Latin"/>
+            <xsd:enumeration value="Latvian"/>
+            <xsd:enumeration value="Lingala"/>
+            <xsd:enumeration value="Lithuanian"/>
+            <xsd:enumeration value="Lojban"/>
+            <xsd:enumeration value="LowerSorbian"/>
+            <xsd:enumeration value="Macedonian"/>
+            <xsd:enumeration value="Malagasy"/>
+            <xsd:enumeration value="Malay"/>
+            <xsd:enumeration value="Malayalam"/>
+            <xsd:enumeration value="Maltese"/>
+            <xsd:enumeration value="MandarinChinese"/>
+            <xsd:enumeration value="Maori"/>
+            <xsd:enumeration value="Marathi"/>
+            <xsd:enumeration value="Mende"/>
+            <xsd:enumeration value="MiddleEnglish"/>
+            <xsd:enumeration value="Mirandese"/>
+            <xsd:enumeration value="Moksha"/>
+            <xsd:enumeration value="Moldavian"/>
+            <xsd:enumeration value="Mongo"/>
+            <xsd:enumeration value="Mongolian"/>
+            <xsd:enumeration value="Multilingual"/>
+            <xsd:enumeration value="Nauru"/>
+            <xsd:enumeration value="Navaho"/>
+            <xsd:enumeration value="Nepali"/>
+            <xsd:enumeration value="Nogai"/>
+            <xsd:enumeration value="Norwegian"/>
+            <xsd:enumeration value="Occitan"/>
+            <xsd:enumeration value="OldEnglish"/>
+            <xsd:enumeration value="Oriya"/>
+            <xsd:enumeration value="Oromo"/>
+            <xsd:enumeration value="Pashto"/>
+            <xsd:enumeration value="Persian"/>
+            <xsd:enumeration value="PigLatin"/>
+            <xsd:enumeration value="Polish"/>
+            <xsd:enumeration value="Portuguese"/>
+            <xsd:enumeration value="Punjabi"/>
+            <xsd:enumeration value="Quechua"/>
+            <xsd:enumeration value="Romance"/>
+            <xsd:enumeration value="Romanian"/>
+            <xsd:enumeration value="Romany"/>
+            <xsd:enumeration value="Russian"/>
+            <xsd:enumeration value="Samaritan"/>
+            <xsd:enumeration value="Samoan"/>
+            <xsd:enumeration value="Sangho"/>
+            <xsd:enumeration value="Sanskrit"/>
+            <xsd:enumeration value="Serbian"/>
+            <xsd:enumeration value="Serbo-Croatian"/>
+            <xsd:enumeration value="Sesotho"/>
+            <xsd:enumeration value="Setswana"/>
+            <xsd:enumeration value="Shona"/>
+            <xsd:enumeration value="SichuanYi"/>
+            <xsd:enumeration value="Sicilian"/>
+            <xsd:enumeration value="SignLanguage"/>
+            <xsd:enumeration value="Sindhi"/>
+            <xsd:enumeration value="Sinhalese"/>
+            <xsd:enumeration value="Siswati"/>
+            <xsd:enumeration value="Slavic"/>
+            <xsd:enumeration value="Slovak"/>
+            <xsd:enumeration value="Slovakian"/>
+            <xsd:enumeration value="Slovene"/>
+            <xsd:enumeration value="Somali"/>
+            <xsd:enumeration value="Spanish"/>
+            <xsd:enumeration value="Sumerian"/>
+            <xsd:enumeration value="Sundanese"/>
+            <xsd:enumeration value="Swahili"/>
+            <xsd:enumeration value="Swedish"/>
+            <xsd:enumeration value="SwissGerman"/>
+            <xsd:enumeration value="Syriac"/>
+            <xsd:enumeration value="Tagalog"/>
+            <xsd:enumeration value="TaiwaneseChinese"/>
+            <xsd:enumeration value="Tajik"/>
+            <xsd:enumeration value="Tamil"/>
+            <xsd:enumeration value="Tatar"/>
+            <xsd:enumeration value="Telugu"/>
+            <xsd:enumeration value="Thai"/>
+            <xsd:enumeration value="Tibetan"/>
+            <xsd:enumeration value="Tigrinya"/>
+            <xsd:enumeration value="Tonga"/>
+            <xsd:enumeration value="Tsonga"/>
+            <xsd:enumeration value="Turkish"/>
+            <xsd:enumeration value="Turkmen"/>
+            <xsd:enumeration value="Twi"/>
+            <xsd:enumeration value="Udmurt"/>
+            <xsd:enumeration value="Uighur"/>
+            <xsd:enumeration value="Ukrainian"/>
+            <xsd:enumeration value="Ukranian"/>
+            <xsd:enumeration value="Unknown"/>
+            <xsd:enumeration value="Urdu"/>
+            <xsd:enumeration value="Uzbek"/>
+            <xsd:enumeration value="Vietnamese"/>
+            <xsd:enumeration value="Volapuk"/>
+            <xsd:enumeration value="Welsh"/>
+            <xsd:enumeration value="Wolof"/>
+            <xsd:enumeration value="Xhosa"/>
+            <xsd:enumeration value="Yiddish"/>
+            <xsd:enumeration value="Yoruba"/>
+            <xsd:enumeration value="Zhuang"/>
+            <xsd:enumeration value="Zulu"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+     ###############################################################
+     # CE and CameraPhoto type definitions
+     ###############################################################
+    -->
+    <xsd:simpleType name="ZoomUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="x"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="ZoomDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="ZoomUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="PixelUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="pixels"/>
+            <xsd:enumeration value="MP"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PixelDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="PixelUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="PressureUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="bars"/>
+            <xsd:enumeration value="psi"/>
+            <xsd:enumeration value="pascal"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PressureDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="PressureUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="OpticalPowerUnitOfMeasure">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="diopters"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="OpticalPowerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="OpticalPowerUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="PowerDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="PowerUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ResolutionDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="ResolutionUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="OptionalResolutionDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="StringNotNull">
+                <xsd:attribute name="unitOfMeasure" type="ResolutionUnitOfMeasure" use="optional"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ApertureDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="ApertureUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="ContinuousShootingDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unitOfMeasure" type="ContinuousShootingUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="EnergyConsumptionDimension">
+        <xsd:simpleContent>
+            <xsd:extension base="Dimension">
+                <xsd:attribute name="unitOfMeasure" type="EnergyConsumptionUnitOfMeasure" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType name="StoneCreationMethod">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="natural"/>
+            <xsd:enumeration value="simulated"/>
+            <xsd:enumeration value="synthetic"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AspectRatio">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="2:01"/>
+            <xsd:enumeration value="4:03"/>
+            <xsd:enumeration value="11:09"/>
+            <xsd:enumeration value="14:09"/>
+            <xsd:enumeration value="16:09"/>
+            <xsd:enumeration value="1.27:1"/>
+            <xsd:enumeration value="1.29:1"/>
+            <xsd:enumeration value="1.30:1"/>
+            <xsd:enumeration value="1.33:1"/>
+            <xsd:enumeration value="1.34:1"/>
+            <xsd:enumeration value="1.35:1"/>
+            <xsd:enumeration value="1.37:1"/>
+            <xsd:enumeration value="1.38:1"/>
+            <xsd:enumeration value="1.44:1"/>
+            <xsd:enumeration value="1.45:1"/>
+            <xsd:enumeration value="1.50:1"/>
+            <xsd:enumeration value="1.55:1"/>
+            <xsd:enumeration value="1.58:1"/>
+            <xsd:enumeration value="1.59:1"/>
+            <xsd:enumeration value="1.60:1"/>
+            <xsd:enumeration value="1.63:1"/>
+            <xsd:enumeration value="1.65:1"/>
+            <xsd:enumeration value="1.66:1"/>
+            <xsd:enumeration value="1.67:1"/>
+            <xsd:enumeration value="1.70:1"/>
+            <xsd:enumeration value="1.71:1"/>
+            <xsd:enumeration value="1.74:1"/>
+            <xsd:enumeration value="1.75:1"/>
+            <xsd:enumeration value="1.76:1"/>
+            <xsd:enumeration value="1.77:1"/>
+            <xsd:enumeration value="1.78:1"/>
+            <xsd:enumeration value="1.83:1"/>
+            <xsd:enumeration value="1.85:1"/>
+            <xsd:enumeration value="1.87:1"/>
+            <xsd:enumeration value="1.88:1"/>
+            <xsd:enumeration value="1.98:1"/>
+            <xsd:enumeration value="2.10:1"/>
+            <xsd:enumeration value="2.20:1"/>
+            <xsd:enumeration value="2.21:1"/>
+            <xsd:enumeration value="2.22:1"/>
+            <xsd:enumeration value="2.30:1"/>
+            <xsd:enumeration value="2.31:1"/>
+            <xsd:enumeration value="2.33:1"/>
+            <xsd:enumeration value="2.35:1"/>
+            <xsd:enumeration value="2.39:1"/>
+            <xsd:enumeration value="2.40:1"/>
+            <xsd:enumeration value="2.55:1"/>
+            <xsd:enumeration value="unknown_aspect_ratio"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="BatteryCellTypeValues">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="NiCAD"/>
+            <xsd:enumeration value="NiMh"/>
+            <xsd:enumeration value="alkaline"/>
+            <xsd:enumeration value="aluminum_oxygen"/>
+            <xsd:enumeration value="lead_acid"/>
+            <xsd:enumeration value="lead_calcium"/>
+            <xsd:enumeration value="lithium"/>
+            <xsd:enumeration value="lithium_ion"/>
+            <xsd:enumeration value="lithium_manganese_dioxide"/>
+            <xsd:enumeration value="lithium_metal"/>
+            <xsd:enumeration value="lithium_polymer"/>
+            <xsd:enumeration value="manganese"/>
+            <xsd:enumeration value="polymer"/>
+            <xsd:enumeration value="silver_oxide"/>
+            <xsd:enumeration value="zinc"/>			
+            <xsd:enumeration value="lead_acid_agm"/>
+            <xsd:enumeration value="lithium_air"/>
+            <xsd:enumeration value="lithium_cobalt"/>
+            <xsd:enumeration value="lithium_nickel_cobalt_aluminum"/>
+            <xsd:enumeration value="lithium_nickel_manganese_cobalt"/>
+            <xsd:enumeration value="lithium_phosphate"/>
+            <xsd:enumeration value="lithium_thionyl_chloride"/>
+            <xsd:enumeration value="lithium_titanate"/>
+            <xsd:enumeration value="nickel_iron"/>
+            <xsd:enumeration value="nickel_zinc"/>
+            <xsd:enumeration value="silver_calcium"/>
+            <xsd:enumeration value="silver_zinc"/>
+            <xsd:enumeration value="zinc_air"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+###############################################################
+# FBA Data Types
+    ###############################################################
+    -->
+    <xsd:simpleType name="HazmatItemType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="butane"/>
+            <xsd:enumeration value="fuel_cell"/>
+            <xsd:enumeration value="gasoline"/>
+            <xsd:enumeration value="orm_d_class_1"/>
+            <xsd:enumeration value="orm_d_class_2"/>
+            <xsd:enumeration value="orm_d_class_3"/>
+            <xsd:enumeration value="orm_d_class_4"/>
+            <xsd:enumeration value="orm_d_class_5"/>
+            <xsd:enumeration value="orm_d_class_6"/>
+            <xsd:enumeration value="orm_d_class_7"/>
+            <xsd:enumeration value="orm_d_class_8"/>
+            <xsd:enumeration value="orm_d_class_9"/>
+            <xsd:enumeration value="sealed_lead_acid_battery"/>
+            <xsd:enumeration value="unknown"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="IdentityPackageType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="bulk"/>
+            <xsd:enumeration value="frustration_free"/>
+            <xsd:enumeration value="traditional"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="SerialNumberFormatType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="a_or_z_alphanumeric_13"/>
+            <xsd:enumeration value="alphanumeric_8"/>
+            <xsd:enumeration value="numeric_14"/>
+            <xsd:enumeration value="alphanumeric_14"/>
+            <xsd:enumeration value="numeric_12"/>
+            <xsd:enumeration value="w_alphanumeric_12"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!--
+    ########################################
+    ######  Loyalty Custom Attribute   ##### 
+    ########################################
+    -->
+    <xsd:complexType name="LoyaltyCustomAttribute">
+        <xsd:simpleContent>
+            <xsd:extension base="String">
+                <xsd:attribute name="attributeName" type="String"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="WeightRecommendationType">
+        <xsd:sequence>
+            <xsd:element name="MaximumWeightRecommendation" type="PositiveWeightDimension" minOccurs="0"/>
+            <xsd:element name="MinimumWeightRecommendation" type="PositiveWeightDimension" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- 
+    ########################################
+    ######     Character Data Type     ##### 
+    ########################################
+    -->
+    <xsd:element name="CharacterData" type="CharacterDataType"/>
+    <xsd:complexType name="CharacterDataType">
+        <xsd:sequence>
+            <xsd:element ref="SKU"/>
+            <xsd:element name="EffectiveTimestamp" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="Plugin" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="AdditionalMessageDiscriminator" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="Payload" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="schemaVersion" type="xsd:string"/>
+        <xsd:attribute name="isOfferOnlyUpdate" type="xsd:boolean"/>
+    </xsd:complexType>
+</xsd:schema>

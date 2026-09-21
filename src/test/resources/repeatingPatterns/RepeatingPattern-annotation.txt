@@ -1,0 +1,5 @@
+RepeatingPatternListType
+    repeatingPatterns
+        @Size(max = 10)
+        items
+            @Pattern(regexp = "[0-9]")

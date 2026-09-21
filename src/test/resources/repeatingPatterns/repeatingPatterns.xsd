@@ -1,0 +1,22 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="RepeatingPatternList" type="a:RepeatingPatternListType" />
+
+    <xsd:complexType name="RepeatingPatternListType">
+        <xsd:sequence>
+            <xsd:element maxOccurs="10" minOccurs="0" name="RepeatingPatterns" type="a:RepeatingPatternsType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="RepeatingPatternsType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]" />
+            <xsd:pattern value="[0-9]" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

@@ -138,6 +138,15 @@
       <version>${validation.version}</version>
     </dependency>
 
+    <!-- XJC needs a JAXB implementation for some schemas: without one it stops with
+         "Implementation of Jakarta XML Binding-API has not been found" on the abase fixture -->
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

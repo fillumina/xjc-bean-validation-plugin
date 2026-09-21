@@ -1,0 +1,15 @@
+EachType
+    fiftyCharsStringList
+        @NotNull
+        @Size(min = 1, max = 10)
+        items
+            @Size(max = 50)
+    priceList
+        @NotNull
+        @Size(min = 1, max = 3)
+        items
+            @DecimalMax(value = "2500.00", inclusive = true)
+            @DecimalMin(value = "0.01", inclusive = true)
+            @Digits(integer = 6, fraction = 2)
+    stringList
+        @Size(max = 5)
