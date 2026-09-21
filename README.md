@@ -11,8 +11,10 @@ protected List<@Size(max = 5) String> name;
 ```
 
 The constraint of the items of a collection is written on the type argument, which is the form a
-current provider enforces. The plugin was split out of `com.fillumina:krasa-jaxb-tools`, where it
-lived with the primitives plugin in one jar and one service file.
+current provider enforces. The plugin was split out of [`com.fillumina:krasa-jaxb-tools`](
+https://github.com/fillumina/krasa-jaxb-tools), which continues the XJC addon that Vojtech Krasa
+wrote; the code here is a port of that one. It lived there in the same jar and the same service file
+as the primitives plugin, which is the entanglement this project breaks.
 
 ## Requirements
 
