@@ -1,0 +1,3 @@
+NotNullType
+    notNullString
+        @NotNull(message = "notNullString in NotNullType should be not null")

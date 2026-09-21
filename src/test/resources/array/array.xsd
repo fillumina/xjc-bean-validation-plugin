@@ -1,0 +1,21 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="array" type="a:Array"/>
+
+    <xsd:complexType name="Array">
+        <xsd:sequence>
+            <xsd:element name="arrayOfBytes" type="a:ArrayOfBytes"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="ArrayOfBytes">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:maxLength value="18"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
