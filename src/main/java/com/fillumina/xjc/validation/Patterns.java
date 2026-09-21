@@ -1,0 +1,97 @@
+package com.fillumina.xjc.validation;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+/**
+ * The pattern constraints. A field and the items of a collection both carry them, so the code that
+ * turns a set of schema patterns into annotations takes the annotator to write them into.
+ *
+ * @author Francesco Illuminati
+ */
+final class Patterns {
+
+    private static final String REGEXP = "regexp";
+    private static final String VALUE = "value";
+
+    static void add(XjcAnnotator annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns,
+            boolean multiPattern) {
+        switch (multiPatterns.size()) {
+            case 0:
+                // do nothing at all
+                break;
+            case 1:
+                addAll(annotator, multiPatterns.iterator().next());
+                break;
+            default:
+                if (multiPattern) {
+                    multiPatterns.forEach(patterns -> addAll(annotator, patterns));
+                } else {
+                    addList(annotator, multiPatterns);
+                }
+        }
+    }
+
+    /**
+     * Uses @Pattern.List to list all patterns.
+     * If a type definition with patterns has a base type with patterns the two different set of
+     * patterns are not alternatives (OR) but equally mandatory (AND) so a @Pattern.List
+     * must be used.
+     * <p>
+     * see https://www.w3.org/TR/2011/CR-xmlschema11-2-20110721/datatypes.html#rf-pattern
+     */
+    private static void addList(XjcAnnotator annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns) {
+        XjcAnnotator.Annotate.MultipleAnnotation multi = annotator
+                .annotate(ValidationAnnotations.PATTERN_LIST)
+                .multipleAnnotationContainer(VALUE);
+
+        for (Set<String> patterns : multiPatterns) {
+            switch (patterns.size()) {
+                case 0:
+                    // do nothing
+                    break;
+                case 1:
+                    multi.annotate(ValidationAnnotations.PATTERN)
+                            .param(REGEXP, patterns.iterator().next())
+                            .log();
+                    break;
+                default:
+                    multi.annotate(ValidationAnnotations.PATTERN)
+                            .param(REGEXP, consolidate(patterns))
+                            .log();
+            }
+        }
+    }
+
+    private static void addAll(XjcAnnotator annotator, Collection<String> patterns) {
+        switch (patterns.size()) {
+            case 0:
+                // do nothing at all
+                break;
+            case 1:
+                addOne(annotator, patterns.iterator().next());
+                break;
+            default:
+                // all the patterns (A, B, C) as the options of a single one (A|B|C)
+                addOne(annotator, consolidate(patterns));
+        }
+    }
+
+    private static void addOne(XjcAnnotator annotator, String pattern) {
+        annotator.annotate(ValidationAnnotations.PATTERN)
+                .param(REGEXP, pattern)
+                .log();
+    }
+
+    private static String consolidate(Collection<String> patterns) {
+        StringBuilder regexp = new StringBuilder();
+        for (String pattern : patterns) {
+            regexp.append("(").append(pattern).append(")|");
+        }
+        return regexp.substring(0, regexp.length() - 1);
+    }
+
+    private Patterns() {
+    }
+}
