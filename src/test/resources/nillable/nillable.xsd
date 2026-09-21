@@ -1,0 +1,25 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="nillable" type="a:Nillable"/>
+
+    <xsd:complexType name="Nillable">
+        <xsd:sequence>
+            <xsd:element 
+                name="notNullable" type="xsd:string"/>
+            
+            <xsd:element minOccurs="0" nillable="false" 
+                name="nullable" type="xsd:string"/>
+            
+            <!-- these two other options are really esoteric and never used in practice -->
+            <xsd:element minOccurs="0" nillable="true" 
+                name="mustBeOmittedOrBeNil" type="xsd:string"/>
+            <xsd:element minOccurs="1" nillable="true" 
+                name="mustBeThereAndBeNil" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,12 @@
+ContentListType
+    itemList
+        @Size(max = 200)
+        items
+            @Valid
+Item
+MessageContentType
+    conentList
+        @Valid
+MessageType
+    messageContent
+        @Valid

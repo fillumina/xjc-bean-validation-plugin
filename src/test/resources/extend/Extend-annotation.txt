@@ -1,0 +1,7 @@
+AComplexExtendingType
+AComplexType
+    ccy
+        @NotNull
+    value
+        @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 18, fraction = 5)

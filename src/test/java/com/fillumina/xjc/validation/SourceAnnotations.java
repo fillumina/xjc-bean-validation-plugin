@@ -73,9 +73,9 @@ final class SourceAnnotations {
                 fields.add(field);
             }
         }
-        if (fields.isEmpty()) {
-            return;
-        }
+        // a class with no fields of its own is listed too, as the old line's extraction listed it:
+        // that it exists and carries nothing is information, and it keeps the expectations
+        // comparable with the ones they were ported from
         fields.sort(Comparator.comparing(field -> field.getName().toString()));
 
         text.append(type.getSimpleName()).append('\n');
