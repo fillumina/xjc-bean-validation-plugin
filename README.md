@@ -62,8 +62,8 @@ Every option is written after the plugin name, as in
 
 ## Building
 
-The build needs nix. `nix-shell` gives JDK 21 and Maven:
+The build needs JDK 21 and Maven, and nothing else. With both on the path:
 
 ```
-nix-shell --run 'mvn -B verify'
+mvn -B verify
 ```
