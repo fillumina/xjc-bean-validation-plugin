@@ -1,0 +1,7 @@
+ClassWithValidation
+    intField
+        @DecimalMin(value = "1", inclusive = true)
+    longField
+        @DecimalMin(value = "1", inclusive = true)
+    otherIntField
+    otherLongField

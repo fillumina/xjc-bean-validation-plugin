@@ -1,0 +1,20 @@
+AddressType
+    formalTitle
+        @Size(max = 10)
+    name
+        @NotNull
+Container
+    derivedListOfInteger
+        @NotNull
+    listOfAddress
+        @NotNull
+        @Size(min = 3, max = 7)
+        items
+            @Valid
+    listOfNotNullString
+        @Size(max = 5)
+    listOfPercentage
+        @NotNull
+        @Size(min = 2, max = 4)
+    listOfString
+        @NotNull

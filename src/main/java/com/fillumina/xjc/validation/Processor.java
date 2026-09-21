@@ -265,6 +265,10 @@ public class Processor {
                     if (options.isItemAnnotations()) {
                         AccumulatorFacet itemFacet = facet.getItemFacet();
                         if (itemFacet != null) {
+                            // the field is a list because its type is an xsd:list, so the length
+                            // facets gathered here count the items in it and belong on the field
+                            annotator.addSizeAnnotation(facet.minLength(), facet.maxLength(),
+                                    facet.length());
                             setItemAnnotations(fieldHelper, annotator, itemFacet);
                         } else {
                             // an element that inherits occurrences other than one is promoted to a

@@ -1,0 +1,29 @@
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="a"
+  xmlns:a="a"
+  elementFormDefault="qualified">
+
+  <xsd:simpleType name="IntField">
+      <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="1"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LongField">
+      <xsd:restriction base="xsd:long">
+          <xsd:minInclusive value="1"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="ClassWithValidation">
+      <xsd:sequence>
+          <xsd:element name="intField" type="a:IntField" minOccurs="0"/>
+          <xsd:element name="otherIntField" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="longField" type="a:LongField" minOccurs="0"/>
+          <xsd:element name="otherLongField" type="xsd:long" minOccurs="0"/>
+      </xsd:sequence>
+  </xsd:complexType>
+
+
+</xsd:schema>
