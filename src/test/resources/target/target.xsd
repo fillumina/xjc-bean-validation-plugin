@@ -1,0 +1,19 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    xmlns:b="b"
+    elementFormDefault="qualified">
+
+    <xsd:import namespace="b" schemaLocation="b.xsd"/>
+
+    <xsd:element name="aContainer">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="aListOfString" type="b:LongStringNotNull"
+                             minOccurs="0" maxOccurs="5"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

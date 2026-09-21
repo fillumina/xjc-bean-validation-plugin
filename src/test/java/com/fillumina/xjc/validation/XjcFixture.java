@@ -32,6 +32,10 @@ class XjcFixture {
     private final String folder;
     private final String caseName;
     private final List<String> arguments;
+    /** The directory of binding files to pass with {@code -b}, or null when the fixture needs none. */
+    private final String bindingDirectory;
+    /** The name of the schema file inside the fixture directory. */
+    private final String schemaName;
 
     /**
      * @param folder the directory under {@code src/test/resources}, which holds the schema and the
@@ -41,9 +45,16 @@ class XjcFixture {
      *     always given
      */
     XjcFixture(String folder, String caseName, List<String> arguments) {
+        this(folder, caseName, arguments, null, caseName + ".xsd");
+    }
+
+    XjcFixture(String folder, String caseName, List<String> arguments, String bindingDirectory,
+            String schemaName) {
         this.folder = folder;
         this.caseName = caseName;
         this.arguments = arguments;
+        this.bindingDirectory = bindingDirectory;
+        this.schemaName = schemaName;
     }
 
     void check() throws Exception {
@@ -70,6 +81,10 @@ class XjcFixture {
                 "-d", output.toString(),
                 "-" + BeanValidationPlugin.PLUGIN_NAME));
         arguments.addAll(this.arguments);
+        if (bindingDirectory != null) {
+            arguments.add("-b");
+            arguments.add(bindingDirectory);
+        }
         arguments.add(schema().toString());
 
         ByteArrayOutputStream messages = new ByteArrayOutputStream();
@@ -90,7 +105,7 @@ class XjcFixture {
     }
 
     private Path schema() {
-        Path schema = Path.of("src", "test", "resources", folder, folder + ".xsd");
+        Path schema = Path.of("src", "test", "resources", folder, schemaName);
         if (!Files.exists(schema)) {
             throw new AssertionError("no schema at " + schema.toAbsolutePath());
         }

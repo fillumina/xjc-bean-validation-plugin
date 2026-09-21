@@ -37,6 +37,21 @@ abstract class FixtureTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("cases")
     void theAnnotationsAreTheExpectedOnes(Case testCase) throws Exception {
-        new XjcFixture(fixture(), testCase.name(), testCase.arguments()).check();
+        new XjcFixture(fixture(), testCase.name(), testCase.arguments(), bindingDirectory(),
+                schemaName()).check();
+    }
+
+    /** @return the directory of binding files this fixture needs, or null when it needs none. */
+    String bindingDirectory() {
+        return null;
+    }
+
+    /**
+     * @return the name of the schema file inside the fixture directory, which is the name of the
+     *     last segment of the directory unless the fixture says otherwise
+     */
+    String schemaName() {
+        String folder = fixture();
+        return folder.substring(folder.lastIndexOf('/') + 1) + ".xsd";
     }
 }
