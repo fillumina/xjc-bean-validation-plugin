@@ -101,8 +101,8 @@ class FieldAnnotator {
         }
     }
 
-    void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean multiPattern) {
-        PatternAnnotations.add(fields, patterns, multiPattern);
+    void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean patternList) {
+        PatternAnnotations.add(fields, patterns, patternList);
     }
 
     /** @return the constraints of the items of a collection, which go on the type argument. */

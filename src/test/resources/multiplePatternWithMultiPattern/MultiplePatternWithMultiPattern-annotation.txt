@@ -1,3 +1,0 @@
-Multipattern
-    multiplePatterns
-        @Pattern(regexp = "([0-9])|([A-B])")

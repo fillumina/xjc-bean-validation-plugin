@@ -11,6 +11,11 @@ NumericBounds
             @DecimalMax(value = "100", inclusive = true)
             @DecimalMin(value = "0", inclusive = true)
     plainInt
+        @DecimalMax(value = "2147483647", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
         @NotNull
     plainIntList
         @Size(max = 5)
+        items
+            @DecimalMax(value = "2147483647", inclusive = true)
+            @DecimalMin(value = "-2147483648", inclusive = true)

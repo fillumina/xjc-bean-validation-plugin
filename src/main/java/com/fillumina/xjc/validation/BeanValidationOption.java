@@ -31,16 +31,18 @@ enum BeanValidationOption {
             },
             // getter:
             (p) ->  p.getTargetNamespace()),
-    multiPattern(
+    patternList(
             Boolean.class,
-            "uses a multiple Jakarta Bean Validation @Pattern instead of @Pattern.List",
-            (p, v) -> setBoolean(v, r -> p.multiPattern(r)),
-            p -> p.isMultiPattern()),
-    generateAllNumericConstraints(
+            "writes one @Pattern.List instead of one @Pattern per alternative: both are valid and mean "
+                    + "the same, and one @Pattern per alternative is what this plugin writes",
+            (p, v) -> setBoolean(v, r -> p.patternList(r)),
+            p -> p.isPatternList()),
+    omitJavaTypeBounds(
             Boolean.class,
-            "adds @DecimalMin and @DecimalMax annotations even if within the range of the java type",
-            (p,v) -> setBoolean(v, r -> p.allNumericConstraints(r)),
-            (p) -> p.isAllNumericConstraints()),
+            "leaves out the bounds that are the natural limits of the Java type, as in @DecimalMin on an "
+                    + "int at Integer.MIN_VALUE: they say nothing the type does not already say",
+            (p,v) -> setBoolean(v, r -> p.omitJavaTypeBounds(r)),
+            (p) -> p.isOmitJavaTypeBounds()),
     generateNotNullAnnotations(
             Boolean.class,
             "adds a @NotNull when an element has minOccurs not 0, is required or is not nillable",

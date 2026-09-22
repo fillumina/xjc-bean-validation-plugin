@@ -1,5 +1,7 @@
 NumericValue
     fixedAtTheTypeLimit
+        @DecimalMax(value = "-2147483648", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
         @NotNull
     fixedAttribute
         @DecimalMax(value = "1", inclusive = true)
@@ -9,6 +11,10 @@ NumericValue
         @DecimalMin(value = "1", inclusive = true)
         @NotNull
     multiEnumerated
+        @DecimalMax(value = "2147483647", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
         @NotNull
     singleEnumerated
+        @DecimalMax(value = "2147483647", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
         @NotNull

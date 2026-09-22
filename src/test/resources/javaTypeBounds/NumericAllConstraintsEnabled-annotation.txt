@@ -1,15 +1,9 @@
-Primitive
-    aboolean
-        @NotNull
+NumericAllConstraints
     abyte
         @DecimalMax(value = "127", inclusive = true)
         @DecimalMin(value = "-128", inclusive = true)
         @NotNull
     adecimal
-        @NotNull
-    adouble
-        @NotNull
-    afloat
         @NotNull
     aint
         @DecimalMax(value = "2147483647", inclusive = true)

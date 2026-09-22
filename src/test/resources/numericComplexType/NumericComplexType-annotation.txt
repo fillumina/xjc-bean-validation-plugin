@@ -1,7 +1,13 @@
 ClassWithValidation
     intField
+        @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
     longField
+        @DecimalMax(value = "9223372036854775807", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
     otherIntField
+        @DecimalMax(value = "2147483647", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
     otherLongField
+        @DecimalMax(value = "9223372036854775807", inclusive = true)
+        @DecimalMin(value = "-9223372036854775808", inclusive = true)

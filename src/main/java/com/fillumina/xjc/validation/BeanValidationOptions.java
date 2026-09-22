@@ -13,9 +13,9 @@ import java.util.List;
 class BeanValidationOptions {
     // set default values in Builder not here
     private final String targetNamespace;
-    private final boolean multiPattern;
+    private final boolean patternList;
     private final boolean verbose;
-    private final boolean allNumericConstraints;
+    private final boolean omitJavaTypeBounds;
     private final boolean notNullAnnotations;
     private final boolean notNullCustomMessage;
     private final boolean notNullPrefixFieldName;
@@ -29,16 +29,18 @@ class BeanValidationOptions {
         return targetNamespace;
     }
 
-    boolean isMultiPattern() {
-        return multiPattern;
+    /** @return whether the patterns are written as one {@code @Pattern.List}. */
+    boolean isPatternList() {
+        return patternList;
     }
 
     boolean isVerbose() {
         return verbose;
     }
 
-    boolean isAllNumericConstraints() {
-        return allNumericConstraints;
+    /** @return whether the bounds that are the Java type's own limits are left out. */
+    boolean isOmitJavaTypeBounds() {
+        return omitJavaTypeBounds;
     }
 
     boolean isNotNullAnnotations() {
@@ -77,9 +79,9 @@ class BeanValidationOptions {
 
     static class Builder {
         private String targetNamespace = null;
-        private boolean multiPattern = false;
+        private boolean patternList = false;
         private boolean verbose = false;
-        private boolean allNumericConstraints = false;
+        private boolean omitJavaTypeBounds = false;
         private boolean notNullAnnotations = true;
         private boolean notNullCustomMessage = false;
         private boolean notNullPrefixFieldName = false;
@@ -129,8 +131,8 @@ class BeanValidationOptions {
             return this;
         }
 
-        Builder multiPattern(final boolean value) {
-            this.multiPattern = value;
+        Builder patternList(final boolean value) {
+            this.patternList = value;
             return this;
         }
 
@@ -144,8 +146,8 @@ class BeanValidationOptions {
             return this;
         }
 
-        Builder allNumericConstraints(final boolean value) {
-            this.allNumericConstraints = value;
+        Builder omitJavaTypeBounds(final boolean value) {
+            this.omitJavaTypeBounds = value;
             return this;
         }
 
@@ -186,8 +188,8 @@ class BeanValidationOptions {
         }
 
         BeanValidationOptions build() {
-            return new BeanValidationOptions(targetNamespace, multiPattern,
-                    verbose, allNumericConstraints, notNullAnnotations, notNullCustomMessage,
+            return new BeanValidationOptions(targetNamespace, patternList,
+                    verbose, omitJavaTypeBounds, notNullAnnotations, notNullCustomMessage,
                     notNullPrefixFieldName, notNullPrefixClassName, notNullCustomMessageText,
                     itemAnnotations, generateValidOnCollections,
                     overrides);
@@ -198,17 +200,17 @@ class BeanValidationOptions {
         return new BeanValidationOptions.Builder();
     }
 
-    private BeanValidationOptions(final String targetNamespace, final boolean multiPattern, final boolean verbose,
-            final boolean allNumericConstraints, final boolean notNullAnnotations,
+    private BeanValidationOptions(final String targetNamespace, final boolean patternList, final boolean verbose,
+            final boolean omitJavaTypeBounds, final boolean notNullAnnotations,
             final boolean notNullCustomMessage, final boolean notNullPrefixFieldName,
             final boolean notNullPrefixClassName, final String notNullCustomMessageText,
             final boolean itemAnnotations,
             final boolean generateValidOnCollections,
             final List<String> overrides) {
         this.targetNamespace = targetNamespace;
-        this.multiPattern = multiPattern;
+        this.patternList = patternList;
         this.verbose = verbose;
-        this.allNumericConstraints = allNumericConstraints;
+        this.omitJavaTypeBounds = omitJavaTypeBounds;
         this.notNullAnnotations = notNullAnnotations;
         this.notNullCustomMessage = notNullCustomMessage;
         this.notNullPrefixFieldName = notNullPrefixFieldName;

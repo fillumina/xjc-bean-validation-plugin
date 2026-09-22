@@ -50,9 +50,11 @@ Every option is written after the plugin name, as in
   its type argument.
 - `generateValidOnCollections` — on by default; writes `@Valid` on the type argument of a
   collection, so that its elements are validated in turn.
-- `generateAllNumericConstraints` — writes `@DecimalMin` and `@DecimalMax` even when the bound is
-  inside the range of the Java type.
-- `multiPattern` — writes one `@Pattern` per alternative instead of a `@Pattern.List`.
+- `omitJavaTypeBounds` — leaves out the `@DecimalMin` and `@DecimalMax` bounds that are the Java
+  type's own limits, as in `@DecimalMin("-2147483648")` on an `int`: every bound the schema states is
+  written by default.
+- `patternList` — writes one `@Pattern.List` instead of one `@Pattern` per alternative. Both are
+  legal and mean the same; one `@Pattern` per alternative is what the plugin writes by default.
 - `override` — overrides what the plugin computed for a class or a property: leaves an annotation
   out, sets one of its parameters, or writes another in its place, on the field or on the type
   argument of a collection. Repeatable.

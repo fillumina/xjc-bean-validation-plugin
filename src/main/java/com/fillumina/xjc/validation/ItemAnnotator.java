@@ -69,8 +69,8 @@ class ItemAnnotator {
         }
     }
 
-    void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean multiPattern) {
-        PatternAnnotations.add(annotator, patterns, multiPattern);
+    void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean patternList) {
+        PatternAnnotations.add(annotator, patterns, patternList);
     }
 
     void addValidAnnotation() {

@@ -16,7 +16,7 @@ final class PatternAnnotations {
     private static final String VALUE = "value";
 
     static void add(AnnotationWriter annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns,
-            boolean multiPattern) {
+            boolean patternList) {
         switch (multiPatterns.size()) {
             case 0:
                 // do nothing at all
@@ -25,10 +25,10 @@ final class PatternAnnotations {
                 addAll(annotator, multiPatterns.iterator().next());
                 break;
             default:
-                if (multiPattern) {
-                    multiPatterns.forEach(patterns -> addAll(annotator, patterns));
-                } else {
+                if (patternList) {
                     addList(annotator, multiPatterns);
+                } else {
+                    multiPatterns.forEach(patterns -> addAll(annotator, patterns));
                 }
         }
     }

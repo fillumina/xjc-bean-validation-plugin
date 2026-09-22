@@ -1,13 +1,19 @@
 Numeric
     abyte
+        @DecimalMax(value = "127", inclusive = true)
+        @DecimalMin(value = "-128", inclusive = true)
         @NotNull
     adecimal
         @NotNull
     aint
+        @DecimalMax(value = "2147483647", inclusive = true)
+        @DecimalMin(value = "-2147483648", inclusive = true)
         @NotNull
     ainteger
         @NotNull
     along
+        @DecimalMax(value = "9223372036854775807", inclusive = true)
+        @DecimalMin(value = "-9223372036854775808", inclusive = true)
         @NotNull
     anegativeInteger
         @DecimalMax(value = "-1", inclusive = true)
@@ -22,6 +28,8 @@ Numeric
         @DecimalMin(value = "1", inclusive = true)
         @NotNull
     ashort
+        @DecimalMax(value = "32767", inclusive = true)
+        @DecimalMin(value = "-32768", inclusive = true)
         @NotNull
     aunsignedByte
         @DecimalMax(value = "255", inclusive = true)

@@ -2,14 +2,19 @@ MultiPatternWithBase
     multiPattern
         @Pattern(regexp = "([0-3])|([7-9])")
     multiPatternInheritMultiBase
-        @Pattern.List({@Pattern(regexp = "([U-W])|([J-L])"), @Pattern(regexp = "([0-3])|([7-9])")})
+        @Pattern(regexp = "([0-3])|([7-9])")
+        @Pattern(regexp = "([U-W])|([J-L])")
     multiPatternInheritSingleBase
-        @Pattern.List({@Pattern(regexp = "[Y-Z]"), @Pattern(regexp = "([0-3])|([7-9])")})
+        @Pattern(regexp = "([0-3])|([7-9])")
+        @Pattern(regexp = "[Y-Z]")
     multiplePatternsWithBase
-        @Pattern.List({@Pattern(regexp = "[Y-Z]\\p{InBasicLatin}"), @Pattern(regexp = "([0-9])|([A-B])")})
+        @Pattern(regexp = "([0-9])|([A-B])")
+        @Pattern(regexp = "[Y-Z]\\p{InBasicLatin}")
     singlePattern
         @Pattern(regexp = "[0-3]")
     singlePatternInheritMultiBase
-        @Pattern.List({@Pattern(regexp = "([U-W])|([J-L])"), @Pattern(regexp = "[0-3]")})
+        @Pattern(regexp = "([U-W])|([J-L])")
+        @Pattern(regexp = "[0-3]")
     singlePatternInheritSingleBase
-        @Pattern.List({@Pattern(regexp = "[Y-Z]"), @Pattern(regexp = "[0-3]")})
+        @Pattern(regexp = "[0-3]")
+        @Pattern(regexp = "[Y-Z]")

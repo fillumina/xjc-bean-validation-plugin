@@ -317,16 +317,24 @@ class Processor {
             items.addSizeAnnotation(facet.minLength(), facet.maxLength());
             items.addDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
             items.addDecimalMinAnnotation(
-                    fieldHelper.itemBound(facet.minInclusive()),
-                    fieldHelper.itemBound(facet.minExclusive()));
+                    itemBound(fieldHelper, facet.minInclusive()),
+                    itemBound(fieldHelper, facet.minExclusive()));
             items.addDecimalMaxAnnotation(
-                    fieldHelper.itemBound(facet.maxInclusive()),
-                    fieldHelper.itemBound(facet.maxExclusive()));
+                    itemBound(fieldHelper, facet.maxInclusive()),
+                    itemBound(fieldHelper, facet.maxExclusive()));
             // @Pattern resolves to a validator that accepts CharSequence only: on a collection of
             // numbers it would check nothing and fail at validation time
             if (fieldHelper.isStringList()) {
-                items.addPatterns(facet.multiPatterns(), options.isMultiPattern());
+                items.addPatterns(facet.multiPatterns(), options.isPatternList());
             }
+        }
+
+        /**
+         * @return the bound as it is written, unless the option leaves out the ones the Java type
+         *     already states
+         */
+        private BigDecimal itemBound(FieldHelper fieldHelper, BigDecimal bound) {
+            return options.isOmitJavaTypeBounds() ? fieldHelper.itemBound(bound) : bound;
         }
 
         /**
@@ -417,21 +425,21 @@ class Processor {
             }
 
             if (fieldHelper.isString()) {
-                annotator.addPatterns(facet.multiPatterns(), options.isMultiPattern());
+                annotator.addPatterns(facet.multiPatterns(), options.isPatternList());
             }
 
             if (fieldHelper.isNumber() || fieldHelper.isString()) {
-                if (options.isAllNumericConstraints()) {
-                    annotator.addDecimalMinAnnotationInclusive(facet.minInclusive());
-                    annotator.addDecimalMinAnnotationExclusive(facet.minExclusive());
-                    annotator.addDecimalMaxAnnotationInclusive(facet.maxInclusive());
-                    annotator.addDecimalMaxAnnotationExclusive(facet.maxExclusive());
-
-                } else {
+                if (options.isOmitJavaTypeBounds()) {
                     annotator.addDecimalMinAnnotationInclusive(fieldHelper.fieldBound(facet.minInclusive()));
                     annotator.addDecimalMinAnnotationExclusive(fieldHelper.fieldBound(facet.minExclusive()));
                     annotator.addDecimalMaxAnnotationInclusive(fieldHelper.fieldBound(facet.maxInclusive()));
                     annotator.addDecimalMaxAnnotationExclusive(fieldHelper.fieldBound(facet.maxExclusive()));
+
+                } else {
+                    annotator.addDecimalMinAnnotationInclusive(facet.minInclusive());
+                    annotator.addDecimalMinAnnotationExclusive(facet.minExclusive());
+                    annotator.addDecimalMaxAnnotationInclusive(facet.maxInclusive());
+                    annotator.addDecimalMaxAnnotationExclusive(facet.maxExclusive());
                 }
                 annotator.addDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
             }

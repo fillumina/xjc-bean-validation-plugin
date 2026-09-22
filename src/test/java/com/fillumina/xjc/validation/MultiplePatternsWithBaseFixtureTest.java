@@ -10,6 +10,9 @@ class MultiplePatternsWithBaseFixtureTest extends FixtureTest {
     }
 
     static Stream<Case> cases() {
-        return Stream.of(Case.of("MultiplePatternsWithBase", option("targetNamespace", "a")));
+        return Stream.of(
+                Case.of("MultiplePatternsWithBase", option("targetNamespace", "a")),
+                Case.of("MultiplePatternsWithBaseAsList", option("targetNamespace", "a"),
+                        option("patternList", "true")));
     }
 }
