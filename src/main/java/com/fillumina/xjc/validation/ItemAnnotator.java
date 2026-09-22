@@ -21,9 +21,14 @@ class ItemAnnotator {
     private final JFieldVar field;
     private final AnnotationWriter annotator;
 
-    ItemAnnotator(JFieldVar field, AnnotationLog logger) {
+    ItemAnnotator(JFieldVar field, AnnotationLog logger, List<AnnotationWriter.Annotate> collector) {
         this.field = field;
-        this.annotator = new AnnotationWriter(field, logger);
+        this.annotator = new AnnotationWriter(field, logger, collector, true);
+    }
+
+    /** @return the writer of these annotations, so a caller can write one back on the type argument. */
+    AnnotationWriter writer() {
+        return annotator;
     }
 
     void addSizeAnnotation(Integer minLength, Integer maxLength) {

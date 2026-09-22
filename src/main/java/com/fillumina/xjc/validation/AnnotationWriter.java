@@ -23,18 +23,30 @@ class AnnotationWriter {
     private final AnnotationLog logger;
     /** When not null the annotations are collected here instead of being written to the field. */
     private final List<Annotate> collector;
+    /** True when this writer annotates the items of the field, which go on its type argument. */
+    private final boolean typeArgument;
     /** Every annotation written on the field, so it can be taken off again. */
     private final List<JAnnotationUse> written = new ArrayList<>();
     private final Set<Class<? extends Annotation>> annotationSet = new HashSet<>();
 
     AnnotationWriter(JFieldVar field, AnnotationLog logger) {
-        this(field, logger, null);
+        this(field, logger, null, false);
     }
 
     AnnotationWriter(JFieldVar field, AnnotationLog logger, List<Annotate> collector) {
+        this(field, logger, collector, false);
+    }
+
+    /**
+     * @param typeArgument true when the annotations belong on the type argument of the field rather
+     *     than on the field itself, so that a caller can tell the two apart while they are collected
+     */
+    AnnotationWriter(JFieldVar field, AnnotationLog logger, List<Annotate> collector,
+            boolean typeArgument) {
         this.field = field;
         this.logger = logger;
         this.collector = collector;
+        this.typeArgument = typeArgument;
     }
 
     Annotate annotate(Class<? extends Annotation> annotation) {
@@ -59,16 +71,19 @@ class AnnotationWriter {
         private final JAnnotationUse annotationUse;
         /** False when the annotation is a duplicate and is written nowhere. */
         private final boolean active;
+        private final boolean typeArgument;
         private final Map<String, String> parameterMap = new LinkedHashMap<>();
 
         Annotate(JAnnotationUse annotationUse) {
             this.annotationClass = null;
             this.annotationUse = annotationUse;
             this.active = annotationUse != null;
+            this.typeArgument = false;
         }
 
         Annotate(Class<? extends Annotation> annotation) {
             this.annotationClass = annotation;
+            this.typeArgument = AnnotationWriter.this.typeArgument;
             // @Pattern is allowed more than once on the same target
             boolean used = annotationSet.add(annotation) || annotation.equals(ValidationAnnotations.PATTERN);
             this.active = used;
@@ -86,6 +101,11 @@ class AnnotationWriter {
         /** @return the annotation that would have been written, with the parameters it was given. */
         Class<? extends Annotation> getAnnotationClass() {
             return annotationClass;
+        }
+
+        /** @return true when the annotation belongs on the type argument of the field. */
+        boolean isTypeArgument() {
+            return typeArgument;
         }
 
         Map<String, String> getParameters() {

@@ -87,7 +87,12 @@ class Processor {
     private void writeExcluded(JFieldVar field, String className, String propertyName,
             List<AnnotationWriter.Annotate> collected, List<ExcludeStatements.Statement> statements,
             AnnotationLog logger) {
-        Set<ExcludeStatements.Statement> replacing = new LinkedHashSet<>();
+        AnnotationWriter fieldWriter = new AnnotationWriter(field, logger);
+        // the annotations of the items go back on the type argument, so they are kept apart here
+        ItemAnnotator items = new ItemAnnotator(field, logger, null);
+        Set<ExcludeStatements.Statement> replacingOnTheField = new LinkedHashSet<>();
+        Set<ExcludeStatements.Statement> replacingOnTheItems = new LinkedHashSet<>();
+        boolean itemWritten = false;
         for (AnnotationWriter.Annotate computed : collected) {
             Map<String, String> parameters = new LinkedHashMap<>();
             boolean leftOut = false;
@@ -96,7 +101,8 @@ class Processor {
                     continue;
                 }
                 if (statement.hasReplacement()) {
-                    replacing.add(statement);
+                    (computed.isTypeArgument() ? replacingOnTheItems : replacingOnTheField)
+                            .add(statement);
                     leftOut = true;
                 } else if (statement.hasParameter()) {
                     parameters.put(statement.getParameter(), ExcludeReplacement.resolveValue(
@@ -107,14 +113,28 @@ class Processor {
                 }
             }
             if (!leftOut) {
-                ExcludeReplacement.writeComputed(field, computed, parameters, logger);
+                ExcludeReplacement.writeComputed(
+                        computed.isTypeArgument() ? items.writer() : fieldWriter, computed,
+                        parameters, logger);
+                itemWritten |= computed.isTypeArgument();
             }
         }
         for (ExcludeStatements.Statement statement : statements) {
-            if (replacing.contains(statement)) {
-                ExcludeReplacement.parse(statement.getReplacement())
-                        .writeInto(field, className, propertyName, collected, logger);
+            boolean onTheField = replacingOnTheField.contains(statement);
+            boolean onTheItems = replacingOnTheItems.contains(statement);
+            if (onTheField || onTheItems) {
+                ExcludeReplacement replacement = ExcludeReplacement.parse(statement.getReplacement());
+                if (onTheField) {
+                    replacement.writeInto(fieldWriter, className, propertyName, collected, logger);
+                }
+                if (onTheItems) {
+                    replacement.writeInto(items.writer(), className, propertyName, collected, logger);
+                    itemWritten = true;
+                }
             }
+        }
+        if (itemWritten) {
+            items.apply();
         }
     }
 

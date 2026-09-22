@@ -29,7 +29,7 @@ class FieldAnnotator {
      */
     FieldAnnotator(JFieldVar field, AnnotationLog logger, List<AnnotationWriter.Annotate> collector) {
         this.fields = new AnnotationWriter(field, logger, collector);
-        this.items = new ItemAnnotator(field, logger);
+        this.items = new ItemAnnotator(field, logger, collector);
     }
 
     void addNotNullAnnotation(String message) {

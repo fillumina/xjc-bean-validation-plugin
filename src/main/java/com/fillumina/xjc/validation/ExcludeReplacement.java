@@ -1,6 +1,5 @@
 package com.fillumina.xjc.validation;
 
-import com.sun.codemodel.JFieldVar;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -109,9 +108,9 @@ class ExcludeReplacement {
      * Writes the annotation on the field, resolving what the text asks for against the annotations
      * the plugin computed for it.
      */
-    void writeInto(JFieldVar field, String className, String propertyName,
+    void writeInto(AnnotationWriter writer, String className, String propertyName,
             List<AnnotationWriter.Annotate> computed, AnnotationLog logger) {
-        AnnotationWriter.Annotate annotation = new AnnotationWriter(field, logger).annotate(annotationClass);
+        AnnotationWriter.Annotate annotation = writer.annotate(annotationClass);
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
             String name = parameter.getKey();
             String value = resolveValue(parameter.getValue(), annotationClass, className, propertyName,
@@ -124,10 +123,10 @@ class ExcludeReplacement {
     /**
      * Writes the annotation the plugin computed, with the parameters a statement set on top of them.
      */
-    static void writeComputed(JFieldVar field, AnnotationWriter.Annotate computed,
+    static void writeComputed(AnnotationWriter writer, AnnotationWriter.Annotate computed,
             Map<String, String> overrides, AnnotationLog logger) {
         Class<? extends Annotation> type = computed.getAnnotationClass();
-        AnnotationWriter.Annotate annotation = new AnnotationWriter(field, logger).annotate(type);
+        AnnotationWriter.Annotate annotation = writer.annotate(type);
         Map<String, String> parameters = new LinkedHashMap<>(computed.getParameters());
         parameters.putAll(overrides);
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
