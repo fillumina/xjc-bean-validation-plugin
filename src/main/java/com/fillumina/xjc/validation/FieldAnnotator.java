@@ -43,6 +43,16 @@ class FieldAnnotator {
         fields.annotate(ValidationAnnotations.VALID).log();
     }
 
+    /** For a boolean the schema pins to true, with {@code fixed="true"} or {@code fixed="1"}. */
+    void addAssertTrueAnnotation() {
+        fields.annotate(ValidationAnnotations.ASSERT_TRUE).log();
+    }
+
+    /** The same for a boolean pinned to false, with {@code fixed="false"} or {@code fixed="0"}. */
+    void addAssertFalseAnnotation() {
+        fields.annotate(ValidationAnnotations.ASSERT_FALSE).log();
+    }
+
     void addSizeAnnotation(Integer minLength, Integer maxLength, Integer length) {
         if (isValidLength(minLength) || isValidLength(maxLength)) {
             fields.annotate(ValidationAnnotations.SIZE)

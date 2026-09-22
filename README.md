@@ -2,7 +2,8 @@
 
 An XJC plugin that reads the restrictions of an XML Schema and writes the matching Jakarta Bean
 Validation annotations into the classes XJC generates: `xs:maxLength` becomes `@Size`, `xs:pattern`
-becomes `@Pattern`, a required element becomes `@NotNull`, and so on.
+becomes `@Pattern`, a required element becomes `@NotNull`, a boolean pinned by `fixed` becomes
+`@AssertTrue` or `@AssertFalse`, and so on.
 
 ```java
 // xs:element name="name" type="a:ShortText" maxOccurs="unbounded",
@@ -159,7 +160,8 @@ Two things to know before writing one:
 
 - the annotation glob is matched against what the plugin **computed**, so it can only name the
   annotations this plugin writes — `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`,
-  `DecimalMax`, `Pattern` — and a replacement has to name one of them too;
+  `DecimalMax`, `Pattern`, `AssertTrue`, `AssertFalse` — and a replacement has to name one of them
+  too;
 - an annotation glob without the `List.` prefix covers that annotation wherever it was computed, on
   the field **and** on the type argument of a collection: `*#labels@Size` takes the cardinality
   `@Size` of the list and the `@Size` of its items together. `*#labels@List.Size` takes the one on

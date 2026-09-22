@@ -70,6 +70,11 @@ class FieldHelper {
         return isType(String.class);
     }
 
+    /** @return true for a boolean field, primitive or boxed. */
+    boolean isBoolean() {
+        return isType(Boolean.class);
+    }
+
     boolean isStringList() {
         return isList() && String.class.getCanonicalName().equals(itemTypeName());
     }

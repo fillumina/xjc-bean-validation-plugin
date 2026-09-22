@@ -242,6 +242,12 @@ class Processor {
                 annotator.addNotNullAnnotation(message);
             }
 
+            // a boolean the schema pins to one value: the annotation says which, and considers a null
+            // valid, so an optional element needs nothing else
+            if (!property.isCollection() && fieldHelper.isBoolean()) {
+                addFixedBooleanAnnotation(annotator, element.getFixedValue());
+            }
+
             // the cardinality of a collection: minOccurs = 0 is the default and constrains
             // nothing, so it is not written, and an unbounded maxOccurs arrives as -1 and is left
             // out by the annotator
@@ -339,6 +345,21 @@ class Processor {
         }
 
         /**
+         * Writes {@code @AssertTrue} or {@code @AssertFalse} for a boolean pinned by {@code fixed},
+         * which XML Schema spells {@code true}, {@code false}, {@code 1} or {@code 0}.
+         */
+        private void addFixedBooleanAnnotation(FieldAnnotator annotator, XmlString fixedValue) {
+            if (fixedValue == null) {
+                return;
+            }
+            if ("true".equals(fixedValue.value) || "1".equals(fixedValue.value)) {
+                annotator.addAssertTrueAnnotation();
+            } else if ("false".equals(fixedValue.value) || "0".equals(fixedValue.value)) {
+                annotator.addAssertFalseAnnotation();
+            }
+        }
+
+        /**
          * parses xsd:attribute
          */
         private void processAttribute(CAttributePropertyInfo property) {
@@ -361,6 +382,9 @@ class Processor {
                     }
 
                     FieldHelper fieldHelper = new FieldHelper(field);
+                    if (fieldHelper.isBoolean()) {
+                        addFixedBooleanAnnotation(annotator, particle.getDecl().getFixedValue());
+                    }
                     FacetSourceAccumulator facet = FacetGatherer.gather(type);
                     BigDecimal fixedBound =
                             fixedBoundOf(fieldHelper, particle.getDecl().getFixedValue());

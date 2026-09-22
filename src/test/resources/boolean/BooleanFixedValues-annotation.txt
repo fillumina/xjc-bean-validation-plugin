@@ -1,0 +1,15 @@
+Switches
+    fixedFlag
+        @AssertTrue
+        @NotNull
+    free
+        @NotNull
+    mustBeFalse
+        @AssertFalse
+    mustBeTrue
+        @AssertTrue
+        @NotNull
+    oneIsTrue
+        @AssertTrue
+    zeroIsFalse
+        @AssertFalse

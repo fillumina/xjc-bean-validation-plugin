@@ -1,6 +1,8 @@
 package com.fillumina.xjc.validation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -24,6 +26,8 @@ final class ValidationAnnotations {
     static final Class<? extends Annotation> DECIMAL_MAX = DecimalMax.class;
     static final Class<? extends Annotation> PATTERN = Pattern.class;
     static final Class<? extends Annotation> PATTERN_LIST = Pattern.List.class;
+    static final Class<? extends Annotation> ASSERT_TRUE = AssertTrue.class;
+    static final Class<? extends Annotation> ASSERT_FALSE = AssertFalse.class;
 
     /** The annotations an {@code override} statement may name, by simple name. */
     static Map<String, Class<? extends Annotation>> bySimpleName() {
@@ -35,6 +39,8 @@ final class ValidationAnnotations {
         byName.put("DecimalMin", DECIMAL_MIN);
         byName.put("DecimalMax", DECIMAL_MAX);
         byName.put("Pattern", PATTERN);
+        byName.put("AssertTrue", ASSERT_TRUE);
+        byName.put("AssertFalse", ASSERT_FALSE);
         return byName;
     }
 

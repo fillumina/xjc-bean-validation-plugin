@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="switches">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="mustBeTrue" type="xsd:boolean" fixed="true"/>
+                <xsd:element name="mustBeFalse" type="xsd:boolean" fixed="false" minOccurs="0"/>
+                <xsd:element name="oneIsTrue" type="xsd:boolean" fixed="1" minOccurs="0"/>
+                <xsd:element name="zeroIsFalse" type="xsd:boolean" fixed="0" minOccurs="0"/>
+                <xsd:element name="free" type="xsd:boolean"/>
+            </xsd:sequence>
+            <xsd:attribute name="fixedFlag" type="xsd:boolean" fixed="true" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
