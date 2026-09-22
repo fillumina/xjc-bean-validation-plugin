@@ -10,3 +10,23 @@ target
 .run/
 .pi/
 !/src/test/resources/target/
+# Eclipse and JDT (jdtls writes these when it imports the project)
+.classpath
+.project
+.settings/
+.factorypath
+/bin/
+
+# editors and operating system
+.DS_Store
+*~
+.*.swp
+
+# nix
+result
+result-*
+.direnv/
+
+# jvm crash dumps
+hs_err_pid*
+replay_pid*
