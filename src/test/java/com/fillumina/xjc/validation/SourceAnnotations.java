@@ -74,9 +74,8 @@ final class SourceAnnotations {
                 fields.add(field);
             }
         }
-        // a class with no fields of its own is listed too, as the old line's extraction listed it:
-        // that it exists and carries nothing is information, and it keeps the expectations
-        // comparable with the ones they were ported from
+        // a class with no fields of its own is listed too: that it exists and carries nothing is
+        // information
         fields.sort(Comparator.comparing(field -> field.getName().toString()));
 
         text.append(type.getSimpleName()).append('\n');
@@ -96,10 +95,9 @@ final class SourceAnnotations {
     }
 
     /**
-     * Whether this member is one of the properties XJC generates, which are {@code protected}. The
-     * old line's extraction looked for lines starting with {@code protected}, so an enumeration's
-     * constants and the {@code value} field JAXB puts in a generated enum were not part of the
-     * expectations, and they are not part of them here either.
+     * Whether this member is one of the properties XJC generates, which are {@code protected}: an
+     * enumeration's constants and the {@code value} field JAXB puts in a generated enum are not
+     * properties.
      */
     private static boolean isAProperty(VariableTree field) {
         return field.getModifiers().getFlags().contains(Modifier.PROTECTED);

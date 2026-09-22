@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code options} of the old line, ported with its cases. */
 class OptionsFixtureTest extends FixtureTest {
 
     @Override
@@ -13,9 +12,9 @@ class OptionsFixtureTest extends FixtureTest {
     static Stream<Case> cases() {
         return Stream.of(
                 Case.of("OptionDefault"),
-                Case.of("OptionGenerateStringListAnnotation",
+                Case.of("OptionGenerateItemAnnotations",
                         option("generateNotNullAnnotations", "false"),
-                        option("generateListAnnotations", "true"),
+                        option("generateItemAnnotations", "true"),
                         option("targetNamespace", "null")));
     }
 }

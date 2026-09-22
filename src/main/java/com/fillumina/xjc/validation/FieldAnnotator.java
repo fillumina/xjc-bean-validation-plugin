@@ -20,19 +20,15 @@ class FieldAnnotator {
     private static final String VALUE = "value";
     private static final String MESSAGE = "message";
 
-    private final XjcAnnotator fields;
+    private final AnnotationWriter fields;
     private final ItemAnnotator items;
-
-    FieldAnnotator(JFieldVar field, ValidationsLogger logger) {
-        this(field, logger, null);
-    }
 
     /**
      * @param collector when not null the annotations are collected instead of written, see
-     *     {@link Exclusions}
+     *     {@link ExcludeStatements}
      */
-    FieldAnnotator(JFieldVar field, ValidationsLogger logger, List<XjcAnnotator.Annotate> collector) {
-        this.fields = new XjcAnnotator(field, logger, collector);
+    FieldAnnotator(JFieldVar field, AnnotationLog logger, List<AnnotationWriter.Annotate> collector) {
+        this.fields = new AnnotationWriter(field, logger, collector);
         this.items = new ItemAnnotator(field, logger);
     }
 
@@ -99,38 +95,19 @@ class FieldAnnotator {
     void addDigitsAnnotation(Integer totalDigits, Integer fractionDigits) {
         if (totalDigits != null) {
             fields.annotate(ValidationAnnotations.DIGITS)
-                    .param(INTEGER, getValueOrZeroOnNull(totalDigits))
-                    .param(FRACTION, getValueOrZeroOnNull(fractionDigits))
+                    .param(INTEGER, valueOrZero(totalDigits))
+                    .param(FRACTION, valueOrZero(fractionDigits))
                     .log();
         }
     }
 
     void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean multiPattern) {
-        Patterns.add(fields, patterns, multiPattern);
+        PatternAnnotations.add(fields, patterns, multiPattern);
     }
 
-    void addItemSizeAnnotation(Integer minLength, Integer maxLength) {
-        items.addSizeAnnotation(minLength, maxLength);
-    }
-
-    void addItemDigitsAnnotation(Integer totalDigits, Integer fractionDigits) {
-        items.addDigitsAnnotation(totalDigits, fractionDigits);
-    }
-
-    void addItemDecimalMinAnnotation(BigDecimal minInclusive, BigDecimal minExclusive) {
-        items.addDecimalMinAnnotation(minInclusive, minExclusive);
-    }
-
-    void addItemDecimalMaxAnnotation(BigDecimal maxInclusive, BigDecimal maxExclusive) {
-        items.addDecimalMaxAnnotation(maxInclusive, maxExclusive);
-    }
-
-    void addItemPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean multiPattern) {
-        items.addPatterns(patterns, multiPattern);
-    }
-
-    void addItemValidAnnotation() {
-        items.addValidAnnotation();
+    /** @return the constraints of the items of a collection, which go on the type argument. */
+    ItemAnnotator items() {
+        return items;
     }
 
     /** Writes the item constraints on the type argument of the field, once and for all. */
@@ -142,7 +119,7 @@ class FieldAnnotator {
         return length != null && length != -1;
     }
 
-    static Integer getValueOrZeroOnNull(Integer value) {
+    static Integer valueOrZero(Integer value) {
         return value == null ? Integer.valueOf(0) : value;
     }
 }

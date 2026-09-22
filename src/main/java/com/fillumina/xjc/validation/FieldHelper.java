@@ -14,30 +14,30 @@ import java.util.stream.Collectors;
 class FieldHelper {
     private final JFieldVar field;
 
-    public FieldHelper(JFieldVar field) {
+    FieldHelper(JFieldVar field) {
         this.field = field;
     }
 
-    public BigDecimal validValue(BigDecimal value) {
-        if (value != null) {
-            String typeName = field.type().boxify().fullName();
-            return NumericRange.valid(typeName, value);
+    BigDecimal fieldBound(BigDecimal value) {
+        if (value == null) {
+            return null;
         }
-        return null;
+        String typeName = field.type().boxify().fullName();
+        return NumericRange.isBoundOfTheJavaType(typeName, value) ? null : value;
     }
 
     /**
-     * The same as {@link #validValue(BigDecimal)}, for the elements of a collection: a bound of a
+     * The same as {@link #fieldBound(BigDecimal)}, for the elements of a collection: a bound of a
      * {@code List<Integer>} has to be compared with {@code Integer}, while the field itself is a
      * {@code List}, which {@code NumericRange} does not know.
      */
-    public BigDecimal validItemValue(BigDecimal value) {
-        if (value != null) {
-            String itemType = itemTypeName();
-            String typeName = itemType != null ? itemType : field.type().boxify().fullName();
-            return NumericRange.valid(typeName, value);
+    BigDecimal itemBound(BigDecimal value) {
+        if (value == null) {
+            return null;
         }
-        return null;
+        String itemType = itemTypeName();
+        String typeName = itemType != null ? itemType : field.type().boxify().fullName();
+        return NumericRange.isBoundOfTheJavaType(typeName, value) ? null : value;
     }
 
     /**
@@ -65,25 +65,21 @@ class FieldHelper {
                 : Collections.emptyList();
     }
 
-    /** WARNING a string with enumeration restrictions is converted into an enum */
-    public boolean isString() {
+    /** @return true for a string field; an enumeration restriction is generated as an enum. */
+    boolean isString() {
         return isType(String.class);
     }
 
-    public boolean isStringList() {
+    boolean isStringList() {
         return isList() && String.class.getCanonicalName().equals(itemTypeName());
     }
 
-    public boolean isList() {
+    boolean isList() {
         return isType(List.class) && itemTypeName() != null;
     }
 
-    public boolean isArray() {
+    boolean isArray() {
         return field.type().isArray();
-    }
-
-    public boolean isCustomType() {
-        return "JDirectClass".equals(field.type().getClass().getSimpleName());
     }
 
     private static final Set<String> NUMBERS = Arrays.stream(new Class<?>[]{
@@ -98,7 +94,7 @@ class FieldHelper {
             .map(c -> c.getSimpleName().toUpperCase())
             .collect(Collectors.toSet());
 
-    public boolean isNumber() {
+    boolean isNumber() {
         return isFieldTypeNameNumber(field.type().boxify().name()) ||
                 isFieldTypeFullNameNumber(field.type().fullName());
     }

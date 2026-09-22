@@ -6,8 +6,8 @@ import java.util.stream.Stream;
  * A string field whose type is restricted by numeric facets, which a binding file would have to
  * turn into a number: the annotations follow the facets, not the Java type.
  *
- * <p>The fixture also holds a binding file, which its test never passed to XJC in the old line
- * either, so it is not passed here.
+ * <p>The fixture also holds a binding file, which the case does not pass to XJC: the facets are what
+ * is under test.
  */
 class StringDigitsRestrictionFixtureTest extends FixtureTest {
 

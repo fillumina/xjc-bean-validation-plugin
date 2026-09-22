@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * The minimum and the maximum of the boxed numbers, to leave out a bound that the Java type
+ * already states.
  *
  * @author Francesco Illuminati
  */
@@ -22,7 +24,7 @@ class NumericRange {
     final BigDecimal min;
     final BigDecimal max;
 
-    public NumericRange(Number min, Number max) {
+    NumericRange(Number min, Number max) {
         this.min = parse(min);
         this.max = parse(max);
     }
@@ -34,11 +36,9 @@ class NumericRange {
         return null;
     }
 
-    public static BigDecimal valid(String typeName, BigDecimal value) {
+    /** @return true when the bound is one of the two limits of the Java type itself. */
+    static boolean isBoundOfTheJavaType(String typeName, BigDecimal bound) {
         NumericRange range = MAP.get(typeName);
-        if (range != null && (value.equals(range.min) || value.equals(range.max)) ) {
-            return null;
-        }
-        return value;
+        return range != null && (bound.equals(range.min) || bound.equals(range.max));
     }
 }

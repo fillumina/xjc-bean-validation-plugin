@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code abase} of the old line, ported with its cases. */
 class AbaseFixtureTest extends FixtureTest {
 
     @Override

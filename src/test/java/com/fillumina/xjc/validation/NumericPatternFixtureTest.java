@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code numericPattern} of the old line, ported unchanged. */
 class NumericPatternFixtureTest extends FixtureTest {
 
     @Override

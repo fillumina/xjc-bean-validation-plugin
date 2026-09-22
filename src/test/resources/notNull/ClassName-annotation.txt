@@ -1,3 +1,0 @@
-NotNullType
-    notNullString
-        @NotNull(message = "NotNullType.notNullString {jakarta.validation.constraints.NotNull.message}")

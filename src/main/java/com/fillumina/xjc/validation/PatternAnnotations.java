@@ -10,12 +10,12 @@ import java.util.Set;
  *
  * @author Francesco Illuminati
  */
-final class Patterns {
+final class PatternAnnotations {
 
     private static final String REGEXP = "regexp";
     private static final String VALUE = "value";
 
-    static void add(XjcAnnotator annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns,
+    static void add(AnnotationWriter annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns,
             boolean multiPattern) {
         switch (multiPatterns.size()) {
             case 0:
@@ -41,8 +41,8 @@ final class Patterns {
      * <p>
      * see https://www.w3.org/TR/2011/CR-xmlschema11-2-20110721/datatypes.html#rf-pattern
      */
-    private static void addList(XjcAnnotator annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns) {
-        XjcAnnotator.Annotate.MultipleAnnotation multi = annotator
+    private static void addList(AnnotationWriter annotator, LinkedHashSet<LinkedHashSet<String>> multiPatterns) {
+        AnnotationWriter.Annotate.MultipleAnnotation multi = annotator
                 .annotate(ValidationAnnotations.PATTERN_LIST)
                 .multipleAnnotationContainer(VALUE);
 
@@ -64,7 +64,7 @@ final class Patterns {
         }
     }
 
-    private static void addAll(XjcAnnotator annotator, Collection<String> patterns) {
+    private static void addAll(AnnotationWriter annotator, Collection<String> patterns) {
         switch (patterns.size()) {
             case 0:
                 // do nothing at all
@@ -78,7 +78,7 @@ final class Patterns {
         }
     }
 
-    private static void addOne(XjcAnnotator annotator, String pattern) {
+    private static void addOne(AnnotationWriter annotator, String pattern) {
         annotator.annotate(ValidationAnnotations.PATTERN)
                 .param(REGEXP, pattern)
                 .log();
@@ -92,6 +92,6 @@ final class Patterns {
         return regexp.substring(0, regexp.length() - 1);
     }
 
-    private Patterns() {
+    private PatternAnnotations() {
     }
 }

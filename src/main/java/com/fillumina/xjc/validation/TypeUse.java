@@ -13,9 +13,9 @@ import java.util.List;
  * {@code List<@Size(max = 5) String>}. Used as the type argument of a collection field.
  *
  * <p>This is the only way to write a constraint on the items of a collection: an annotation on the
- * field constrains the collection itself, and the {@code @Each*} annotations of the old line are
- * inert with a current provider. The annotations come from the field, where they were created, so
- * that codemodel renders and escapes their parameters; the caller takes them off the field first.
+ * field constrains the collection itself, so the constraints of the items have to travel with the
+ * type argument. They come from the field, where they were created, so that codemodel renders and
+ * escapes their parameters; the caller takes them off the field first.
  *
  * <p>The methods that describe the wrapped type are answered by the element type, which is correct
  * while the element carries no type variables of its own.

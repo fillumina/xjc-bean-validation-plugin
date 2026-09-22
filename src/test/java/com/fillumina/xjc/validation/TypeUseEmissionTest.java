@@ -29,7 +29,7 @@ class TypeUseEmissionTest {
     @Test
     void theAnnotationIsPrintedInFrontOfTheElementTypeWithItsImport() throws Exception {
         String generated = generate(field -> {
-            ItemAnnotator items = new ItemAnnotator(field, SilentValidationLogger.INSTANCE);
+            ItemAnnotator items = new ItemAnnotator(field, AnnotationLogWarning.INSTANCE);
             items.addSizeAnnotation(null, 5);
             items.apply();
         });
@@ -41,10 +41,10 @@ class TypeUseEmissionTest {
     @Test
     void theFieldKeepsItsOwnAnnotationAndItsOwnType() throws Exception {
         String generated = generate(field -> {
-            new XjcAnnotator(field, SilentValidationLogger.INSTANCE)
+            new AnnotationWriter(field, AnnotationLogWarning.INSTANCE)
                     .annotate(ValidationAnnotations.NOT_NULL)
                     .log();
-            ItemAnnotator items = new ItemAnnotator(field, SilentValidationLogger.INSTANCE);
+            ItemAnnotator items = new ItemAnnotator(field, AnnotationLogWarning.INSTANCE);
             items.addSizeAnnotation(1, 5);
             items.addValidAnnotation();
             items.apply();
@@ -58,7 +58,7 @@ class TypeUseEmissionTest {
     @Test
     void nothingIsChangedWhenTheItemsCarryNoAnnotation() throws Exception {
         String generated = generate(field -> {
-            new ItemAnnotator(field, SilentValidationLogger.INSTANCE).apply();
+            new ItemAnnotator(field, AnnotationLogWarning.INSTANCE).apply();
         });
 
         assertTrue(generated.contains("protected List<String> names;"), generated);

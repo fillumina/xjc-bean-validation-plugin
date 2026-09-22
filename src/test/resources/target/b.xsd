@@ -9,9 +9,16 @@
             <xsd:sequence>
                 <xsd:element name="bListOfString" type="b:LongStringNotNull"
                              minOccurs="0" maxOccurs="5"/>
+                <xsd:element name="bNote" type="b:BNote" minOccurs="0"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:complexType name="BNote">
+        <xsd:sequence>
+            <xsd:element name="text" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
 
 
     <xsd:simpleType name="LongStringNotNull">

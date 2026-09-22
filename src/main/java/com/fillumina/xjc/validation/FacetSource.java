@@ -1,0 +1,83 @@
+package com.fillumina.xjc.validation;
+
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.function.Predicate;
+
+/**
+ *
+ * @author Francesco Illuminati
+ */
+abstract class FacetSource {
+
+    abstract Integer minLength();
+
+    abstract Integer maxLength();
+
+    abstract Integer length();
+
+    abstract Integer totalDigits();
+
+    abstract Integer fractionDigits();
+
+    abstract BigDecimal minInclusive();
+
+    abstract BigDecimal minExclusive();
+
+    abstract BigDecimal maxInclusive();
+
+    abstract BigDecimal maxExclusive();
+
+    abstract String pattern();
+
+    abstract LinkedHashSet<String> patternList();
+
+    abstract String enumeration();
+
+    abstract LinkedHashSet<String> enumerationList();
+
+    /** @return the pattern facets, with the XSD regexps translated into Java ones. */
+    LinkedHashSet<String> patterns() {
+        final LinkedHashSet<String> patterns = patternList();
+        addIfNotNullOrEmpty(patterns, pattern(), String::isEmpty);
+        if (patterns != null && !patterns.isEmpty()) {
+            return patterns.stream()
+                    .filter(p -> XsdRegexp.isSupported(p))
+                    .map(p -> XsdRegexp.translate(p))
+                    .collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
+        }
+        return patterns;
+    }
+
+    /** @return the enumeration facets, each value quoted as a literal regexp. */
+    LinkedHashSet<String> enumerations() {
+        final LinkedHashSet<String> enumerations = enumerationList();
+        addIfNotNullOrEmpty(enumerations, enumeration(), String::isEmpty);
+        if (enumerations != null && !enumerations.isEmpty()) {
+            return enumerations.stream()
+                    .filter(p -> p != null && !p.isEmpty())
+                    .map(p -> XsdRegexp.quote(p))
+                    .collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
+        }
+        return enumerations;
+    }
+
+    /** Adds a value unless it is null or empty, so a facet that says nothing is left out. */
+    static <C extends Collection<T>, T> void addIfNotNullOrEmpty(C target, T value, Predicate<T> isEmpty) {
+        if (value != null && !isEmpty.test(value)) {
+            target.add(value);
+        }
+    }
+
+    /** The same, for every value of a source collection. */
+    static <T> void addAllIfNotNullOrEmpty(Collection<T> target, Collection<T> source, Predicate<T> isEmpty) {
+        if (source != null && !source.isEmpty()) {
+            for (T t : source) {
+                if (t != null && !isEmpty.test(t)) {
+                    target.add(t);
+                }
+            }
+        }
+    }
+}

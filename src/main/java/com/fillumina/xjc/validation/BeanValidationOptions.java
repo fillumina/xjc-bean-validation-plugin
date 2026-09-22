@@ -3,7 +3,6 @@ package com.fillumina.xjc.validation;
 import com.sun.tools.xjc.BadCommandLineException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Set the options using the included builder and then create an immutable option bean to
@@ -11,7 +10,7 @@ import java.util.Objects;
  *
  * @author Francesco Illuminati
  */
-public class ValidationsOptions {
+class BeanValidationOptions {
     // set default values in Builder not here
     private final String targetNamespace;
     private final boolean multiPattern;
@@ -26,85 +25,57 @@ public class ValidationsOptions {
     private final boolean generateValidOnCollections;
     private final List<String> exclusions;
 
-    public void logActualOptions() {
-        if (verbose) {
-            System.out.println(getActualOptionValuesAsString());
-        }
-    }
-
-    /** @return a multi line string containing the value for each option. */
-    private String getActualOptionValuesAsString() {
-        String linePrefix = "    ";
-        StringBuilder buf = new StringBuilder();
-        buf
-                .append("[info] ")
-                .append(BeanValidationPlugin.PLUGIN_NAME)
-                .append(" options:")
-                .append(System.lineSeparator());
-
-        for (ValidationsArgument a : ValidationsArgument.values()) {
-            buf
-                    .append(linePrefix)
-                    .append(a.name())
-                    .append(": ")
-                    .append(Objects.toString(a.getValue(this)))
-                    .append(System.lineSeparator());
-        }
-
-        return buf.toString();
-    }
-
-    public String getTargetNamespace() {
+    String getTargetNamespace() {
         return targetNamespace;
     }
 
-    public boolean isMultiPattern() {
+    boolean isMultiPattern() {
         return multiPattern;
     }
 
-    public boolean isVerbose() {
+    boolean isVerbose() {
         return verbose;
     }
 
-    public boolean isAllNumericConstraints() {
+    boolean isAllNumericConstraints() {
         return allNumericConstraints;
     }
 
-    public boolean isNotNullAnnotations() {
+    boolean isNotNullAnnotations() {
         return notNullAnnotations;
     }
 
-    public boolean isNotNullCustomMessage() {
+    boolean isNotNullCustomMessage() {
         return notNullCustomMessage;
     }
 
-    public boolean isNotNullPrefixFieldName() {
+    boolean isNotNullPrefixFieldName() {
         return notNullPrefixFieldName;
     }
 
-    public boolean isNotNullPrefixClassName() {
+    boolean isNotNullPrefixClassName() {
         return notNullPrefixClassName;
     }
 
-    public String getNotNullCustomMessageText() {
+    String getNotNullCustomMessageText() {
         return notNullCustomMessageText;
     }
 
     /** @return whether the constraints of the items of a collection are written on its type argument. */
-    public boolean isItemAnnotations() {
+    boolean isItemAnnotations() {
         return itemAnnotations;
     }
 
-    public boolean isGenerateValidOnCollections() {
+    boolean isGenerateValidOnCollections() {
         return generateValidOnCollections;
     }
 
     /** @return the statements of the {@code exclude} option, in the order they were given. */
-    public List<String> getExclusions() {
+    List<String> getExclusions() {
         return exclusions;
     }
 
-    public static class Builder {
+    static class Builder {
         private String targetNamespace = null;
         private boolean multiPattern = false;
         private boolean verbose = false;
@@ -121,28 +92,24 @@ public class ValidationsOptions {
         private Builder() {
         }
 
-        /** @return 1 if the argument is referring to this plugin, 0 otherwise. */
-        public int parseArgument(String option) throws BadCommandLineException {
-            if (option.startsWith(BeanValidationPlugin.PLUGIN_OPTION_NAME)) {
-                int idx = option.indexOf("=");
-                if (idx != -1) {
-                    final String name = option.substring(
-                            BeanValidationPlugin.PLUGIN_OPTION_NAME_LENGTH, idx);
-                    final String value = option.substring(idx + 1);
-                    ValidationsArgument argument = ValidationsArgument.parse(name);
-                    setValue(argument, value);
-                } else if (option.length() > BeanValidationPlugin.PLUGIN_OPTION_NAME_LENGTH) {
-                    final String name = option.substring(
-                            BeanValidationPlugin.PLUGIN_OPTION_NAME_LENGTH);
-                    ValidationsArgument argument = ValidationsArgument.parse(name);
-                    setValue(argument, "true");
-                }
+        /** @return 1 if the argument is an option of this plugin, 0 otherwise. */
+        int parseArgument(String option) throws BadCommandLineException {
+            if (option.equals("-" + BeanValidationPlugin.PLUGIN_NAME)) {
+                // the plain option switches the plugin on, which XJC did before calling this
                 return 1;
             }
-            return 0;
+            if (!option.startsWith(BeanValidationPlugin.OPTION_PREFIX)) {
+                return 0;
+            }
+            final String rest = option.substring(BeanValidationPlugin.OPTION_PREFIX.length());
+            final int equals = rest.indexOf('=');
+            final String name = equals == -1 ? rest : rest.substring(0, equals);
+            final String value = equals == -1 ? "true" : rest.substring(equals + 1);
+            setValue(BeanValidationOption.parse(name), value);
+            return 1;
         }
 
-        private void setValue(ValidationsArgument argument, final String value)
+        private void setValue(BeanValidationOption argument, final String value)
                 throws BadCommandLineException {
             try {
                 String error = argument.setValue(this, value);
@@ -157,69 +124,69 @@ public class ValidationsOptions {
             }
         }
 
-        public Builder targetNamespace(final String value) {
+        Builder targetNamespace(final String value) {
             this.targetNamespace = value;
             return this;
         }
 
-        public Builder multiPattern(final boolean value) {
+        Builder multiPattern(final boolean value) {
             this.multiPattern = value;
             return this;
         }
 
-        public Builder verbose(final boolean value) {
+        Builder verbose(final boolean value) {
             this.verbose = value;
             return this;
         }
 
-        public Builder notNullAnnotations(final boolean value) {
+        Builder notNullAnnotations(final boolean value) {
             this.notNullAnnotations = value;
             return this;
         }
 
-        public Builder allNumericConstraints(final boolean value) {
+        Builder allNumericConstraints(final boolean value) {
             this.allNumericConstraints = value;
             return this;
         }
 
-        public Builder notNullCustomMessage(final boolean value) {
+        Builder notNullCustomMessage(final boolean value) {
             this.notNullCustomMessage = value;
             return this;
         }
 
-        public Builder notNullPrefixFieldName(final boolean value) {
+        Builder notNullPrefixFieldName(final boolean value) {
             this.notNullPrefixFieldName = value;
             return this;
         }
 
-        public Builder notNullPrefixClassName(final boolean value) {
+        Builder notNullPrefixClassName(final boolean value) {
             this.notNullPrefixClassName = value;
             return this;
         }
 
-        public Builder notNullCustomMessageText(final String value) {
+        Builder notNullCustomMessageText(final String value) {
             this.notNullCustomMessageText = value;
             return this;
         }
 
-        public Builder itemAnnotations(final boolean value) {
+        Builder itemAnnotations(final boolean value) {
             this.itemAnnotations = value;
             return this;
         }
 
-        public Builder generateValidOnCollections(final boolean value) {
+        Builder generateValidOnCollections(final boolean value) {
             this.generateValidOnCollections = value;
             return this;
         }
 
         /** Adds one statement of the {@code exclude} option, which can be repeated. */
-        public Builder exclusion(final String value) {
+        Builder exclusion(final String value) {
             this.exclusions.add(value);
             return this;
         }
 
-        public ValidationsOptions build() {
-            return new ValidationsOptions(targetNamespace, multiPattern,
+        BeanValidationOptions build() {
+            return new BeanValidationOptions(targetNamespace, multiPattern,
                     verbose, allNumericConstraints, notNullAnnotations, notNullCustomMessage,
                     notNullPrefixFieldName, notNullPrefixClassName, notNullCustomMessageText,
                     itemAnnotations, generateValidOnCollections,
@@ -227,11 +194,11 @@ public class ValidationsOptions {
         }
     }
 
-    public static ValidationsOptions.Builder builder() {
-        return new ValidationsOptions.Builder();
+    static BeanValidationOptions.Builder builder() {
+        return new BeanValidationOptions.Builder();
     }
 
-    private ValidationsOptions(final String targetNamespace, final boolean multiPattern, final boolean verbose,
+    private BeanValidationOptions(final String targetNamespace, final boolean multiPattern, final boolean verbose,
             final boolean allNumericConstraints, final boolean notNullAnnotations,
             final boolean notNullCustomMessage, final boolean notNullPrefixFieldName,
             final boolean notNullPrefixClassName, final String notNullCustomMessageText,

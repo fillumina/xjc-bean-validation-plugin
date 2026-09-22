@@ -19,11 +19,11 @@ import java.util.List;
 class ItemAnnotator {
 
     private final JFieldVar field;
-    private final XjcAnnotator annotator;
+    private final AnnotationWriter annotator;
 
-    ItemAnnotator(JFieldVar field, ValidationsLogger logger) {
+    ItemAnnotator(JFieldVar field, AnnotationLog logger) {
         this.field = field;
-        this.annotator = new XjcAnnotator(field, logger);
+        this.annotator = new AnnotationWriter(field, logger);
     }
 
     void addSizeAnnotation(Integer minLength, Integer maxLength) {
@@ -65,7 +65,7 @@ class ItemAnnotator {
     }
 
     void addPatterns(LinkedHashSet<LinkedHashSet<String>> patterns, boolean multiPattern) {
-        Patterns.add(annotator, patterns, multiPattern);
+        PatternAnnotations.add(annotator, patterns, multiPattern);
     }
 
     void addValidAnnotation() {

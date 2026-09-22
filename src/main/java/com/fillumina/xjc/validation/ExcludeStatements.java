@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Illuminati
  */
-class Exclusions {
+class ExcludeStatements {
 
-    private static final Exclusions NONE = new Exclusions(Collections.<Statement>emptyList());
+    private static final ExcludeStatements NONE = new ExcludeStatements(Collections.<Statement>emptyList());
 
     /** @return {@code null} when the statement is well formed, the reason when it is not. */
     static String validate(String statement) {
@@ -37,7 +37,7 @@ class Exclusions {
         }
     }
 
-    static Exclusions of(List<String> statements) {
+    static ExcludeStatements of(List<String> statements) {
         if (statements == null || statements.isEmpty()) {
             return NONE;
         }
@@ -45,19 +45,13 @@ class Exclusions {
         for (String statement : statements) {
             parsed.add(Statement.parse(statement));
         }
-        return new Exclusions(parsed);
+        return new ExcludeStatements(parsed);
     }
 
     private final List<Statement> statements;
 
-    private Exclusions(List<Statement> statements) {
+    private ExcludeStatements(List<Statement> statements) {
         this.statements = statements;
-    }
-
-    /** @return the first statement covering this class and property, likely the only one. */
-    Statement statementFor(String className, String propertyName) {
-        List<Statement> matching = statementsFor(className, propertyName);
-        return matching.isEmpty() ? null : matching.get(0);
     }
 
     /**

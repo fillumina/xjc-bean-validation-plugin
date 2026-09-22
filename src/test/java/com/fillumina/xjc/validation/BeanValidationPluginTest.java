@@ -2,8 +2,10 @@ package com.fillumina.xjc.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Driver;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -62,25 +64,24 @@ class BeanValidationPluginTest {
         assertFalse(generated.contains("@NotNull"), generated);
     }
 
-    /**
-     * The plugin answers to the name it had in the old line as well, and a build migrating from it
-     * keeps working until it is changed.
-     */
+    /** The plugin does not answer to the name it had in the line this project was split from. */
     @Test
-    void theOldNameOfTheOptionStillWorks() throws Exception {
+    void theOldNameOfTheOptionIsRefused() throws Exception {
         Path output = Files.createDirectories(outputDirectory.resolve("old-name"));
         List<String> arguments = List.of("-quiet", "-extension", "-XJsr303Annotations",
                 "-d", output.toString(), SCHEMA.toAbsolutePath().toString());
 
         ByteArrayOutputStream messages = new ByteArrayOutputStream();
         try (PrintStream stream = new PrintStream(messages, true, StandardCharsets.UTF_8)) {
-            assertEquals(0, Driver.run(arguments.toArray(String[]::new), stream, stream),
-                    () -> "xjc failed: " + messages);
+            BadCommandLineException refused = assertThrows(BadCommandLineException.class,
+                    () -> Driver.run(arguments.toArray(String[]::new), stream, stream));
+            assertEquals("unrecognized parameter -XJsr303Annotations", refused.getMessage());
         }
 
-        String generated = Files.readString(generatedSource(output, "Order.java"))
-                .replaceAll("\\s+", " ");
-        assertTrue(generated.contains("@NotNull protected String code;"), generated);
+        try (Stream<Path> files = Files.walk(output)) {
+            assertEquals(0, files.filter(Files::isRegularFile).count(),
+                    "the plugin ran under the old name of the option");
+        }
     }
 
     /**

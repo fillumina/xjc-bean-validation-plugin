@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code modelGroup} of the old line, ported with its cases. */
 class ModelGroupFixtureTest extends FixtureTest {
 
     @Override

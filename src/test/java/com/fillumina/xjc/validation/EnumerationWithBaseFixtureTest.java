@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code enumerationWithBase} of the old line, ported unchanged. */
 class EnumerationWithBaseFixtureTest extends FixtureTest {
 
     @Override

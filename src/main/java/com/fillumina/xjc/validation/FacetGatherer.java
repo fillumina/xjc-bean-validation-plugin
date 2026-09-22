@@ -12,25 +12,25 @@ import java.util.LinkedHashSet;
  *
  * @author Francesco Illuminati
  */
-public class HierarchyFacetGatherer {
+class FacetGatherer {
 
-    public static AccumulatorFacet gatherRestrictions(XSSimpleType type) {
+    static FacetSourceAccumulator gather(XSSimpleType type) {
         if (type == null) {
-            return AccumulatorFacet.EMPTY;
+            return FacetSourceAccumulator.EMPTY;
         }
-        AccumulatorFacet facet = new AccumulatorFacet();
+        FacetSourceAccumulator facet = new FacetSourceAccumulator();
         navigateUpTheHierarchy(facet, type);
         consolidatePatterns(facet);
         return facet;
     }
 
-    private static void consolidatePatterns(AccumulatorFacet facet) {
-        final LinkedHashSet<LinkedHashSet<String>> multiPatterns = facet.getMultiPatterns();
-        final LinkedHashSet<String> multiEnumerations = facet.getMultiEnumerations();
+    private static void consolidatePatterns(FacetSourceAccumulator facet) {
+        final LinkedHashSet<LinkedHashSet<String>> multiPatterns = facet.multiPatterns();
+        final LinkedHashSet<String> multiEnumerations = facet.multiEnumerations();
 
         if (! (multiPatterns.isEmpty() && multiEnumerations.isEmpty()) ) {
             if (multiPatterns.size() > 1) {
-                Utils.addIfNotNullOrEmpty(multiPatterns, multiEnumerations, Collection::isEmpty);
+                FacetSource.addIfNotNullOrEmpty(multiPatterns, multiEnumerations, Collection::isEmpty);
             } else if (!multiEnumerations.isEmpty()) {
                 if (multiPatterns.isEmpty()) {
                     multiPatterns.add(new LinkedHashSet<>());
@@ -41,7 +41,7 @@ public class HierarchyFacetGatherer {
 
     }
 
-    private static void navigateUpTheHierarchy(AccumulatorFacet facet, XSSimpleType type) {
+    private static void navigateUpTheHierarchy(FacetSourceAccumulator facet, XSSimpleType type) {
         XSSimpleType baseType = null;
         if (type instanceof XSListSimpleType) {
             baseType = type.getBaseListType();
@@ -57,7 +57,7 @@ public class HierarchyFacetGatherer {
             navigateUpTheHierarchy(facet, baseType);
         }
 
-        final XSSimpleTypeFacet typeFacet = new XSSimpleTypeFacet(type);
+        final FacetSourceView typeFacet = new FacetSourceView(type);
         facet.apply(typeFacet);
     }
 

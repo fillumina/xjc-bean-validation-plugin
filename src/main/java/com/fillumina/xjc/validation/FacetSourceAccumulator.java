@@ -8,14 +8,14 @@ import java.util.LinkedHashSet;
  *
  * @author Francesco Illuminati
  */
-public class AccumulatorFacet extends AbstractFacet {
+class FacetSourceAccumulator extends FacetSource {
 
-    public final static AccumulatorFacet EMPTY = new AccumulatorFacet() {
+    static final FacetSourceAccumulator EMPTY = new FacetSourceAccumulator() {
         @Override
-        public void apply(AbstractFacet facet) {}
+        void apply(FacetSource facet) {}
     };
 
-    private AccumulatorFacet itemFacet;
+    private FacetSourceAccumulator itemFacet;
 
     private Integer minLength;
     private Integer maxLength;
@@ -44,7 +44,7 @@ public class AccumulatorFacet extends AbstractFacet {
         this.maxInclusive = value;
     }
 
-    public void apply(AbstractFacet facet) {
+    void apply(FacetSource facet) {
         final Integer minLength = facet.minLength();
         if (minLength != null) {
             this.minLength = minLength;
@@ -110,91 +110,91 @@ public class AccumulatorFacet extends AbstractFacet {
             this.enumerationList = enumerationList;
         }
 
-        Utils.addIfNotNullOrEmpty(multiPatterns, facet.getPatterns(), Collection::isEmpty);
-        Utils.addAllIfNotNullOrEmpty(multiEnumerations, facet.getEnumerations(), String::isEmpty);
+        addIfNotNullOrEmpty(multiPatterns, facet.patterns(), Collection::isEmpty);
+        addAllIfNotNullOrEmpty(multiEnumerations, facet.enumerations(), String::isEmpty);
     }
 
-    public AccumulatorFacet createItemFacet() {
+    FacetSourceAccumulator createItemFacet() {
         if (itemFacet == null) {
-            itemFacet = new AccumulatorFacet();
+            itemFacet = new FacetSourceAccumulator();
         }
         return itemFacet;
     }
 
-    public AccumulatorFacet getItemFacet() {
+    FacetSourceAccumulator itemFacet() {
         return itemFacet;
     }
 
-    public LinkedHashSet<LinkedHashSet<String>> getMultiPatterns() {
+    LinkedHashSet<LinkedHashSet<String>> multiPatterns() {
         return multiPatterns;
     }
 
-    public LinkedHashSet<String> getMultiEnumerations() {
+    LinkedHashSet<String> multiEnumerations() {
         return multiEnumerations;
     }
 
     @Override
-    public Integer minLength() {
+    Integer minLength() {
         return this.minLength;
     }
 
     @Override
-    public Integer maxLength() {
+    Integer maxLength() {
         return this.maxLength;
     }
 
     @Override
-    public Integer length() {
+    Integer length() {
         return this.length;
     }
 
     @Override
-    public Integer totalDigits() {
+    Integer totalDigits() {
         return totalDigits;
     }
 
     @Override
-    public Integer fractionDigits() {
+    Integer fractionDigits() {
         return fractionDigits;
     }
 
     @Override
-    public BigDecimal minInclusive() {
+    BigDecimal minInclusive() {
         return minInclusive;
     }
 
     @Override
-    public BigDecimal minExclusive() {
+    BigDecimal minExclusive() {
         return minExclusive;
     }
 
     @Override
-    public BigDecimal maxInclusive() {
+    BigDecimal maxInclusive() {
         return maxInclusive;
     }
 
     @Override
-    public BigDecimal maxExclusive() {
+    BigDecimal maxExclusive() {
         return maxExclusive;
     }
 
     @Override
-    public String pattern() {
+    String pattern() {
         return pattern;
     }
 
     @Override
-    public LinkedHashSet<String> patternList() {
+    LinkedHashSet<String> patternList() {
         return patternList;
     }
 
     @Override
-    public String enumeration() {
+    String enumeration() {
         return enumeration;
     }
 
     @Override
-    public LinkedHashSet<String> enumerationList() {
+    LinkedHashSet<String> enumerationList() {
         return enumerationList;
     }
 

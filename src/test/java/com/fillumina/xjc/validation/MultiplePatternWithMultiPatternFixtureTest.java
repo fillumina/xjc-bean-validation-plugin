@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import java.util.stream.Stream;
 
-/** The fixture {@code multiplePatternWithMultiPattern} of the old line, ported with its cases. */
 class MultiplePatternWithMultiPatternFixtureTest extends FixtureTest {
 
     @Override

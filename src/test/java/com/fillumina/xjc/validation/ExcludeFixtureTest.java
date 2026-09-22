@@ -5,10 +5,6 @@ import java.util.stream.Stream;
 /**
  * The {@code exclude} option: leaving an annotation out, setting one of its parameters, or writing
  * another annotation in its place, on a class, a property or a glob.
- *
- * <p>The statements are the ones the old line's tests used, written under this plugin's option name.
- * The old fixture kept two expectation files for the placeholder case, one per annotation library;
- * the jakarta one is the source here.
  */
 class ExcludeFixtureTest extends FixtureTest {
 

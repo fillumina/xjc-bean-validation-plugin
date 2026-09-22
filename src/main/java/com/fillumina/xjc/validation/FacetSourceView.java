@@ -12,76 +12,76 @@ import java.util.stream.Collectors;
  *
  * @author Francesco Illuminati
  */
-class XSSimpleTypeFacet extends AbstractFacet {
+class FacetSourceView extends FacetSource {
 
     private final XSSimpleType simpleType;
 
-    public XSSimpleTypeFacet(XSSimpleType simpleType) {
+    FacetSourceView(XSSimpleType simpleType) {
         this.simpleType = simpleType;
     }
 
     @Override
-    public Integer minLength() {
+    Integer minLength() {
         return getIntegerFacet(XSFacet.FACET_MINLENGTH);
     }
 
     @Override
-    public Integer maxLength() {
+    Integer maxLength() {
         return getIntegerFacet(XSFacet.FACET_MAXLENGTH);
     }
 
     @Override
-    public Integer length() {
+    Integer length() {
         return getIntegerFacet(XSFacet.FACET_LENGTH);
     }
 
     @Override
-    public Integer totalDigits() {
+    Integer totalDigits() {
         return getIntegerFacet(XSFacet.FACET_TOTALDIGITS);
     }
 
     @Override
-    public Integer fractionDigits() {
+    Integer fractionDigits() {
         return getIntegerFacet(XSFacet.FACET_FRACTIONDIGITS);
     }
 
     @Override
-    public BigDecimal minInclusive() {
+    BigDecimal minInclusive() {
         return getDecimalFacet(XSFacet.FACET_MININCLUSIVE);
     }
 
     @Override
-    public BigDecimal minExclusive() {
+    BigDecimal minExclusive() {
         return getDecimalFacet(XSFacet.FACET_MINEXCLUSIVE);
     }
 
     @Override
-    public BigDecimal maxInclusive() {
+    BigDecimal maxInclusive() {
         return getDecimalFacet(XSFacet.FACET_MAXINCLUSIVE);
     }
 
     @Override
-    public BigDecimal maxExclusive() {
+    BigDecimal maxExclusive() {
         return getDecimalFacet(XSFacet.FACET_MAXEXCLUSIVE);
     }
 
     @Override
-    public String pattern() {
+    String pattern() {
         return getStringFacet(XSFacet.FACET_PATTERN);
     }
 
     @Override
-    public LinkedHashSet<String> patternList() {
+    LinkedHashSet<String> patternList() {
         return getMultipleStringFacets(XSFacet.FACET_PATTERN);
     }
 
     @Override
-    public String enumeration() {
+    String enumeration() {
         return getStringFacet(XSFacet.FACET_ENUMERATION);
     }
 
     @Override
-    public LinkedHashSet<String> enumerationList() {
+    LinkedHashSet<String> enumerationList() {
         return getMultipleStringFacets(XSFacet.FACET_ENUMERATION);
     }
 

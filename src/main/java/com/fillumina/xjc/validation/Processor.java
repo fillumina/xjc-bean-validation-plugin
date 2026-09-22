@@ -31,23 +31,19 @@ import java.util.Set;
  *
  * @author Francesco Illuminati
  */
-public class Processor {
+class Processor {
 
-    private final ValidationsOptions options;
-    private final Exclusions exclusions;
+    private final BeanValidationOptions options;
+    private final ExcludeStatements exclusions;
 
-    public Processor(ValidationsOptions options) {
+    Processor(BeanValidationOptions options) {
         this.options = options;
-        this.exclusions = Exclusions.of(options.getExclusions());
+        this.exclusions = ExcludeStatements.of(options.getExclusions());
     }
 
-    /**
-     * Call at each generated class.
-     *
-     * @param model
-     */
-    public void process(Outline model) {
-        for (ClassOutline classOutline : model.getClasses()) {
+    /** Walks the generated classes and writes the annotations of their properties. */
+    void process(Outline outline) {
+        for (ClassOutline classOutline : outline.getClasses()) {
             // the statements match the qualified name: a glob can then cover a package
             String className = classOutline.implClass.fullName();
 
@@ -58,18 +54,18 @@ public class Processor {
 
                 String propertyName = property.getName(false);
 
-                ValidationsLogger logger = options.isVerbose()
-                        ? new SystemOutValidationsLogger(className, propertyName)
-                        : SilentValidationLogger.INSTANCE;
+                AnnotationLog logger = options.isVerbose()
+                        ? new AnnotationLogAll(className, propertyName)
+                        : AnnotationLogWarning.INSTANCE;
 
                 // an excluded property is processed as usual, but its annotations are collected
                 // instead of written, so that a replacement can use the values they would have had
-                List<Exclusions.Statement> exclusionsForProperty =
+                List<ExcludeStatements.Statement> exclusionsForProperty =
                         exclusions.statementsFor(className, propertyName);
-                List<XjcAnnotator.Annotate> collected = exclusionsForProperty.isEmpty()
-                        ? null : new ArrayList<XjcAnnotator.Annotate>();
+                List<AnnotationWriter.Annotate> collected = exclusionsForProperty.isEmpty()
+                        ? null : new ArrayList<AnnotationWriter.Annotate>();
 
-                new TypeProcessor(classOutline, logger, collected).processProperty(property);
+                new PropertyProcessor(classOutline, logger, collected).processProperty(property);
 
                 if (collected != null) {
                     JFieldVar field = classOutline.implClass.fields().get(propertyName);
@@ -89,13 +85,13 @@ public class Processor {
      * a statement gave a parameter, and the replacement of every statement that carries one.
      */
     private void writeExcluded(JFieldVar field, String className, String propertyName,
-            List<XjcAnnotator.Annotate> collected, List<Exclusions.Statement> statements,
-            ValidationsLogger logger) {
-        Set<Exclusions.Statement> replacing = new LinkedHashSet<>();
-        for (XjcAnnotator.Annotate computed : collected) {
+            List<AnnotationWriter.Annotate> collected, List<ExcludeStatements.Statement> statements,
+            AnnotationLog logger) {
+        Set<ExcludeStatements.Statement> replacing = new LinkedHashSet<>();
+        for (AnnotationWriter.Annotate computed : collected) {
             Map<String, String> parameters = new LinkedHashMap<>();
             boolean leftOut = false;
-            for (Exclusions.Statement statement : statements) {
+            for (ExcludeStatements.Statement statement : statements) {
                 if (!statement.coversAnnotation(computed.getAnnotationClass().getSimpleName())) {
                     continue;
                 }
@@ -103,7 +99,7 @@ public class Processor {
                     replacing.add(statement);
                     leftOut = true;
                 } else if (statement.hasParameter()) {
-                    parameters.put(statement.getParameter(), Replacement.resolveValue(
+                    parameters.put(statement.getParameter(), ExcludeReplacement.resolveValue(
                             statement.getParameterValue(), computed.getAnnotationClass(), className,
                             propertyName, collected));
                 } else {
@@ -111,12 +107,12 @@ public class Processor {
                 }
             }
             if (!leftOut) {
-                Replacement.writeComputed(field, computed, parameters, logger);
+                ExcludeReplacement.writeComputed(field, computed, parameters, logger);
             }
         }
-        for (Exclusions.Statement statement : statements) {
+        for (ExcludeStatements.Statement statement : statements) {
             if (replacing.contains(statement)) {
-                Replacement.parse(statement.getReplacement())
+                ExcludeReplacement.parse(statement.getReplacement())
                         .writeInto(field, className, propertyName, collected, logger);
             }
         }
@@ -124,28 +120,28 @@ public class Processor {
 
     /** A statement that matched nothing is a typo, and it silently leaves the annotations in place. */
     private void reportUnmatchedExclusions() {
-        ValidationsLogger logger = options.isVerbose()
-                ? new SystemOutValidationsLogger("", "")
-                : SilentValidationLogger.INSTANCE;
-        for (Exclusions.Statement statement : exclusions.unmatched()) {
+        AnnotationLog logger = options.isVerbose()
+                ? new AnnotationLogAll("", "")
+                : AnnotationLogWarning.INSTANCE;
+        for (ExcludeStatements.Statement statement : exclusions.unmatched()) {
             logger.warning("exclude=" + statement + " matched no class and no property");
         }
     }
 
-    class TypeProcessor {
+    class PropertyProcessor {
 
-        private final ValidationsLogger logger;
+        private final AnnotationLog logger;
         private final ClassOutline classOutline;
-        private final List<XjcAnnotator.Annotate> collector;
+        private final List<AnnotationWriter.Annotate> collector;
 
-        public TypeProcessor(ClassOutline classOutline, ValidationsLogger logger,
-                List<XjcAnnotator.Annotate> collector) {
+        PropertyProcessor(ClassOutline classOutline, AnnotationLog logger,
+                List<AnnotationWriter.Annotate> collector) {
             this.logger = logger;
             this.classOutline = classOutline;
             this.collector = collector;
         }
 
-        public void processProperty(CPropertyInfo property) {
+        void processProperty(CPropertyInfo property) {
             if (property instanceof CElementPropertyInfo) {
                 processElement((CElementPropertyInfo) property);
 
@@ -194,7 +190,7 @@ public class Processor {
          */
         private void processModelGroupIml(CElementPropertyInfo property, FieldAnnotator annotator) {
             if (options.isGenerateValidOnCollections()) {
-                annotator.addItemValidAnnotation();
+                annotator.items().addValidAnnotation();
             }
         }
 
@@ -233,7 +229,7 @@ public class Processor {
             }
 
             final boolean inTargetNamespace =
-                    Utils.isEqualsOrNull(options.getTargetNamespace(), targetNamespace);
+                    TargetNamespace.accepts(options.getTargetNamespace(), targetNamespace);
             // the @Valid of a container goes on the type argument, where a current provider reads
             // it; any other complex type carries it on the field whatever the option says
             if (inTargetNamespace) {
@@ -241,7 +237,7 @@ public class Processor {
                     // cascading makes sense on the elements of a complex type: on a list of strings
                     // or of an enumeration it would validate nothing
                     if (options.isGenerateValidOnCollections() && isComplexType) {
-                        annotator.addItemValidAnnotation();
+                        annotator.items().addValidAnnotation();
                     }
                 } else if (isComplexType) {
                     annotator.addValidAnnotation();
@@ -259,17 +255,17 @@ public class Processor {
 
                 // a complex type can contribute the facet of only one of its possibilities; the
                 // items of a collection are annotated on its type argument
-                AccumulatorFacet facet = HierarchyFacetGatherer.gatherRestrictions(simpleType);
+                FacetSourceAccumulator facet = FacetGatherer.gather(simpleType);
                 if (property.isCollection()) {
 
                     if (options.isItemAnnotations()) {
-                        AccumulatorFacet itemFacet = facet.getItemFacet();
+                        FacetSourceAccumulator itemFacet = facet.itemFacet();
                         if (itemFacet != null) {
                             // the field is a list because its type is an xsd:list, so the length
                             // facets gathered here count the items in it and belong on the field
                             annotator.addSizeAnnotation(facet.minLength(), facet.maxLength(),
                                     facet.length());
-                            setItemAnnotations(fieldHelper, annotator, itemFacet);
+                            setItemAnnotations(fieldHelper, annotator.items(), itemFacet);
                         } else {
                             // an element that inherits occurrences other than one is promoted to a
                             // list, so the facet already refers to the item
@@ -279,7 +275,7 @@ public class Processor {
                                         + " argument: report this together with the schema that"
                                         + " provoked it");
                             }
-                            setItemAnnotations(fieldHelper, annotator, facet);
+                            setItemAnnotations(fieldHelper, annotator.items(), facet);
                         }
                     }
 
@@ -297,19 +293,19 @@ public class Processor {
         }
 
         /** The constraints of the items of a collection: they end up on its type argument. */
-        private void setItemAnnotations(FieldHelper fieldHelper, FieldAnnotator annotator, AccumulatorFacet facet) {
-            annotator.addItemSizeAnnotation(facet.minLength(), facet.maxLength());
-            annotator.addItemDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
-            annotator.addItemDecimalMinAnnotation(
-                    fieldHelper.validItemValue(facet.minInclusive()),
-                    fieldHelper.validItemValue(facet.minExclusive()));
-            annotator.addItemDecimalMaxAnnotation(
-                    fieldHelper.validItemValue(facet.maxInclusive()),
-                    fieldHelper.validItemValue(facet.maxExclusive()));
+        private void setItemAnnotations(FieldHelper fieldHelper, ItemAnnotator items, FacetSourceAccumulator facet) {
+            items.addSizeAnnotation(facet.minLength(), facet.maxLength());
+            items.addDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
+            items.addDecimalMinAnnotation(
+                    fieldHelper.itemBound(facet.minInclusive()),
+                    fieldHelper.itemBound(facet.minExclusive()));
+            items.addDecimalMaxAnnotation(
+                    fieldHelper.itemBound(facet.maxInclusive()),
+                    fieldHelper.itemBound(facet.maxExclusive()));
             // @Pattern resolves to a validator that accepts CharSequence only: on a collection of
             // numbers it would check nothing and fail at validation time
             if (fieldHelper.isStringList()) {
-                annotator.addItemPatterns(facet.getMultiPatterns(), options.isMultiPattern());
+                items.addPatterns(facet.multiPatterns(), options.isMultiPattern());
             }
         }
 
@@ -336,7 +332,7 @@ public class Processor {
                     }
 
                     FieldHelper fieldHelper = new FieldHelper(field);
-                    AccumulatorFacet facet = HierarchyFacetGatherer.gatherRestrictions(type);
+                    FacetSourceAccumulator facet = FacetGatherer.gather(type);
                     BigDecimal fixedBound =
                             fixedBoundOf(fieldHelper, particle.getDecl().getFixedValue());
                     if (fixedBound != null) {
@@ -383,7 +379,7 @@ public class Processor {
         }
 
         private void processType(XSSimpleType simpleType, JFieldVar field, FieldAnnotator annotator) {
-            AccumulatorFacet facet = HierarchyFacetGatherer.gatherRestrictions(simpleType);
+            FacetSourceAccumulator facet = FacetGatherer.gather(simpleType);
             FieldHelper fieldHelper = new FieldHelper(field);
             processType(fieldHelper, annotator, facet);
         }
@@ -394,14 +390,14 @@ public class Processor {
         private void processType(
                 FieldHelper fieldHelper,
                 FieldAnnotator annotator,
-                AccumulatorFacet facet) {
+                FacetSourceAccumulator facet) {
 
             if (fieldHelper.isArray() || fieldHelper.isString()) {
                 annotator.addSizeAnnotation(facet.minLength(), facet.maxLength(), facet.length());
             }
 
             if (fieldHelper.isString()) {
-                annotator.addPatterns(facet.getMultiPatterns(), options.isMultiPattern());
+                annotator.addPatterns(facet.multiPatterns(), options.isMultiPattern());
             }
 
             if (fieldHelper.isNumber() || fieldHelper.isString()) {
@@ -412,10 +408,10 @@ public class Processor {
                     annotator.addDecimalMaxAnnotationExclusive(facet.maxExclusive());
 
                 } else {
-                    annotator.addDecimalMinAnnotationInclusive(fieldHelper.validValue(facet.minInclusive()));
-                    annotator.addDecimalMinAnnotationExclusive(fieldHelper.validValue(facet.minExclusive()));
-                    annotator.addDecimalMaxAnnotationInclusive(fieldHelper.validValue(facet.maxInclusive()));
-                    annotator.addDecimalMaxAnnotationExclusive(fieldHelper.validValue(facet.maxExclusive()));
+                    annotator.addDecimalMinAnnotationInclusive(fieldHelper.fieldBound(facet.minInclusive()));
+                    annotator.addDecimalMinAnnotationExclusive(fieldHelper.fieldBound(facet.minExclusive()));
+                    annotator.addDecimalMaxAnnotationInclusive(fieldHelper.fieldBound(facet.maxInclusive()));
+                    annotator.addDecimalMaxAnnotationExclusive(fieldHelper.fieldBound(facet.maxExclusive()));
                 }
                 annotator.addDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
             }

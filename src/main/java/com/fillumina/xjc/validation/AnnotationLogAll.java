@@ -4,14 +4,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * The logger of a verbose run: it prints every annotation it writes, and what it writes it on.
  *
  * @author Francesco Illuminati
  */
-class SystemOutValidationsLogger implements ValidationsLogger {
+class AnnotationLogAll implements AnnotationLog {
     private final String className;
     private final String propertyName;
 
-    public SystemOutValidationsLogger(String className, String propertyName) {
+    AnnotationLogAll(String className, String propertyName) {
         this.className = className;
         this.propertyName = propertyName;
     }
@@ -28,6 +29,11 @@ class SystemOutValidationsLogger implements ValidationsLogger {
             }
         }
         log("adding @" + annotationName + params + " to " + className + "." + propertyName);
+    }
+
+    @Override
+    public void info(String message) {
+        log(message);
     }
 
     @Override

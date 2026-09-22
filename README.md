@@ -36,9 +36,6 @@ Inside a Maven build the plugin goes on the classpath of whatever runs XJC, whic
 `jaxb-maven-plugin` means declaring it as a dependency of that plugin and passing
 `-XBeanValidationAnnotations` among the arguments.
 
-The option is also accepted under its old name, `-XJsr303Annotations`, so that a build migrating
-from `krasa-jaxb-tools` does not have to be changed first.
-
 ## Options
 
 Every option is written after the plugin name, as in
@@ -49,7 +46,7 @@ Every option is written after the plugin name, as in
   schema requires.
 - `notNullAnnotationsCustomMessages` — the message of `@NotNull`: `true`, `false`, `FieldName`,
   `ClassName` or a text, where `{ClassName}` and `{FieldName}` are replaced.
-- `generateListAnnotations` — on by default; writes the constraints of the items of a collection on
+- `generateItemAnnotations` — on by default; writes the constraints of the items of a collection on
   its type argument.
 - `generateValidOnCollections` — on by default; writes `@Valid` on the type argument of a
   collection, so that its elements are validated in turn.

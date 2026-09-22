@@ -5,13 +5,13 @@ import java.util.stream.Stream;
 /**
  * {@code targetNamespace}: only the elements of the named namespace carry {@code @Valid}.
  *
- * <p>The schema holds two namespaces, {@code a} and {@code b}, and the old line kept one expectation
- * file per namespace, because its runner wrote one file per namespace. There is one file per case
- * here, holding every class the run generated, which is why the three cases below have one
- * expectation each rather than two.
+ * <p>The schema holds two namespaces, {@code a} and {@code b}, and each holds one element of a complex
+ * type, {@code aNote} and {@code bNote}. {@code @Valid} cascades only into a complex type, so those
+ * two elements are what show the option at work, and each case compares one file holding every class
+ * the run generated.
  *
- * <p>The last case passes {@code null} as the namespace, which the old builder turned into the
- * literal text {@code null}: a namespace that matches nothing, so nothing carries the annotation.
+ * <p>The last case passes the literal text {@code null}, which the option reads like an unset one, so
+ * both elements carry the annotation.
  */
 class TargetFixtureTest extends FixtureTest {
 
@@ -23,11 +23,11 @@ class TargetFixtureTest extends FixtureTest {
     static Stream<Case> cases() {
         return Stream.of(
                 Case.of("TargetANamespace", notNullOff(), namespace("a")),
-                Case.of("TargetBNamespaceJakarta", notNullOff(), namespace("b")),
-                Case.of("TargetNullNamespaceJakarta", notNullOff(), namespace("null")));
+                Case.of("TargetBNamespace", notNullOff(), namespace("b")),
+                Case.of("TargetNullNamespace", notNullOff(), namespace("null")));
     }
 
-    /** The old cases also turned the {@code @NotNull} of the elements off. */
+    /** The {@code @NotNull} of the required elements is off, so only {@code @Valid} is under test. */
     private static String notNullOff() {
         return option("generateNotNullAnnotations", "false");
     }

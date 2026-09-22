@@ -1,20 +1,20 @@
 package com.fillumina.xjc.validation;
 
+import static com.fillumina.xjc.validation.BeanValidationPlugin.PLUGIN_NAME;
+
 import com.sun.tools.xjc.BadCommandLineException;
-import static com.fillumina.xjc.validation.BeanValidationPlugin.PLUGIN_ALIAS_OPTION_NAME;
-import static com.fillumina.xjc.validation.BeanValidationPlugin.PLUGIN_OPTION_NAME;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Parse the arguments passed to the plugin and initialize the {@link ValidationsOptions}
+ * Parse the arguments passed to the plugin and initialize the {@link BeanValidationOptions}
  * accordingly.
  *
  * @author Francesco Illuminati
  */
-public enum ValidationsArgument {
+enum BeanValidationOption {
     targetNamespace(
             // type:
             String.class,
@@ -54,29 +54,21 @@ public enum ValidationsArgument {
 
                 if (b != null) {
                     p.notNullCustomMessage(b);
+                } else if ("ClassName".equalsIgnoreCase(v)) {
+                    p.notNullCustomMessage(true);
+                    p.notNullPrefixFieldName(false);
+                    p.notNullPrefixClassName(true);
+                    p.notNullCustomMessageText(null);
+                } else if ("FieldName".equalsIgnoreCase(v)) {
+                    p.notNullCustomMessage(true);
+                    p.notNullPrefixFieldName(true);
+                    p.notNullPrefixClassName(false);
+                    p.notNullCustomMessageText(null);
                 } else {
-                    if (NotNullAnnotationCustomMessageType.Classname.equalsIgnoreCase(v)) {
-                        p.notNullCustomMessage(true);
-                        p.notNullPrefixFieldName(false);
-                        p.notNullPrefixClassName(true);
-                        p.notNullCustomMessageText(null);
-                    } else if (NotNullAnnotationCustomMessageType.Fieldname.equalsIgnoreCase(v)) {
-                        p.notNullCustomMessage(true);
-                        p.notNullPrefixFieldName(true);
-                        p.notNullPrefixClassName(false);
-                        p.notNullCustomMessageText(null);
-                    } else if (v.equalsIgnoreCase("false")) {
-                        p.notNullCustomMessage(false);
-                        p.notNullPrefixFieldName(false);
-                        p.notNullPrefixClassName(false);
-                        p.notNullCustomMessageText(null);
-                    } else {
-                        p.notNullCustomMessage(false);
-                        p.notNullPrefixFieldName(false);
-                        p.notNullPrefixClassName(false);
-                        p.notNullCustomMessageText(v);
-                    }
-
+                    p.notNullCustomMessage(false);
+                    p.notNullPrefixFieldName(false);
+                    p.notNullPrefixClassName(false);
+                    p.notNullCustomMessageText(v);
                 }
                 return null;
             },
@@ -95,12 +87,10 @@ public enum ValidationsArgument {
             "increases verbosity",
             (p,v) -> setBoolean(v, r -> p.verbose(r)),
             (p) -> p.isVerbose()),
-    generateListAnnotations(
+    generateItemAnnotations(
             Boolean.class,
             "writes the constraints of the items of a collection on its type argument, as in "
-                    + "List<@Size(max = 5) String>: that is the form a current provider enforces, "
-                    + "where the @Each* annotations of the line this project was split from are "
-                    + "inert. On by default, and only the option name is the old one",
+                    + "List<@Size(max = 5) String>: that is the form a current provider enforces",
             (p,v) -> setBoolean(v, r -> p.itemAnnotations(r)),
             (p) -> p.isItemAnnotations()),
     generateValidOnCollections(
@@ -116,7 +106,7 @@ public enum ValidationsArgument {
                     + "optionally # and a glob for the property, optionally = and the annotation to write "
                     + "instead of the computed one",
             (p, v) -> {
-                String error = Exclusions.validate(v);
+                String error = ExcludeStatements.validate(v);
                 if (error != null) {
                     return error;
                 }
@@ -132,27 +122,27 @@ public enum ValidationsArgument {
     private final String help;
 
     // set the value into the builder and return null if ok or a text with the error
-    private final BiFunction<ValidationsOptions.Builder, String, String> setter;
+    private final BiFunction<BeanValidationOptions.Builder, String, String> setter;
 
     // get the value
-    private final Function<ValidationsOptions, Object> getter;
+    private final Function<BeanValidationOptions, Object> getter;
 
-    ValidationsArgument(
+    BeanValidationOption(
             Class<?> type,
             String help,
-            BiFunction<ValidationsOptions.Builder, String, String> setter,
-            Function<ValidationsOptions, Object> getter) {
+            BiFunction<BeanValidationOptions.Builder, String, String> setter,
+            Function<BeanValidationOptions, Object> getter) {
         this.type = type;
         this.help = help;
         this.setter = setter;
         this.getter = getter;
     }
 
-    String setValue(ValidationsOptions.Builder optionBuilder, String value) {
+    String setValue(BeanValidationOptions.Builder optionBuilder, String value) {
         return setter.apply(optionBuilder, value);
     }
 
-    Object getValue(ValidationsOptions options) {
+    Object getValue(BeanValidationOptions options) {
         return getter.apply(options);
     }
 
@@ -160,35 +150,44 @@ public enum ValidationsArgument {
         return type.getSimpleName();
     }
 
-    String fullName() {
+    String optionPath() {
         return BeanValidationPlugin.PLUGIN_NAME + ":" + name();
     }
 
-    public static String getUsageHelp() {
+    static String usage() {
         return new StringBuilder()
                 .append("  -")
-                .append(PLUGIN_OPTION_NAME)
+                .append(PLUGIN_NAME)
                 .append("      :  ")
                 .append("inject Jakarta Bean Validation annotations")
                 .append(System.lineSeparator())
-                .append("  -")
-                .append(PLUGIN_ALIAS_OPTION_NAME)
-                .append("      :  ")
-                .append("the same plugin, under the name of the specification")
-                .append(System.lineSeparator())
                 .append("   Options:")
-                .append(helpMessageWithPrefix("     "))
+                .append(helpWithPrefix("     "))
                 .append(System.lineSeparator())
                 .toString();
     }
 
-    static ValidationsArgument parse(final String name) throws BadCommandLineException {
+    /** @return the options with the values they were given, one per line. */
+    static String valuesInUse(BeanValidationOptions options) {
+        StringBuilder buf = new StringBuilder("options in use:")
+                .append(System.lineSeparator());
+        for (BeanValidationOption option : values()) {
+            buf.append("    ")
+                    .append(option.name())
+                    .append(": ")
+                    .append(Objects.toString(option.getValue(options)))
+                    .append(System.lineSeparator());
+        }
+        return buf.toString();
+    }
+
+    static BeanValidationOption parse(final String name) throws BadCommandLineException {
         try {
-            return ValidationsArgument.valueOf(name);
+            return BeanValidationOption.valueOf(name);
         } catch (IllegalArgumentException ex) {
             throw new BadCommandLineException(BeanValidationPlugin.PLUGIN_NAME +
                     " unrecognized option " + name + ", usage:\n" +
-                    ValidationsArgument.helpMessageWithPrefix(""));
+                    BeanValidationOption.helpWithPrefix(""));
         }
     }
 
@@ -196,9 +195,9 @@ public enum ValidationsArgument {
      * @param linePrefix a string prefixed to each output line
      * @return a multi line string containing an help for each option.
      */
-    public static String helpMessageWithPrefix(String linePrefix) {
+    static String helpWithPrefix(String linePrefix) {
         StringBuilder buf = new StringBuilder();
-        for (ValidationsArgument a : values()) {
+        for (BeanValidationOption a : values()) {
             buf
                     .append(linePrefix)
                     .append(a.name())
@@ -212,8 +211,8 @@ public enum ValidationsArgument {
         return buf.toString();
     }
 
-    public String errorMessage(String wrongValue) {
-        return fullName() + " option expected a value of type " + type.getSimpleName() +
+    String errorMessage(String wrongValue) {
+        return optionPath() + " option expected a value of type " + type.getSimpleName() +
                 " but got '" + Objects.toString(wrongValue) + "'";
     }
 
@@ -228,16 +227,6 @@ public enum ValidationsArgument {
         }
         setter.accept(bool);
         return null;
-    }
-
-    /**
-     * @return the boolean value of v (no case sensitive) or null otherwise.
-     */
-    static boolean toBoolean(String v, Boolean defaultIfNull) {
-        if (v != null) {
-            return toBoolean(v);
-        }
-        return defaultIfNull != null ? defaultIfNull : false;
     }
 
     /**

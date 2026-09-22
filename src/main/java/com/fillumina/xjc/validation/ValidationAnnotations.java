@@ -13,9 +13,6 @@ import java.util.Map;
 
 /**
  * The Jakarta Bean Validation annotations this plugin writes, and the names it knows them by.
- *
- * <p>The old line carried a flavour switch and the same list twice, once for {@code javax} and once
- * for {@code jakarta}. This project is Jakarta only, so the list is a constant.
  */
 final class ValidationAnnotations {
 

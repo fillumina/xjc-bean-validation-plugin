@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Illuminati
  */
-class Replacement {
+class ExcludeReplacement {
 
     private static final Pattern ANNOTATION =
             Pattern.compile("^@([A-Za-z][A-Za-z0-9]*)\\s*(?:\\((.*)\\))?$", Pattern.DOTALL);
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([A-Za-z][A-Za-z0-9]*)\\}");
 
-    static Replacement parse(String text) {
+    static ExcludeReplacement parse(String text) {
         Matcher matcher = ANNOTATION.matcher(text.trim());
         if (!matcher.matches()) {
             throw new IllegalArgumentException("a replacement is one annotation, as in "
@@ -42,7 +42,7 @@ class Replacement {
             throw new IllegalArgumentException("@" + name + " is not one of the annotations this "
                     + "plugin manages: " + managed.keySet());
         }
-        return new Replacement(text.trim(), annotationClass, parameters(matcher.group(2)));
+        return new ExcludeReplacement(text.trim(), annotationClass, parameters(matcher.group(2)));
     }
 
     /** @return the parameters as written, values still quoted. */
@@ -98,7 +98,7 @@ class Replacement {
     private final Class<? extends Annotation> annotationClass;
     private final Map<String, String> parameters;
 
-    private Replacement(String text, Class<? extends Annotation> annotationClass,
+    private ExcludeReplacement(String text, Class<? extends Annotation> annotationClass,
             Map<String, String> parameters) {
         this.text = text;
         this.annotationClass = annotationClass;
@@ -110,8 +110,8 @@ class Replacement {
      * the plugin computed for it.
      */
     void writeInto(JFieldVar field, String className, String propertyName,
-            List<XjcAnnotator.Annotate> computed, ValidationsLogger logger) {
-        XjcAnnotator.Annotate annotation = new XjcAnnotator(field, logger).annotate(annotationClass);
+            List<AnnotationWriter.Annotate> computed, AnnotationLog logger) {
+        AnnotationWriter.Annotate annotation = new AnnotationWriter(field, logger).annotate(annotationClass);
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
             String name = parameter.getKey();
             String value = resolveValue(parameter.getValue(), annotationClass, className, propertyName,
@@ -124,10 +124,10 @@ class Replacement {
     /**
      * Writes the annotation the plugin computed, with the parameters a statement set on top of them.
      */
-    static void writeComputed(JFieldVar field, XjcAnnotator.Annotate computed,
-            Map<String, String> overrides, ValidationsLogger logger) {
+    static void writeComputed(JFieldVar field, AnnotationWriter.Annotate computed,
+            Map<String, String> overrides, AnnotationLog logger) {
         Class<? extends Annotation> type = computed.getAnnotationClass();
-        XjcAnnotator.Annotate annotation = new XjcAnnotator(field, logger).annotate(type);
+        AnnotationWriter.Annotate annotation = new AnnotationWriter(field, logger).annotate(type);
         Map<String, String> parameters = new LinkedHashMap<>(computed.getParameters());
         parameters.putAll(overrides);
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
@@ -137,7 +137,7 @@ class Replacement {
     }
 
     /** Writes one parameter as the annotation declares it, so numbers stay numbers. */
-    static void writeParameter(XjcAnnotator.Annotate annotation,
+    static void writeParameter(AnnotationWriter.Annotate annotation,
             Class<? extends Annotation> annotationType, String name, String value) {
         Class<?> type = parameterType(annotationType, name);
         if (type == String.class) {
@@ -165,7 +165,7 @@ class Replacement {
 
     /** @return the value with every placeholder replaced, in one pass. */
     static String resolveValue(String value, Class<? extends Annotation> annotationClass,
-            String className, String propertyName, List<XjcAnnotator.Annotate> computed) {
+            String className, String propertyName, List<AnnotationWriter.Annotate> computed) {
         Matcher matcher = PLACEHOLDER.matcher(value);
         StringBuilder resolved = new StringBuilder();
         int end = 0;
@@ -178,7 +178,7 @@ class Replacement {
     }
 
     private static String valueOf(String name, Class<? extends Annotation> annotationClass,
-            String className, String propertyName, List<XjcAnnotator.Annotate> computed) {
+            String className, String propertyName, List<AnnotationWriter.Annotate> computed) {
         if ("className".equals(name)) {
             return className;
         }
@@ -187,7 +187,7 @@ class Replacement {
         }
         String found = null;
         List<String> where = new ArrayList<>();
-        for (XjcAnnotator.Annotate annotation : computed) {
+        for (AnnotationWriter.Annotate annotation : computed) {
             String value = annotation.getParameters().get(name);
             if (value != null) {
                 where.add("@" + annotation.getAnnotationClass().getSimpleName());
@@ -229,9 +229,9 @@ class Replacement {
         return names;
     }
 
-    private static String computedNames(List<XjcAnnotator.Annotate> computed) {
+    private static String computedNames(List<AnnotationWriter.Annotate> computed) {
         List<String> names = new ArrayList<>();
-        for (XjcAnnotator.Annotate annotation : computed) {
+        for (AnnotationWriter.Annotate annotation : computed) {
             names.add("@" + annotation.getAnnotationClass().getSimpleName());
         }
         return names.toString();
