@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
  *     literal;</li>
  * <li>a statement without {@code #} covers the whole class;</li>
  * <li>the annotation glob, when present, is matched against the simple name of the annotations this
- *     plugin computed, and only those are left out, or replaced, or given the parameter. Written as
- *     {@code @List.Size} it covers the annotations of the items of a collection, which go on the type
- *     argument, and leaves the ones on the field alone;</li>
+ *     plugin computed, and only those are left out, or replaced, or given the parameter. Without a
+ *     prefix it covers annotations on the field. Written as {@code @List.Size} it covers the
+ *     annotations of the items of a collection, which go on the type argument;</li>
  * <li>a statement with no annotation part covers every annotation the plugin would write;</li>
  * <li>{@code :parameter = value} sets one parameter of the computed annotation, {@code {…}} being a
  *     value the plugin knows, and {@code = @Annotation(...)} writes that annotation instead.</li>
@@ -223,8 +223,8 @@ class OverrideStatements {
             if (annotationPattern == null) {
                 return true;
             }
-            if (itemsOnly && !isTypeArgument) {
-                // a statement that names the items covers nothing else; a plain one covers both
+            if (itemsOnly != isTypeArgument) {
+                // A bare annotation selector names the field; the List. prefix names its items.
                 return false;
             }
             if (annotationPattern.matcher(simpleName).matches()) {
