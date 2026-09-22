@@ -15,7 +15,9 @@ import java.util.regex.Pattern;
  *     literal;</li>
  * <li>a statement without {@code #} covers the whole class;</li>
  * <li>the annotation glob, when present, is matched against the simple name of the annotations this
- *     plugin computed, and only those are left out, or replaced, or given the parameter;</li>
+ *     plugin computed, and only those are left out, or replaced, or given the parameter. Written as
+ *     {@code <@Size>} it covers the annotations of the items of a collection, which go on the type
+ *     argument, and leaves the ones on the field alone;</li>
  * <li>a statement with no annotation part covers every annotation the plugin would write;</li>
  * <li>{@code :parameter = value} sets one parameter of the computed annotation, {@code {…}} being a
  *     value the plugin knows, and {@code = @Annotation(...)} writes that annotation instead.</li>
@@ -93,6 +95,8 @@ class OverrideStatements {
         private final String parameter;
         private final String parameterValue;
         private final String replacement;
+        /** True when the statement names the annotations of the items, on the type argument. */
+        private final boolean typeArgument;
         private boolean matched;
         private boolean annotationMatched;
 
@@ -122,10 +126,24 @@ class OverrideStatements {
                 }
             }
             String annotationGlob = null;
+            boolean typeArgument = false;
             final int at = head.indexOf('@');
             if (at != -1) {
+                String before = head.substring(0, at).trim();
                 annotationGlob = head.substring(at + 1).trim();
-                head = head.substring(0, at).trim();
+                if (before.endsWith("<")) {
+                    typeArgument = true;
+                    before = before.substring(0, before.length() - 1).trim();
+                    if (!annotationGlob.endsWith(">")) {
+                        throw new IllegalArgumentException(
+                                "the < of an annotation glob needs its >, as in <@Size>");
+                    }
+                    annotationGlob = annotationGlob.substring(0, annotationGlob.length() - 1).trim();
+                } else if (annotationGlob.endsWith(">")) {
+                    throw new IllegalArgumentException(
+                            "the > of an annotation glob needs its <, as in <@Size>");
+                }
+                head = before;
                 if (annotationGlob.isEmpty()) {
                     throw new IllegalArgumentException("no annotation name after the @");
                 }
@@ -155,7 +173,7 @@ class OverrideStatements {
             return new Statement(value, toPattern(classGlob),
                     propertyGlob == null ? null : toPattern(propertyGlob),
                     annotationGlob == null ? null : toPattern(annotationGlob),
-                    parameter, parameter == null ? null : tail, replacement);
+                    parameter, parameter == null ? null : tail, replacement, typeArgument);
         }
 
         /** @return the glob as a pattern: {@code *} and {@code ?} only, everything else literal. */
@@ -179,7 +197,7 @@ class OverrideStatements {
 
         private Statement(String text, Pattern classPattern, Pattern propertyPattern,
                 Pattern annotationPattern, String parameter, String parameterValue,
-                String replacement) {
+                String replacement, boolean typeArgument) {
             this.text = text;
             this.classPattern = classPattern;
             this.propertyPattern = propertyPattern;
@@ -187,6 +205,7 @@ class OverrideStatements {
             this.parameter = parameter;
             this.parameterValue = parameterValue;
             this.replacement = replacement;
+            this.typeArgument = typeArgument;
         }
 
         boolean matches(String className, String propertyName) {
@@ -201,9 +220,12 @@ class OverrideStatements {
         }
 
         /** @return true when the statement covers this computed annotation. */
-        boolean coversAnnotation(String simpleName) {
+        boolean coversAnnotation(String simpleName, boolean isTypeArgument) {
             if (annotationPattern == null) {
                 return true;
+            }
+            if (typeArgument != isTypeArgument) {
+                return false;
             }
             if (annotationPattern.matcher(simpleName).matches()) {
                 annotationMatched = true;

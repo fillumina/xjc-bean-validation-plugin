@@ -97,7 +97,8 @@ class Processor {
             Map<String, String> parameters = new LinkedHashMap<>();
             boolean leftOut = false;
             for (OverrideStatements.Statement statement : statements) {
-                if (!statement.coversAnnotation(computed.getAnnotationClass().getSimpleName())) {
+                if (!statement.coversAnnotation(computed.getAnnotationClass().getSimpleName(),
+                        computed.isTypeArgument())) {
                     continue;
                 }
                 if (statement.hasReplacement()) {

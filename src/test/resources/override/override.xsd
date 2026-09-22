@@ -12,6 +12,7 @@
             <xsd:element name="amount" type="a:amountType"/>
             <xsd:element name="child" type="a:childType"/>
             <xsd:element name="children" type="a:childType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="labels" type="a:labelType" minOccurs="1" maxOccurs="5"/>
         </xsd:sequence>
     </xsd:complexType>
 

@@ -7,3 +7,4 @@ RootType
     children
     code
     label
+    labels
