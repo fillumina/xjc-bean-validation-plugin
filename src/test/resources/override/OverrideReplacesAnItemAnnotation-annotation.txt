@@ -11,7 +11,7 @@ RootType
         @Valid
     children
         items
-            @Valid
+            @NotNull
     code
         @NotNull
         @Pattern(regexp = "[A-Z]{2}[0-9]{3}")

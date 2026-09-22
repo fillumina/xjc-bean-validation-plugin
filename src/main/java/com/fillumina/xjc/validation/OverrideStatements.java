@@ -95,8 +95,8 @@ class OverrideStatements {
         private final String parameter;
         private final String parameterValue;
         private final String replacement;
-        /** True when the statement names the annotations of the items, on the type argument. */
-        private final boolean typeArgument;
+        /** True when the statement names the annotations of the items, as {@code [@Size]} does. */
+        private final boolean itemsOnly;
         private boolean matched;
         private boolean annotationMatched;
 
@@ -126,13 +126,13 @@ class OverrideStatements {
                 }
             }
             String annotationGlob = null;
-            boolean typeArgument = false;
+            boolean itemsOnly = false;
             final int at = head.indexOf('@');
             if (at != -1) {
                 String before = head.substring(0, at).trim();
                 annotationGlob = head.substring(at + 1).trim();
                 if (before.endsWith("[")) {
-                    typeArgument = true;
+                    itemsOnly = true;
                     before = before.substring(0, before.length() - 1).trim();
                     if (!annotationGlob.endsWith("]")) {
                         throw new IllegalArgumentException(
@@ -173,7 +173,7 @@ class OverrideStatements {
             return new Statement(value, toPattern(classGlob),
                     propertyGlob == null ? null : toPattern(propertyGlob),
                     annotationGlob == null ? null : toPattern(annotationGlob),
-                    parameter, parameter == null ? null : tail, replacement, typeArgument);
+                    parameter, parameter == null ? null : tail, replacement, itemsOnly);
         }
 
         /** @return the glob as a pattern: {@code *} and {@code ?} only, everything else literal. */
@@ -197,7 +197,7 @@ class OverrideStatements {
 
         private Statement(String text, Pattern classPattern, Pattern propertyPattern,
                 Pattern annotationPattern, String parameter, String parameterValue,
-                String replacement, boolean typeArgument) {
+                String replacement, boolean itemsOnly) {
             this.text = text;
             this.classPattern = classPattern;
             this.propertyPattern = propertyPattern;
@@ -205,7 +205,7 @@ class OverrideStatements {
             this.parameter = parameter;
             this.parameterValue = parameterValue;
             this.replacement = replacement;
-            this.typeArgument = typeArgument;
+            this.itemsOnly = itemsOnly;
         }
 
         boolean matches(String className, String propertyName) {
@@ -224,7 +224,8 @@ class OverrideStatements {
             if (annotationPattern == null) {
                 return true;
             }
-            if (typeArgument != isTypeArgument) {
+            if (itemsOnly && !isTypeArgument) {
+                // a statement that names the items covers nothing else; a plain one covers both
                 return false;
             }
             if (annotationPattern.matcher(simpleName).matches()) {

@@ -10,8 +10,6 @@ RootType
         @NotNull
         @Valid
     children
-        items
-            @Valid
     code
         @NotNull
         @Pattern(regexp = "[A-Z]{2}[0-9]{3}")
