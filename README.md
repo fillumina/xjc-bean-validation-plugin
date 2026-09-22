@@ -96,7 +96,8 @@ On by default: `generateNotNullAnnotations`, `generateItemAnnotations` and
 `generateValidOnCollections`. Off by default, because they only narrow what is written or change how
 it reads: `omitJavaTypeBounds`, `patternList` and `verbose`.
 
-- `targetNamespace` — adds `@Valid` to the elements of the given namespace only.
+- `targetNamespace` — adds `@Valid` only to elements whose schema namespace begins with the given
+  text. An empty value or the literal `null` leaves every namespace eligible.
 - `generateNotNullAnnotations` — on by default; writes `@NotNull` on the elements and attributes the
   schema requires.
 - `notNullAnnotationsCustomMessages` — the message of `@NotNull`: `true`, `false`, `FieldName`,
