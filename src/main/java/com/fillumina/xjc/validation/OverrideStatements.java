@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * <li>a statement without {@code #} covers the whole class;</li>
  * <li>the annotation glob, when present, is matched against the simple name of the annotations this
  *     plugin computed, and only those are left out, or replaced, or given the parameter. Written as
- *     {@code <@Size>} it covers the annotations of the items of a collection, which go on the type
+ *     {@code [@Size]} it covers the annotations of the items of a collection, which go on the type
  *     argument, and leaves the ones on the field alone;</li>
  * <li>a statement with no annotation part covers every annotation the plugin would write;</li>
  * <li>{@code :parameter = value} sets one parameter of the computed annotation, {@code {…}} being a
@@ -131,17 +131,17 @@ class OverrideStatements {
             if (at != -1) {
                 String before = head.substring(0, at).trim();
                 annotationGlob = head.substring(at + 1).trim();
-                if (before.endsWith("<")) {
+                if (before.endsWith("[")) {
                     typeArgument = true;
                     before = before.substring(0, before.length() - 1).trim();
-                    if (!annotationGlob.endsWith(">")) {
+                    if (!annotationGlob.endsWith("]")) {
                         throw new IllegalArgumentException(
-                                "the < of an annotation glob needs its >, as in <@Size>");
+                                "the [ of an annotation glob needs its ], as in [@Size]");
                     }
                     annotationGlob = annotationGlob.substring(0, annotationGlob.length() - 1).trim();
-                } else if (annotationGlob.endsWith(">")) {
+                } else if (annotationGlob.endsWith("]")) {
                     throw new IllegalArgumentException(
-                            "the > of an annotation glob needs its <, as in <@Size>");
+                            "the ] of an annotation glob needs its [, as in [@Size]");
                 }
                 head = before;
                 if (annotationGlob.isEmpty()) {
