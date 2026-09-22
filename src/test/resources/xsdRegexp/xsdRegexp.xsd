@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:t="http://example.com/validation"
+           targetNamespace="http://example.com/validation"
+           elementFormDefault="qualified">
+
+  <xs:element name="patternProbe" type="t:PatternProbe"/>
+
+  <xs:complexType name="PatternProbe">
+    <xs:sequence>
+      <xs:element name="digits" type="t:Digits"/>
+      <xs:element name="word" type="t:Word"/>
+      <xs:element name="xmlName" type="t:XmlName"/>
+      <xs:element name="xmlCharacters" type="t:XmlCharacters"/>
+      <xs:element name="notXmlName" type="t:NotXmlName"/>
+      <xs:element name="withoutVowels" type="t:WithoutVowels"/>
+      <xs:element name="latinOne" type="t:LatinOne"/>
+      <xs:element name="literalAnchors" type="t:LiteralAnchors"/>
+      <xs:element name="whitespace" type="t:Whitespace"/>
+      <xs:element name="wildcard" type="t:Wildcard"/>
+      <xs:element name="uppercase" type="t:Uppercase"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="Digits"><xs:restriction base="xs:string"><xs:pattern value="\d+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="Word"><xs:restriction base="xs:string"><xs:pattern value="\w+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="XmlName"><xs:restriction base="xs:string"><xs:pattern value="\i\c*"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="XmlCharacters"><xs:restriction base="xs:string"><xs:pattern value="\c+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="NotXmlName"><xs:restriction base="xs:string"><xs:pattern value="\I+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="WithoutVowels"><xs:restriction base="xs:string"><xs:pattern value="[a-z-[aeiou]]+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="LatinOne"><xs:restriction base="xs:string"><xs:pattern value="\p{IsLatin-1Supplement}+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="LiteralAnchors"><xs:restriction base="xs:string"><xs:pattern value="^abc$"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="Whitespace"><xs:restriction base="xs:string"><xs:pattern value="\s+"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="Wildcard"><xs:restriction base="xs:string"><xs:pattern value="a.b"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="Uppercase"><xs:restriction base="xs:string"><xs:pattern value="\p{Lu}+"/></xs:restriction></xs:simpleType>
+
+</xs:schema>

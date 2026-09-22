@@ -9,7 +9,7 @@ OptionsType
             @Size(max = 50)
     multiPattern
         @NotNull
-        @Pattern(regexp = "(\\w{3}-\\w{7}-\\w{7})|(\\w{2}-\\w{2})|(none)")
+        @Pattern(regexp = "([^\\p{P}\\p{Z}\\p{C}]{3}-[^\\p{P}\\p{Z}\\p{C}]{7}-[^\\p{P}\\p{Z}\\p{C}]{7})|([^\\p{P}\\p{Z}\\p{C}]{2}-[^\\p{P}\\p{Z}\\p{C}]{2})|(none)")
     priceList
         @NotNull
         @Size(min = 1, max = 3)

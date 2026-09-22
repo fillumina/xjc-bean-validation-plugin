@@ -31,6 +31,8 @@ import org.junit.jupiter.api.io.TempDir;
 class EnforcementTest {
 
     private static final Path SCHEMA = Path.of("src", "test", "resources", "validation.xsd");
+    private static final Path XSD_REGEXP_SCHEMA =
+            Path.of("src", "test", "resources", "xsdRegexp", "xsdRegexp.xsd");
 
     @TempDir
     Path workDirectory;
@@ -74,6 +76,49 @@ class EnforcementTest {
         assertTrue(messages.stream().anyMatch(m -> m.startsWith("code ")), messages.toString());
     }
 
+    @Test
+    void translatedXsdPatternsAreEnforced() throws Exception {
+        Class<?> patternProbe = generateAndLoad(XSD_REGEXP_SCHEMA, "PatternProbe");
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        Object valid = patternProbe.getConstructor().newInstance();
+        set(patternProbe, valid, "Digits", "١٢");
+        set(patternProbe, valid, "Word", "€é");
+        set(patternProbe, valid, "XmlName", "éclair");
+        set(patternProbe, valid, "XmlCharacters", "éclair");
+        set(patternProbe, valid, "NotXmlName", "7");
+        set(patternProbe, valid, "WithoutVowels", "bcd");
+        set(patternProbe, valid, "LatinOne", "é");
+        set(patternProbe, valid, "LiteralAnchors", "^abc$");
+        set(patternProbe, valid, "Whitespace", " \t");
+        set(patternProbe, valid, "Wildcard", "a\u2028b");
+        set(patternProbe, valid, "Uppercase", "ABC");
+        assertTrue(validate(validator, valid).isEmpty());
+
+        Object invalid = patternProbe.getConstructor().newInstance();
+        set(patternProbe, invalid, "Digits", "A");
+        set(patternProbe, invalid, "Word", "_");
+        set(patternProbe, invalid, "XmlName", "7name");
+        set(patternProbe, invalid, "XmlCharacters", "name!");
+        set(patternProbe, invalid, "NotXmlName", "é");
+        set(patternProbe, invalid, "WithoutVowels", "ace");
+        set(patternProbe, invalid, "LatinOne", "A");
+        set(patternProbe, invalid, "LiteralAnchors", "abc");
+        set(patternProbe, invalid, "Whitespace", "A");
+        set(patternProbe, invalid, "Wildcard", "a\nb");
+        set(patternProbe, invalid, "Uppercase", "Abc");
+        List<String> messages = messagesOf(validate(validator, invalid));
+
+        for (String property : List.of("digits", "word", "xmlName", "xmlCharacters", "notXmlName",
+                "withoutVowels", "latinOne", "literalAnchors", "whitespace", "wildcard", "uppercase")) {
+            assertTrue(messages.stream().anyMatch(m -> m.startsWith(property + " ")), messages.toString());
+        }
+    }
+
+    private static void set(Class<?> type, Object instance, String property, String value) throws Exception {
+        type.getMethod("set" + property, String.class).invoke(instance, value);
+    }
+
     private static List<String> messagesOf(Set<ConstraintViolation<Object>> violations) {
         List<String> messages = new ArrayList<>();
         for (ConstraintViolation<Object> violation : violations) {
@@ -89,12 +134,16 @@ class EnforcementTest {
 
     /** Runs XJC over the schema, compiles what it wrote, and loads the named class. */
     private Class<?> generateAndLoad(String className) throws Exception {
+        return generateAndLoad(SCHEMA, className);
+    }
+
+    private Class<?> generateAndLoad(Path schema, String className) throws Exception {
         Path generated = Files.createDirectories(workDirectory.resolve("generated"));
         Path classes = Files.createDirectories(workDirectory.resolve("classes"));
 
         List<String> arguments = List.of("-quiet", "-extension",
                 "-" + BeanValidationPlugin.PLUGIN_NAME, "-d", generated.toString(),
-                SCHEMA.toAbsolutePath().toString());
+                schema.toAbsolutePath().toString());
         ByteArrayOutputStream messageOutput = new ByteArrayOutputStream();
         try (PrintStream stream = new PrintStream(messageOutput, true, StandardCharsets.UTF_8)) {
             int exitCode = Driver.run(arguments.toArray(String[]::new), stream, stream);

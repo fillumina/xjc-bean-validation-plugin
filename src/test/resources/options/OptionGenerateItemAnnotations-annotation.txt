@@ -6,7 +6,7 @@ OptionsType
         items
             @Size(max = 50)
     multiPattern
-        @Pattern(regexp = "(\\w{3}-\\w{7}-\\w{7})|(\\w{2}-\\w{2})|(none)")
+        @Pattern(regexp = "([^\\p{P}\\p{Z}\\p{C}]{3}-[^\\p{P}\\p{Z}\\p{C}]{7}-[^\\p{P}\\p{Z}\\p{C}]{7})|([^\\p{P}\\p{Z}\\p{C}]{2}-[^\\p{P}\\p{Z}\\p{C}]{2})|(none)")
     priceList
         @Size(min = 1, max = 3)
         items
