@@ -54,6 +54,27 @@ class BeanValidationPluginTest {
     }
 
     @Test
+    void pluginVerboseOptionPrintsThePluginLogWithoutXjcVerbose() throws Exception {
+        Path output = Files.createDirectories(outputDirectory.resolve("plugin-verbose"));
+        List<String> arguments = List.of("-quiet", "-extension",
+                "-" + BeanValidationPlugin.PLUGIN_NAME,
+                "-" + BeanValidationPlugin.PLUGIN_NAME + ":verbose=true",
+                "-d", output.toString(), SCHEMA.toAbsolutePath().toString());
+        ByteArrayOutputStream messages = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        try (PrintStream stream = new PrintStream(messages, true, StandardCharsets.UTF_8)) {
+            System.setOut(stream);
+            int exitCode = Driver.run(arguments.toArray(String[]::new), stream, stream);
+            assertEquals(0, exitCode, () -> "xjc failed: " + messages);
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        assertTrue(messages.toString(StandardCharsets.UTF_8).contains("options in use:"),
+                () -> "plugin verbose output missing: " + messages);
+    }
+
+    @Test
     void theNotNullAnnotationCanBeTurnedOff() throws Exception {
         List<String> extra = new ArrayList<>();
         extra.add("-XBeanValidationAnnotations:generateNotNullAnnotations=false");

@@ -48,7 +48,10 @@ public class BeanValidationPlugin extends Plugin {
 
     @Override
     public boolean run(Outline model, Options opt, ErrorHandler errorHandler) {
-        optionsBuilder.verbose(opt.verbose);
+        // XJC's global flag also enables this plugin's log, but must not turn a plugin option off.
+        if (opt.verbose) {
+            optionsBuilder.verbose(true);
+        }
 
         BeanValidationOptions options = optionsBuilder.build();
 
