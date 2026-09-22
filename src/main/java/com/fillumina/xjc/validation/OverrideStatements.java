@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * The statements of the {@code exclude} option. A statement is
+ * The statements of the {@code override} option. A statement is
  * {@code ClassGlob[#FieldGlob][@AnnotationGlob][:parameter = value][=@Annotation]}:
  *
  * <ul>
@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Illuminati
  */
-class ExcludeStatements {
+class OverrideStatements {
 
-    private static final ExcludeStatements NONE = new ExcludeStatements(Collections.<Statement>emptyList());
+    private static final OverrideStatements NONE = new OverrideStatements(Collections.<Statement>emptyList());
 
     /** @return {@code null} when the statement is well formed, the reason when it is not. */
     static String validate(String statement) {
@@ -37,7 +37,7 @@ class ExcludeStatements {
         }
     }
 
-    static ExcludeStatements of(List<String> statements) {
+    static OverrideStatements of(List<String> statements) {
         if (statements == null || statements.isEmpty()) {
             return NONE;
         }
@@ -45,12 +45,12 @@ class ExcludeStatements {
         for (String statement : statements) {
             parsed.add(Statement.parse(statement));
         }
-        return new ExcludeStatements(parsed);
+        return new OverrideStatements(parsed);
     }
 
     private final List<Statement> statements;
 
-    private ExcludeStatements(List<Statement> statements) {
+    private OverrideStatements(List<Statement> statements) {
         this.statements = statements;
     }
 

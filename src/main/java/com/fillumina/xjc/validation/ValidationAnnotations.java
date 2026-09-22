@@ -25,7 +25,7 @@ final class ValidationAnnotations {
     static final Class<? extends Annotation> PATTERN = Pattern.class;
     static final Class<? extends Annotation> PATTERN_LIST = Pattern.List.class;
 
-    /** The annotations an {@code exclude} statement may name, by simple name. */
+    /** The annotations an {@code override} statement may name, by simple name. */
     static Map<String, Class<? extends Annotation>> bySimpleName() {
         Map<String, Class<? extends Annotation>> byName = new LinkedHashMap<>();
         byName.put("Valid", VALID);

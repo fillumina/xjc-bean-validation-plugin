@@ -100,20 +100,20 @@ enum BeanValidationOption {
                     + "off means the elements of a collection are no longer validated through it",
             (p, v) -> setBoolean(v, r -> p.generateValidOnCollections(r)),
             (p) -> p.isGenerateValidOnCollections()),
-    exclude(
+    override(
             String.class,
             "leaves the given class or property out of the generated annotations: a glob for the class, "
                     + "optionally # and a glob for the property, optionally = and the annotation to write "
                     + "instead of the computed one",
             (p, v) -> {
-                String error = ExcludeStatements.validate(v);
+                String error = OverrideStatements.validate(v);
                 if (error != null) {
                     return error;
                 }
-                p.exclusion(v);
+                p.override(v);
                 return null;
             },
-            p -> p.getExclusions());
+            p -> p.getOverrides());
 
     // parameter type
     private final Class<?> type;

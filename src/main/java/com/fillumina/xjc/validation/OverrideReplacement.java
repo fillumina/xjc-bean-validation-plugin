@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The replacement of an {@code exclude} statement: one of the annotations this plugin manages,
+ * The replacement of an {@code override} statement: one of the annotations this plugin manages,
  * written in place of the annotations it would have computed for a class or a property.
  *
  * <p>
@@ -22,13 +22,13 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Illuminati
  */
-class ExcludeReplacement {
+class OverrideReplacement {
 
     private static final Pattern ANNOTATION =
             Pattern.compile("^@([A-Za-z][A-Za-z0-9]*)\\s*(?:\\((.*)\\))?$", Pattern.DOTALL);
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([A-Za-z][A-Za-z0-9]*)\\}");
 
-    static ExcludeReplacement parse(String text) {
+    static OverrideReplacement parse(String text) {
         Matcher matcher = ANNOTATION.matcher(text.trim());
         if (!matcher.matches()) {
             throw new IllegalArgumentException("a replacement is one annotation, as in "
@@ -41,7 +41,7 @@ class ExcludeReplacement {
             throw new IllegalArgumentException("@" + name + " is not one of the annotations this "
                     + "plugin manages: " + managed.keySet());
         }
-        return new ExcludeReplacement(text.trim(), annotationClass, parameters(matcher.group(2)));
+        return new OverrideReplacement(text.trim(), annotationClass, parameters(matcher.group(2)));
     }
 
     /** @return the parameters as written, values still quoted. */
@@ -97,7 +97,7 @@ class ExcludeReplacement {
     private final Class<? extends Annotation> annotationClass;
     private final Map<String, String> parameters;
 
-    private ExcludeReplacement(String text, Class<? extends Annotation> annotationClass,
+    private OverrideReplacement(String text, Class<? extends Annotation> annotationClass,
             Map<String, String> parameters) {
         this.text = text;
         this.annotationClass = annotationClass;

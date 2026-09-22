@@ -53,8 +53,9 @@ Every option is written after the plugin name, as in
 - `generateAllNumericConstraints` — writes `@DecimalMin` and `@DecimalMax` even when the bound is
   inside the range of the Java type.
 - `multiPattern` — writes one `@Pattern` per alternative instead of a `@Pattern.List`.
-- `exclude` — leaves a class or a property out of the annotations, sets one of their parameters, or
-  writes another annotation in their place. Repeatable.
+- `override` — overrides what the plugin computed for a class or a property: leaves an annotation
+  out, sets one of its parameters, or writes another in its place, on the field or on the type
+  argument of a collection. Repeatable.
 - `verbose` — prints the options in use and every annotation written.
 
 ## Building

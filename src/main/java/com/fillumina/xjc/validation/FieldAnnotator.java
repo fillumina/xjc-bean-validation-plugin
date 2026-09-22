@@ -25,7 +25,7 @@ class FieldAnnotator {
 
     /**
      * @param collector when not null the annotations are collected instead of written, see
-     *     {@link ExcludeStatements}
+     *     {@link OverrideStatements}
      */
     FieldAnnotator(JFieldVar field, AnnotationLog logger, List<AnnotationWriter.Annotate> collector) {
         this.fields = new AnnotationWriter(field, logger, collector);

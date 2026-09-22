@@ -34,11 +34,11 @@ import java.util.Set;
 class Processor {
 
     private final BeanValidationOptions options;
-    private final ExcludeStatements exclusions;
+    private final OverrideStatements overrides;
 
     Processor(BeanValidationOptions options) {
         this.options = options;
-        this.exclusions = ExcludeStatements.of(options.getExclusions());
+        this.overrides = OverrideStatements.of(options.getOverrides());
     }
 
     /** Walks the generated classes and writes the annotations of their properties. */
@@ -58,11 +58,11 @@ class Processor {
                         ? new AnnotationLogAll(className, propertyName)
                         : AnnotationLogWarning.INSTANCE;
 
-                // an excluded property is processed as usual, but its annotations are collected
+                // a property with a statement is processed as usual, but its annotations are collected
                 // instead of written, so that a replacement can use the values they would have had
-                List<ExcludeStatements.Statement> exclusionsForProperty =
-                        exclusions.statementsFor(className, propertyName);
-                List<AnnotationWriter.Annotate> collected = exclusionsForProperty.isEmpty()
+                List<OverrideStatements.Statement> overridesForProperty =
+                        overrides.statementsFor(className, propertyName);
+                List<AnnotationWriter.Annotate> collected = overridesForProperty.isEmpty()
                         ? null : new ArrayList<AnnotationWriter.Annotate>();
 
                 new PropertyProcessor(classOutline, logger, collected).processProperty(property);
@@ -70,8 +70,8 @@ class Processor {
                 if (collected != null) {
                     JFieldVar field = classOutline.implClass.fields().get(propertyName);
                     if (field != null) {
-                        writeExcluded(field, className, propertyName, collected,
-                                exclusionsForProperty, logger);
+                        writeOverrided(field, className, propertyName, collected,
+                                overridesForProperty, logger);
                     }
                 }
             }
@@ -84,19 +84,19 @@ class Processor {
      * Writes what the statements leave behind: the computed annotations none of them covers, the ones
      * a statement gave a parameter, and the replacement of every statement that carries one.
      */
-    private void writeExcluded(JFieldVar field, String className, String propertyName,
-            List<AnnotationWriter.Annotate> collected, List<ExcludeStatements.Statement> statements,
+    private void writeOverrided(JFieldVar field, String className, String propertyName,
+            List<AnnotationWriter.Annotate> collected, List<OverrideStatements.Statement> statements,
             AnnotationLog logger) {
         AnnotationWriter fieldWriter = new AnnotationWriter(field, logger);
         // the annotations of the items go back on the type argument, so they are kept apart here
         ItemAnnotator items = new ItemAnnotator(field, logger, null);
-        Set<ExcludeStatements.Statement> replacingOnTheField = new LinkedHashSet<>();
-        Set<ExcludeStatements.Statement> replacingOnTheItems = new LinkedHashSet<>();
+        Set<OverrideStatements.Statement> replacingOnTheField = new LinkedHashSet<>();
+        Set<OverrideStatements.Statement> replacingOnTheItems = new LinkedHashSet<>();
         boolean itemWritten = false;
         for (AnnotationWriter.Annotate computed : collected) {
             Map<String, String> parameters = new LinkedHashMap<>();
             boolean leftOut = false;
-            for (ExcludeStatements.Statement statement : statements) {
+            for (OverrideStatements.Statement statement : statements) {
                 if (!statement.coversAnnotation(computed.getAnnotationClass().getSimpleName())) {
                     continue;
                 }
@@ -105,7 +105,7 @@ class Processor {
                             .add(statement);
                     leftOut = true;
                 } else if (statement.hasParameter()) {
-                    parameters.put(statement.getParameter(), ExcludeReplacement.resolveValue(
+                    parameters.put(statement.getParameter(), OverrideReplacement.resolveValue(
                             statement.getParameterValue(), computed.getAnnotationClass(), className,
                             propertyName, collected));
                 } else {
@@ -113,17 +113,17 @@ class Processor {
                 }
             }
             if (!leftOut) {
-                ExcludeReplacement.writeComputed(
+                OverrideReplacement.writeComputed(
                         computed.isTypeArgument() ? items.writer() : fieldWriter, computed,
                         parameters, logger);
                 itemWritten |= computed.isTypeArgument();
             }
         }
-        for (ExcludeStatements.Statement statement : statements) {
+        for (OverrideStatements.Statement statement : statements) {
             boolean onTheField = replacingOnTheField.contains(statement);
             boolean onTheItems = replacingOnTheItems.contains(statement);
             if (onTheField || onTheItems) {
-                ExcludeReplacement replacement = ExcludeReplacement.parse(statement.getReplacement());
+                OverrideReplacement replacement = OverrideReplacement.parse(statement.getReplacement());
                 if (onTheField) {
                     replacement.writeInto(fieldWriter, className, propertyName, collected, logger);
                 }
@@ -143,8 +143,8 @@ class Processor {
         AnnotationLog logger = options.isVerbose()
                 ? new AnnotationLogAll("", "")
                 : AnnotationLogWarning.INSTANCE;
-        for (ExcludeStatements.Statement statement : exclusions.unmatched()) {
-            logger.warning("exclude=" + statement + " matched no class and no property");
+        for (OverrideStatements.Statement statement : overrides.unmatched()) {
+            logger.warning("override=" + statement + " matched no class and no property");
         }
     }
 

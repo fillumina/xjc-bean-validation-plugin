@@ -23,7 +23,7 @@ class BeanValidationOptions {
     private final String notNullCustomMessageText;
     private final boolean itemAnnotations;
     private final boolean generateValidOnCollections;
-    private final List<String> exclusions;
+    private final List<String> overrides;
 
     String getTargetNamespace() {
         return targetNamespace;
@@ -70,9 +70,9 @@ class BeanValidationOptions {
         return generateValidOnCollections;
     }
 
-    /** @return the statements of the {@code exclude} option, in the order they were given. */
-    List<String> getExclusions() {
-        return exclusions;
+    /** @return the statements of the {@code override} option, in the order they were given. */
+    List<String> getOverrides() {
+        return overrides;
     }
 
     static class Builder {
@@ -87,7 +87,7 @@ class BeanValidationOptions {
         private String notNullCustomMessageText = null;
         private boolean itemAnnotations = true;
         private boolean generateValidOnCollections = true;
-        private final List<String> exclusions = new ArrayList<>();
+        private final List<String> overrides = new ArrayList<>();
 
         private Builder() {
         }
@@ -179,9 +179,9 @@ class BeanValidationOptions {
             return this;
         }
 
-        /** Adds one statement of the {@code exclude} option, which can be repeated. */
-        Builder exclusion(final String value) {
-            this.exclusions.add(value);
+        /** Adds one statement of the {@code override} option, which can be repeated. */
+        Builder override(final String value) {
+            this.overrides.add(value);
             return this;
         }
 
@@ -190,7 +190,7 @@ class BeanValidationOptions {
                     verbose, allNumericConstraints, notNullAnnotations, notNullCustomMessage,
                     notNullPrefixFieldName, notNullPrefixClassName, notNullCustomMessageText,
                     itemAnnotations, generateValidOnCollections,
-                    exclusions);
+                    overrides);
         }
     }
 
@@ -204,7 +204,7 @@ class BeanValidationOptions {
             final boolean notNullPrefixClassName, final String notNullCustomMessageText,
             final boolean itemAnnotations,
             final boolean generateValidOnCollections,
-            final List<String> exclusions) {
+            final List<String> overrides) {
         this.targetNamespace = targetNamespace;
         this.multiPattern = multiPattern;
         this.verbose = verbose;
@@ -216,6 +216,6 @@ class BeanValidationOptions {
         this.notNullCustomMessageText = notNullCustomMessageText;
         this.itemAnnotations = itemAnnotations;
         this.generateValidOnCollections = generateValidOnCollections;
-        this.exclusions = exclusions;
+        this.overrides = overrides;
     }
 }
