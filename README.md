@@ -59,7 +59,7 @@ among the arguments:
       <arg>-XBeanValidationAnnotations:patternList=true</arg>
       <!-- and these correct what was computed by the plugin -->
       <arg>-XBeanValidationAnnotations:override=*#code@Pattern:message = "not a code"</arg>
-      <arg>-XBeanValidationAnnotations:override=*#children[@Valid]</arg>
+      <arg>-XBeanValidationAnnotations:override=*#children@List.Valid</arg>
       <arg>-XBeanValidationAnnotations:override=*#amount@Decimal*=@DecimalMax(value = "99.5")</arg>
     </args>
     <plugins>
@@ -78,8 +78,8 @@ Two details that matter:
 - **the plain option has to be there.** XJC activates a plugin only for the argument equal to its name
   alone, so a build that passes only `-XBeanValidationAnnotations:override=…` generates classes with
   no annotations at all and no error to explain it;
-- **the brackets of an item selector need no escaping**, in XML or in a shell, which is why the
-  selector is written `[@Valid]` and not `<@Valid>`. Quotation marks inside a statement are fine as
+- **nothing in a statement needs escaping**, in XML or in a shell: the item selector is written
+  `@List.Valid` and not `<@Valid>` for that reason. Quotation marks inside a statement are fine as
   they are; in a shell, quote the whole statement because of its `*`.
 
 ## Options
@@ -126,7 +126,7 @@ ClassGlob[#PropertyGlob][@AnnotationGlob][:parameter = value][= @Annotation(...)
 | --- | --- |
 | `ClassGlob` | the qualified name of the generated class: `*` and `?`, everything else literal |
 | `#PropertyGlob` | the name of the property; without it the statement covers the whole class |
-| `@AnnotationGlob` | the simple name of an annotation the plugin computed; without it, every annotation of the property. Written in brackets, as `[@Size]`, it covers the annotations of the items only, which go on the type argument |
+| `@AnnotationGlob` | the simple name of an annotation the plugin computed; without it, every annotation of the property. Written behind `List.`, as `@List.Size`, it covers the annotations of the items only, which go on the type argument |
 | `:parameter = value` | sets one parameter of the computed annotation |
 | `= @Annotation(...)` | writes that annotation in place of the computed one |
 
@@ -150,8 +150,8 @@ is also a test:
 | `a.ChildType` | everything for one generated class, named in full, with no `#` and no `@` |
 | `*#label@Size:max = 5` | keeps the computed `@Size` and gives it another maximum |
 | `*#label@Size:message = at most {max} characters` | keeps it and changes the message, `{max}` resolving to the value the plugin was about to write |
-| `*#labels[@Size]:max = 3` | the same on the **items** of a list, leaving the cardinality `@Size` of the field alone |
-| `*#labels[@Size]` | removes the `@Size` of the items and keeps the one on the field |
+| `*#labels@List.Size:max = 3` | the same on the **items** of a list, leaving the cardinality `@Size` of the field alone |
+| `*#labels@List.Size` | removes the `@Size` of the items and keeps the one on the field |
 | `*#child=@NotNull(message = "{message}")` | writes a replacement instead, `{message}` being the default the annotation itself declares |
 | `*#label=@Size(max = {max})` | another replacement, reusing the maximum the plugin computed |
 
@@ -160,11 +160,12 @@ Two things to know before writing one:
 - the annotation glob is matched against what the plugin **computed**, so it can only name the
   annotations this plugin writes — `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`,
   `DecimalMax`, `Pattern` — and a replacement has to name one of them too;
-- an annotation glob without brackets covers that annotation wherever it was computed, on the field
-  **and** on the type argument of a collection: `*#labels@Size` takes the cardinality `@Size` of the
-  list and the `@Size` of its items together. `*#labels[@Size]` takes the one on the items alone,
-  which is how the `@NotNull` of a `List<@NotNull String>` is singled out; there is no marker for
-  the field alone yet.
+- an annotation glob without the `List.` prefix covers that annotation wherever it was computed, on
+  the field **and** on the type argument of a collection: `*#labels@Size` takes the cardinality
+  `@Size` of the list and the `@Size` of its items together. `*#labels@List.Size` takes the one on
+  the items alone, which is how the `@NotNull` of a `List<@NotNull String>` is singled out; there
+  is no marker for the field alone yet. The dot was chosen over brackets so that `[]` stays free for
+  a character class, should the globs ever gain one.
 
 A statement that matched no class, no property or no annotation is reported as a warning, because a
 statement that silently does nothing is worse than no statement.
