@@ -31,7 +31,8 @@ class FacetSourceAccumulator extends FacetSource {
     private String enumeration;
     private LinkedHashSet<String> enumerationList;
 
-    private final LinkedHashSet<LinkedHashSet<String>> multiPatterns = new LinkedHashSet<>();
+    private LinkedHashSet<LinkedHashSet<String>> multiPatterns = new LinkedHashSet<>();
+    private final LinkedHashSet<String> skippedPatterns = new LinkedHashSet<>();
     private final LinkedHashSet<String> multiEnumerations = new LinkedHashSet<>();
 
     /**
@@ -126,6 +127,35 @@ class FacetSourceAccumulator extends FacetSource {
     }
 
     LinkedHashSet<LinkedHashSet<String>> multiPatterns() {
+        return multiPatterns;
+    }
+
+    /** Translates raw schema patterns before quoted enumeration expressions are added to their group. */
+    void translatePatterns() {
+        LinkedHashSet<LinkedHashSet<String>> translatedGroups = new LinkedHashSet<>();
+        for (LinkedHashSet<String> patterns : multiPatterns) {
+            LinkedHashSet<String> translated = new LinkedHashSet<>();
+            for (String pattern : patterns) {
+                if (XsdRegexp.isSupported(pattern)) {
+                    translated.add(XsdRegexp.translate(pattern));
+                } else {
+                    skippedPatterns.add(pattern);
+                }
+            }
+            translatedGroups.add(translated);
+        }
+        multiPatterns = translatedGroups;
+    }
+
+    /**
+     * @return the translated pattern groups, retaining an empty group when every alternative was
+     *     skipped so their inheritance structure remains intact
+     */
+    LinkedHashSet<LinkedHashSet<String>> translatedMultiPatterns(AnnotationLog logger) {
+        for (String pattern : skippedPatterns) {
+            logger.warning("skipping XML Schema pattern '" + pattern
+                    + "': its Java translation does not compile");
+        }
         return multiPatterns;
     }
 

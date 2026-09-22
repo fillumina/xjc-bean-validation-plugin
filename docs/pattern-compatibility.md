@@ -2,7 +2,7 @@
 
 This reference describes how the plugin turns XML Schema regular expressions into the Java regular expressions used by Jakarta Validation's `@Pattern`.
 
-The target is the [W3C XML Schema regular-expression language](https://www.w3.org/TR/xmlschema-2/#regexs), not Java's default shorthand behavior. Java behavior is described by the [Java `Pattern` reference](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html). A generated constraint must never reject a value that the XSD pattern accepts. If a translated expression does not compile in Java, the plugin omits that pattern constraint rather than emit an invalid or stricter one.
+The target is the [W3C XML Schema regular-expression language](https://www.w3.org/TR/xmlschema-2/#regexs), not Java's default shorthand behavior. Java behavior is described by the [Java `Pattern` reference](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html). A generated constraint must never reject a value that the XSD pattern accepts. If a translated expression does not compile in Java, the plugin omits that pattern constraint and reports a warning rather than emit an invalid or stricter one.
 
 ## Scope
 

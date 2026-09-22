@@ -20,6 +20,7 @@ class FacetGatherer {
         }
         FacetSourceAccumulator facet = new FacetSourceAccumulator();
         navigateUpTheHierarchy(facet, type);
+        facet.translatePatterns();
         consolidatePatterns(facet);
         return facet;
     }

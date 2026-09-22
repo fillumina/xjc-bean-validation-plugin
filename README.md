@@ -440,7 +440,7 @@ protected List<String> labels;
 - XML Schema restrictions are more expressive than standard Jakarta Bean Validation 3.1 annotations. The plugin projects only rules those annotations can express, with the contract that generated Bean Validation is never more restrictive than the XSD it represents. It does not replace schema validation or preserve every XML Schema rule.
 - Pattern translation aims to preserve the [W3C XML Schema regular-expression semantics](https://www.w3.org/TR/xmlschema-2/#regexs), rather than Java's default shorthand meanings. The current conversion covers the common XML Schema shorthands, XML name classes, Unicode categories and blocks, character-class subtraction, and the metacharacters whose meanings differ. See the [pattern compatibility reference](docs/pattern-compatibility.md) for the translation matrix and known boundaries.
 - This coverage is broad but not a formal proof of equivalence. Unusual legal expressions, Unicode-version changes, or differences between XML Schema validator implementations can still expose an edge case. Please report one with a minimal schema and values it should accept and reject; the plugin can then add it to its compatibility matrix.
-- The plugin reports unmatched `override` statements as warnings. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
+- The plugin reports unmatched `override` statements and schema patterns it cannot translate to Java as warnings. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
 - XJC generates properties as protected fields. The plugin annotates those generated properties rather than enumeration constants or JAXB implementation details.
 
 ## Building

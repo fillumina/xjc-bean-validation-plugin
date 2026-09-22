@@ -37,16 +37,10 @@ abstract class FacetSource {
 
     abstract LinkedHashSet<String> enumerationList();
 
-    /** @return the pattern facets, with the XSD regexps translated into Java ones. */
+    /** @return the raw pattern facets; translation happens later, where a skipped pattern can be logged. */
     LinkedHashSet<String> patterns() {
         final LinkedHashSet<String> patterns = patternList();
         addIfNotNullOrEmpty(patterns, pattern(), String::isEmpty);
-        if (patterns != null && !patterns.isEmpty()) {
-            return patterns.stream()
-                    .filter(p -> XsdRegexp.isSupported(p))
-                    .map(p -> XsdRegexp.translate(p))
-                    .collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
-        }
         return patterns;
     }
 

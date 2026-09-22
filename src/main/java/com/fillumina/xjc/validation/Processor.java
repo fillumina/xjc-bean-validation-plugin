@@ -332,7 +332,7 @@ class Processor {
             // @Pattern resolves to a validator that accepts CharSequence only: on a collection of
             // numbers it would check nothing and fail at validation time
             if (fieldHelper.isStringList()) {
-                items.addPatterns(facet.multiPatterns(), options.isPatternList());
+                items.addPatterns(facet.translatedMultiPatterns(logger), options.isPatternList());
             }
         }
 
