@@ -85,6 +85,16 @@ class BeanValidationPluginTest {
         assertFalse(generated.contains("@NotNull"), generated);
     }
 
+    @Test
+    void oldNameOfTheItemAnnotationOptionIsRefused() {
+        BadCommandLineException refused = assertThrows(BadCommandLineException.class,
+                () -> BeanValidationOptions.builder().parseArgument(
+                        "-XBeanValidationAnnotations:generateListAnnotations=true"));
+
+        assertTrue(refused.getMessage().contains("unrecognized option generateListAnnotations"),
+                refused::getMessage);
+    }
+
     /** The plugin does not answer to the name it had in the line this project was split from. */
     @Test
     void theOldNameOfTheOptionIsRefused() throws Exception {
