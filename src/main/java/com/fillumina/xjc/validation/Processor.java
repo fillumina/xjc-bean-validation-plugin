@@ -93,6 +93,11 @@ class Processor {
         Set<OverrideStatements.Statement> replacingOnTheField = new LinkedHashSet<>();
         Set<OverrideStatements.Statement> replacingOnTheItems = new LinkedHashSet<>();
         boolean itemWritten = false;
+        // a placeholder reads the annotations the statement selects, not every annotation of the property
+        Map<OverrideStatements.Statement, List<AnnotationWriter.Annotate>> covered = new LinkedHashMap<>();
+        for (OverrideStatements.Statement statement : statements) {
+            covered.put(statement, coveredBy(collected, statement));
+        }
         for (AnnotationWriter.Annotate computed : collected) {
             Map<String, String> parameters = new LinkedHashMap<>();
             boolean leftOut = false;
@@ -108,7 +113,7 @@ class Processor {
                 } else if (statement.hasParameter()) {
                     parameters.put(statement.getParameter(), OverrideReplacement.resolveValue(
                             statement.getParameterValue(), computed.getAnnotationClass(), className,
-                            propertyName, collected));
+                            propertyName, covered.get(statement)));
                 } else {
                     leftOut = true;
                 }
@@ -126,10 +131,10 @@ class Processor {
             if (onTheField || onTheItems) {
                 OverrideReplacement replacement = OverrideReplacement.parse(statement.getReplacement());
                 if (onTheField) {
-                    replacement.writeInto(fieldWriter, className, propertyName, collected, logger);
+                    replacement.writeInto(fieldWriter, className, propertyName, covered.get(statement), logger);
                 }
                 if (onTheItems) {
-                    replacement.writeInto(items.writer(), className, propertyName, collected, logger);
+                    replacement.writeInto(items.writer(), className, propertyName, covered.get(statement), logger);
                     itemWritten = true;
                 }
             }
@@ -139,13 +144,26 @@ class Processor {
         }
     }
 
+    /** @return the annotations the statement selects, which are the ones its placeholders read. */
+    private static List<AnnotationWriter.Annotate> coveredBy(List<AnnotationWriter.Annotate> computed,
+            OverrideStatements.Statement statement) {
+        List<AnnotationWriter.Annotate> covered = new ArrayList<>();
+        for (AnnotationWriter.Annotate annotation : computed) {
+            if (statement.coversAnnotation(annotation.getAnnotationClass().getSimpleName(),
+                    annotation.isTypeArgument())) {
+                covered.add(annotation);
+            }
+        }
+        return covered;
+    }
+
     /** A statement that matched nothing is a typo, and it silently leaves the annotations in place. */
     private void reportUnmatchedExclusions() {
         AnnotationLog logger = options.isVerbose()
                 ? new AnnotationLogAll("", "")
                 : AnnotationLogWarning.INSTANCE;
         for (OverrideStatements.Statement statement : overrides.unmatched()) {
-            logger.warning("override=" + statement + " matched no class and no property");
+            logger.warning("override=" + statement + " matched no class, property or annotation");
         }
     }
 

@@ -15,4 +15,10 @@
   container, where Bean Validation deprecated it (HV000271).
 - Repeatable `override` statements remove, change, or replace the Jakarta annotations this plugin
   computes, on a field or a collection item type argument.
+- The class, property and annotation globs of an `override` statement match with `*`, `?` and a
+  character class: a set `[abc]`, a range `[a-z]`, or a negated set `[!abc]` and `[^abc]`. Every
+  other character is literal, and an unclosed or unreadable set is an error on the option.
+- A placeholder in an override value is read from the annotations the statement selects:
+  `*#labels@Size` reads the field's `@Size`, `*#labels@List.Size` the item's. A statement that
+  names no annotation covers both, and is refused when they disagree.
 - The option is `-XBeanValidationAnnotations`; the old `-XJsr303Annotations` name is rejected.
