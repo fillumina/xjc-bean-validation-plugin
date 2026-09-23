@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * The statements of the {@code override} option. A statement is
@@ -11,8 +12,8 @@ import java.util.regex.Pattern;
  *
  * <ul>
  * <li>the class glob is matched against the qualified name of the generated class, and the property
- *     glob against the name of the property, both with {@code *} and {@code ?} and everything else
- *     literal;</li>
+ *     glob against the name of the property, both with {@code *}, {@code ?} and the character
+ *     classes {@code [abc]}, {@code [a-z]} and {@code [!abc]}, and everything else literal;</li>
  * <li>a statement without {@code #} covers the whole class;</li>
  * <li>the annotation glob, when present, is matched against the simple name of the annotations this
  *     plugin computed, and only those are left out, or replaced, or given the parameter. Without a
@@ -85,8 +86,6 @@ class OverrideStatements {
     }
 
     static class Statement {
-
-        private static final String REGEX_SPECIAL = "\\.[]{}()<>*+-=!?^$|";
 
         /** The annotation glob of the items is the one behind this prefix, as in @List.Size. */
         private static final String ITEMS_PREFIX = "List.";
@@ -175,7 +174,11 @@ class OverrideStatements {
                     parameter, parameter == null ? null : tail, replacement, itemsOnly);
         }
 
-        /** @return the glob as a pattern: {@code *} and {@code ?} only, everything else literal. */
+        /**
+         * @return the glob as a pattern: {@code *} matches any sequence, {@code ?} one character, and
+         *     {@code [...]} one character of a set, as {@code [abc]}, of a range, as {@code [a-z]}, or
+         *     of a negated set, as {@code [!abc]} and {@code [^abc]}. Everything else is literal.
+         */
         private static Pattern toPattern(String glob) {
             StringBuilder regex = new StringBuilder("^");
             for (int i = 0; i < glob.length(); i++) {
@@ -184,14 +187,53 @@ class OverrideStatements {
                     regex.append(".*");
                 } else if (c == '?') {
                     regex.append('.');
+                } else if (c == '[') {
+                    i = appendCharacterClass(glob, i, regex);
                 } else {
-                    if (REGEX_SPECIAL.indexOf(c) >= 0) {
-                        regex.append('\\');
-                    }
-                    regex.append(c);
+                    appendLiteral(c, regex);
                 }
             }
-            return Pattern.compile(regex.append('$').toString());
+            try {
+                return Pattern.compile(regex.append('$').toString());
+            } catch (PatternSyntaxException ex) {
+                // a set a pattern cannot read, as an inverted range: reported as an option error
+                throw new IllegalArgumentException("the glob " + glob + " is not a valid pattern", ex);
+            }
+        }
+
+        /**
+         * Copies the character class that starts at the {@code [} through to its {@code ]}, so that
+         * the ranges, the negation and the {@code *} and {@code ?} a class holds keep the meaning they
+         * have in a pattern.
+         *
+         * @return the index of the closing {@code ]}
+         */
+        private static int appendCharacterClass(String glob, int open, StringBuilder regex) {
+            final int close = glob.indexOf(']', open + 1);
+            if (close < 0) {
+                throw new IllegalArgumentException("no ] closing the [ of the glob " + glob);
+            }
+            final String content = glob.substring(open + 1, close);
+            if (content.isEmpty() || content.equals("!") || content.equals("^")) {
+                throw new IllegalArgumentException("the [] of the glob " + glob + " holds no character");
+            }
+            // Ant writes the negation of a class with ! and a pattern with ^: both are accepted here.
+            // A backslash stays literal, so that it cannot swallow the closing bracket.
+            final String body = content.charAt(0) == '!' ? "^" + content.substring(1) : content;
+            regex.append('[').append(body.replace("\\", "\\\\")).append(']');
+            return close;
+        }
+
+        /**
+         * Appends one literal character, escaped unless it is a letter, a digit or {@code _}: the
+         * characters of a generated name that a pattern reads as they are written. A {@code .} and a
+         * {@code $} of a qualified name are escaped along with everything else.
+         */
+        private static void appendLiteral(char c, StringBuilder regex) {
+            if (!Character.isLetterOrDigit(c) && c != '_') {
+                regex.append('\\');
+            }
+            regex.append(c);
         }
 
         private Statement(String text, Pattern classPattern, Pattern propertyPattern,

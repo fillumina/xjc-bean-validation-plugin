@@ -214,10 +214,21 @@ Pass one statement per option. Statements are processed in the order given:
 
 | Part                   | Meaning                                                                                                                                                                          |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ClassGlob`            | Qualified generated class name. `*` matches any sequence and `?` matches one character; all other characters are literal.                                                        |
+| `ClassGlob`            | Qualified generated class name. `*` matches any sequence, `?` one character and `[...]` one character of a set, a range or a negated set; all other characters are literal. |
 | `#PropertyGlob`        | Optional generated property name. Without it, the statement applies to every property of the matching class.                                                                     |
-| `@AnnotationGlob`      | Optional simple annotation name, with the same `*` and `?` glob rules. It selects a matching annotation on the field; for example, `@Size` selects a collection-cardinality `@Size`. Without it, every computed annotation of the selected property is covered. |
+| `@AnnotationGlob`      | Optional simple annotation name, with the same glob rules. It selects a matching annotation on the field; for example, `@Size` selects a collection-cardinality `@Size`. Without it, every computed annotation of the selected property is covered. |
 | `@List.AnnotationGlob` | Selects only annotations of collection items, which are written on the type argument. `@List.Size` matches the `@Size` in `List<@Size(max = 5) String>`. |
+
+The three globs share one syntax: `*` matches any sequence, `?` matches one character, and `[...]` matches one character out of a set, a range, or a negated set.
+
+```text
+*#cod[e]         matches code
+*#childr[a-z]n   matches children
+*#item[!0-9]     matches itemx but not item7
+*#item[^0-9]     the same, with the caret a regular expression uses
+```
+
+Inside the brackets `*`, `?` and `\` are literal, and `-` is a range unless it comes first or last. The first `]` closes the set, so a `]` cannot be part of one. An unclosed `[`, an empty `[]` and a set a regular expression cannot read are reported as errors. Only the characters a generated name is made of are written as they are, so the `.` of a qualified name is not the "any character" of a regular expression.
 
 The annotation name must be one the plugin manages: `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`, `DecimalMax`, `Pattern`, `AssertTrue`, or `AssertFalse`.
 
@@ -433,6 +444,42 @@ Both options target the same field. The first removes the collection-cardinality
 
 ```java
 protected List<String> labels;
+```
+
+#### Change several properties with one statement
+
+**Before**
+
+```java
+@Size(min = 2, max = 20)
+protected String line1;
+@Size(min = 2, max = 20)
+protected String line2;
+@Size(min = 2, max = 20)
+protected String line3;
+@Size(min = 2, max = 20)
+protected String note;
+```
+
+**Option**
+
+```text
+-XBeanValidationAnnotations:override=*#line[1-3]@Size:max = 10
+```
+
+This states: for every generated class, select the `@Size` of the properties whose name is `line` followed by one character of the range from `1` to `3`, and change its `max` to `10`. `note` is not selected, so one statement does what three would otherwise do.
+
+**After**
+
+```java
+@Size(min = 2, max = 10)
+protected String line1;
+@Size(min = 2, max = 10)
+protected String line2;
+@Size(min = 2, max = 10)
+protected String line3;
+@Size(min = 2, max = 20)
+protected String note;
 ```
 
 ## Limits and diagnostics
