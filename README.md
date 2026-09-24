@@ -14,6 +14,9 @@ This is the Jakarta-only successor to the Bean Validation part of
 
 An example of it inside a real build, with the test of that wiring, is
 [`xjc-bean-validation-plugin-example`](https://github.com/fillumina/xjc-bean-validation-plugin-example).
+The three plugins of this line together in one build, which is where the split is shown to do what
+the single plugin did, are in
+[`xjc-plugins-example`](https://github.com/fillumina/xjc-plugins-example).
 
 ## Contents
 
