@@ -12,6 +12,9 @@ protected List<@Size(max = 5) String> name;
 This is the Jakarta-only successor to the Bean Validation part of
 [`com.fillumina:krasa-jaxb-tools`](https://github.com/fillumina/krasa-jaxb-tools).
 
+An example of it inside a real build, with the test of that wiring, is
+[`xjc-bean-validation-plugin-example`](https://github.com/fillumina/xjc-bean-validation-plugin-example).
+
 ## Contents
 
 - [Version and status](#version-and-status)
