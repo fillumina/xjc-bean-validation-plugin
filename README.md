@@ -489,6 +489,7 @@ protected String note;
 - This coverage is broad but not a formal proof of equivalence. Unusual legal expressions, Unicode-version changes, or differences between XML Schema validator implementations can still expose an edge case. Please report one with a minimal schema and values it should accept and reject; the plugin can then add it to its compatibility matrix.
 - The plugin reports unmatched `override` statements and schema patterns it cannot translate to Java as warnings. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
 - XJC generates properties as protected fields. The plugin annotates those generated properties rather than enumeration constants or JAXB implementation details.
+- An element that repeats and whose type is an `xs:list` is generated as a list of `JAXBElement`, one list of items each, because JAXB cannot map a list of lists. Its cardinality is written on the outer list, where it counts the occurrences, and the items inside the `JAXBElement` carry no constraint: a provider refuses a constraint written there, because `JAXBElement` is not a container and has no value extractor.
 
 ## Building
 
