@@ -19,6 +19,8 @@ class ListCardinalityFixtureTest extends FixtureTest {
 
     static Stream<Case> cases() {
         return Stream.of(
-                Case.of("ListCardinality", option("targetNamespace", "a")));
+                Case.of("ListCardinality", option("targetNamespace", "a")),
+                Case.of("ListCardinalityDisabled", option("targetNamespace", "a"),
+                        option("generateItemAnnotations", "false")));
     }
 }

@@ -4,6 +4,7 @@ import com.sun.codemodel.JFieldVar;
 import com.sun.tools.xjc.model.CAttributePropertyInfo;
 import com.sun.tools.xjc.model.CElementPropertyInfo;
 import com.sun.tools.xjc.model.CPropertyInfo;
+import com.sun.tools.xjc.model.CReferencePropertyInfo;
 import com.sun.tools.xjc.model.CValuePropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
@@ -187,6 +188,9 @@ class Processor {
             } else if (property instanceof CAttributePropertyInfo) {
                 processAttribute((CAttributePropertyInfo) property);
 
+            } else if (property instanceof CReferencePropertyInfo) {
+                processReference((CReferencePropertyInfo) property);
+
             } else if (property instanceof CValuePropertyInfo) {
                 processAttribute((CValuePropertyInfo) property);
             }
@@ -220,6 +224,40 @@ class Processor {
                 processElementDecl(property, field, particle, (ElementDecl) term, annotator);
             }
             annotator.applyItemAnnotations();
+        }
+
+        /**
+         * An element that repeats and whose type is an {@code xsd:list} can no longer be written
+         * as one space separated value, so XJC gives up the list mapping and makes a reference
+         * property of it: the field holds the occurrences, one list of items each. Only the
+         * cardinality can be written on that field; the items are inside a {@code JAXBElement}
+         * and are not reachable from here.
+         */
+        private void processReference(CReferencePropertyInfo property) {
+            XSComponent definition = property.getSchemaComponent();
+            if (!(definition instanceof XSParticle)) {
+                return;
+            }
+            XSParticle particle = (XSParticle) definition;
+            if (!(particle.getTerm() instanceof ElementDecl)) {
+                return;
+            }
+            final JFieldVar field = classOutline.implClass.fields().get(property.getName(false));
+            if (field == null) {
+                return;
+            }
+            final int minOccurs = particle.getMinOccurs().intValue();
+            final int maxOccurs = particle.getMaxOccurs().intValue();
+            FieldAnnotator annotator = new FieldAnnotator(field, logger, collector);
+            if (property.isCollection() && (minOccurs != 1 || maxOccurs != 1)) {
+                annotator.addSizeAnnotation(minOccurs == 0 ? null : minOccurs, maxOccurs, null);
+            }
+            annotator.applyItemAnnotations();
+        }
+
+        /** @return the simple type an element type takes its facets from, or null when it has none. */
+        private static XSSimpleType simpleTypeOf(XSType type) {
+            return type.isComplexType() ? type.getBaseType().asSimpleType() : type.asSimpleType();
         }
 
         /**
@@ -266,10 +304,15 @@ class Processor {
                 addFixedBooleanAnnotation(annotator, element.getFixedValue());
             }
 
+            final XSSimpleType simpleType = simpleTypeOf(elementType);
+            // the field of an element whose type is an xsd:list holds the items of its value,
+            // not the occurrences of the element, so a cardinality says nothing about it
+            final boolean itemsOfAList = simpleType != null && FacetGatherer.isListType(simpleType);
+
             // the cardinality of a collection: minOccurs = 0 is the default and constrains
             // nothing, so it is not written, and an unbounded maxOccurs arrives as -1 and is left
             // out by the annotator
-            if (property.isCollection() && (minOccurs != 1 || maxOccurs != 1)) {
+            if (property.isCollection() && !itemsOfAList && (minOccurs != 1 || maxOccurs != 1)) {
                 annotator.addSizeAnnotation(minOccurs == 0 ? null : minOccurs, maxOccurs, null);
             }
 
@@ -288,14 +331,6 @@ class Processor {
                     annotator.addValidAnnotation();
                 }
             }
-
-            final XSSimpleType simpleType;
-            if (isComplexType) {
-                simpleType = elementType.getBaseType().asSimpleType();
-            } else {
-                simpleType = elementType.asSimpleType();
-            }
-
             if (simpleType != null) {
 
                 // a complex type can contribute the facet of only one of its possibilities; the

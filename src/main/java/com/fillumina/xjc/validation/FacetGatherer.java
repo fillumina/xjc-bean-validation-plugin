@@ -25,6 +25,23 @@ class FacetGatherer {
         return facet;
     }
 
+    /**
+     * @return true when the schema type is an {@code xsd:list}, whatever restriction hides it, in
+     *     case the field holds the items of the value rather than the occurrences of the element
+     *     it comes from.
+     */
+    static boolean isListType(XSSimpleType type) {
+        XSSimpleType current = type;
+        while (current != null) {
+            if (current instanceof XSListSimpleType || current instanceof ListSimpleTypeImpl) {
+                return true;
+            }
+            final XSSimpleType base = current.getSimpleBaseType();
+            current = base == current ? null : base;
+        }
+        return false;
+    }
+
     private static void consolidatePatterns(FacetSourceAccumulator facet) {
         final LinkedHashSet<LinkedHashSet<String>> multiPatterns = facet.multiPatterns();
         final LinkedHashSet<String> multiEnumerations = facet.multiEnumerations();

@@ -113,7 +113,7 @@ protected List<@Size(max = 5) String> name; // each item
 protected List<@Valid Address> address; // cascade into each complex item
 ```
 
-The item annotations are type-use annotations, which is the form a current Bean Validation provider enforces. `@Valid` is put on a collection's type argument only when its items are complex types; there is nothing to cascade into for strings or enumerations. An `xs:list` is different: its length facets describe the field itself, while its item facets describe the type argument.
+The item annotations are type-use annotations, which is the form a current Bean Validation provider enforces. `@Valid` is put on a collection's type argument only when its items are complex types; there is nothing to cascade into for strings or enumerations. An `xs:list` is different: its length facets describe the field itself, while its item facets describe the type argument, and the number of times the element occurs is not written there, because that count is not the number of items the field holds.
 
 ### Example: from schema to generated Java
 

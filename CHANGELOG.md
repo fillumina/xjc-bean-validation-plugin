@@ -10,7 +10,9 @@
 - The constraints of the items of a collection are written on its type argument, as in
   `List<@Size(max = 5) String>`. They replace the `@Each*` annotations of the old line, which came
   from an unmaintained javax-only library and were inert with a current provider. They are on by
-  default; `generateItemAnnotations` can leave them out.
+  default; `generateItemAnnotations` can leave them out. An `xs:list` is the exception: the
+  length facets of its list type go on the field, which holds the items, and the number of times
+  the element occurs is not written there, because that count is not the number of items.
 - `@Valid` on a collection is written on the type argument, `List<@Valid Other>`, instead of on the
   container, where Bean Validation deprecated it (HV000271).
 - Repeatable `override` statements remove, change, or replace the Jakarta annotations this plugin
