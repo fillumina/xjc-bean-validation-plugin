@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="a" xmlns:a="a">
+
+    <xsd:element name="container" type="a:containerType"/>
+
+    <xsd:complexType name="containerType">
+        <xsd:sequence>
+            <!-- the element occurs at most once, and its value holds any number of items -->
+            <xsd:element name="optionalTags" type="a:tagListType" minOccurs="0"/>
+            <xsd:element name="requiredTags" type="a:tagListType"/>
+
+            <!-- the list type states how many items its value holds -->
+            <xsd:element name="optionalCappedTags" type="a:cappedListType" minOccurs="0"/>
+            <xsd:element name="requiredCappedTags" type="a:cappedListType"/>
+
+            <!-- the element repeats and its value is a list: two multiplicities at once -->
+            <xsd:element name="repeatedTags" type="a:tagListType" minOccurs="0" maxOccurs="3"/>
+
+            <!-- the controls: a repeating element that is not a list, and one that occurs once -->
+            <xsd:element name="repeatedNames" type="a:tagType" minOccurs="0" maxOccurs="3"/>
+            <xsd:element name="singleName" type="a:tagType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="tagListType">
+        <xsd:list itemType="a:tagType"/>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="cappedListType">
+        <xsd:restriction base="a:tagListType">
+            <xsd:maxLength value="3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="tagType">
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="2"/>
+            <xsd:maxLength value="20"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
