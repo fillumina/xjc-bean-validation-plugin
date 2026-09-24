@@ -119,7 +119,7 @@ protected List<@Size(max = 5) String> name; // each item
 protected List<@Valid Address> address; // cascade into each complex item
 ```
 
-The item annotations are type-use annotations, which is the form a current Bean Validation provider enforces. `@Valid` is put on a collection's type argument only when its items are complex types; there is nothing to cascade into for strings or enumerations. An `xs:list` is different: its length facets describe the field itself, while its item facets describe the type argument, and the number of times the element occurs is not written there, because that count is not the number of items the field holds.
+The item annotations are type-use annotations, which is the form a current Bean Validation provider enforces. `@Valid` is put on a collection's type argument only when its items are complex types; there is nothing to cascade into for strings or enumerations. An `xs:list` is different: its length facets describe the field itself, while its item facets describe the type argument, and the number of times the element occurs is not written there, because that count is not the number of items the field holds. Item patterns use the same XML Schema-to-Java regex translation as ordinary string patterns; alternatives in one restriction are combined with OR. Unsupported translated expressions are skipped with a warning rather than emitted as invalid Java regexes.
 
 ### Example: from schema to generated Java
 
@@ -246,7 +246,7 @@ The three globs are matched with the same syntax:
 
 The annotation name must be one the plugin manages: `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`, `DecimalMax`, `Pattern`, `AssertTrue`, or `AssertFalse`.
 
-An annotation selector without `List.` matches the field only. `*#labels@Size` selects the collection-cardinality `@Size` on `labels`; `*#labels@List.Size` selects the `@Size` of its items. To change or remove both, give both override statements.
+An annotation selector without `List.` matches the field only. `*#labels@Size` selects the collection-cardinality `@Size` on `labels`; `*#labels@List.Size` selects the `@Size` of its items. To change or remove both, give both override statements. With `patternList=true`, inherited groups are emitted as nested `@Pattern` annotations inside one `@Pattern.List`. An override on another annotation of the same property leaves that container and its nested patterns intact; a property-wide override removes it. Nested patterns cannot be selected or rewritten individually with `override` (a field `@Pattern` selector does not match the container). Use the default repeatable `@Pattern` form when individual selection is needed.
 
 ### Choose the operation
 
@@ -501,7 +501,7 @@ protected String note;
 - XML Schema restrictions are more expressive than standard Jakarta Bean Validation 3.1 annotations. The plugin projects only rules those annotations can express, with the contract that generated Bean Validation is never more restrictive than the XSD it represents. It does not replace schema validation or preserve every XML Schema rule.
 - Pattern translation aims to preserve the [W3C XML Schema regular-expression semantics](https://www.w3.org/TR/xmlschema-2/#regexs), rather than Java's default shorthand meanings. The current conversion covers the common XML Schema shorthands, XML name classes, Unicode categories and blocks, character-class subtraction, and the metacharacters whose meanings differ. See the [pattern compatibility reference](docs/pattern-compatibility.md) for the translation matrix and known boundaries.
 - This coverage is broad but not a formal proof of equivalence. Unusual legal expressions, Unicode-version changes, or differences between XML Schema validator implementations can still expose an edge case. Please report one with a minimal schema and values it should accept and reject; the plugin can then add it to its compatibility matrix.
-- The plugin reports unmatched `override` statements and schema patterns it cannot translate to Java as warnings. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
+- The plugin reports unmatched `override` statements and schema patterns it cannot translate to compilable Java regexes as warnings, including `xs:list` item patterns. Skipped alternatives may weaken the generated Bean Validation constraint; schema validation is still needed. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
 - XJC generates properties as protected fields. The plugin annotates those generated properties rather than enumeration constants or JAXB implementation details.
 - An element that repeats and whose type is an `xs:list` is generated as a list of `JAXBElement`, one list of items each, because JAXB cannot map a list of lists. Its cardinality is written on the outer list, where it counts the occurrences, and the items inside the `JAXBElement` carry no constraint: a provider refuses a constraint written there, because `JAXBElement` is not a container and has no value extractor.
 

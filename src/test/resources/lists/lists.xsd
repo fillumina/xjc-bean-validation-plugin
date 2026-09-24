@@ -17,6 +17,7 @@
                              minOccurs="2" maxOccurs="4"/>
                 <xsd:element name="listOfString" type="a:ListOfStringType"/>
                 <xsd:element name="derivedListOfInteger" type="a:DerivedListOfIntegerType"/>
+                <xsd:element name="listOfPatternedString" type="a:ListOfPatternedStringType"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -49,6 +50,16 @@
             </xsd:element>
         </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:simpleType name="PatternedStringType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="\d+"/>
+            <xsd:pattern value="[a-z-[aeiou]]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ListOfPatternedStringType">
+        <xsd:list itemType="a:PatternedStringType"/>
+    </xsd:simpleType>
 
     <xsd:simpleType name="ListOfStringType">
         <!-- lists a space delimited, not repeating items: 'one two threee' -->

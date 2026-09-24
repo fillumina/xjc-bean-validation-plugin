@@ -20,7 +20,7 @@ class FacetGatherer {
         }
         FacetSourceAccumulator facet = new FacetSourceAccumulator();
         navigateUpTheHierarchy(facet, type);
-        facet.translatePatterns();
+        translatePatterns(facet);
         consolidatePatterns(facet);
         return facet;
     }
@@ -40,6 +40,14 @@ class FacetGatherer {
             current = base == current ? null : base;
         }
         return false;
+    }
+
+    /** Translates both list-level and item-level raw patterns before they are written. */
+    static void translatePatterns(FacetSourceAccumulator facet) {
+        facet.translatePatterns();
+        if (facet.itemFacet() != null) {
+            facet.itemFacet().translatePatterns();
+        }
     }
 
     private static void consolidatePatterns(FacetSourceAccumulator facet) {

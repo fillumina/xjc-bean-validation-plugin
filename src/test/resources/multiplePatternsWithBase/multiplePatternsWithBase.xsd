@@ -21,7 +21,7 @@
                          name="multiPattern" type="a:multiPattern"/>
             <xsd:element maxOccurs="1" minOccurs="0"
                          name="multiPatternInheritSingleBase" type="a:multiPatternInheritSingleBase"/>
-            <xsd:element maxOccurs="1" minOccurs="0"
+            <xsd:element maxOccurs="1" minOccurs="1"
                          name="multiPatternInheritMultiBase" type="a:multiPatternInheritMultiBase"/>
         </xsd:sequence>
     </xsd:complexType>

@@ -2,6 +2,7 @@ MultiPatternWithBase
     multiPattern
         @Pattern(regexp = "([0-3])|([7-9])")
     multiPatternInheritMultiBase
+        @NotNull
         @Pattern(regexp = "([0-3])|([7-9])")
         @Pattern(regexp = "([U-W])|([J-L])")
     multiPatternInheritSingleBase

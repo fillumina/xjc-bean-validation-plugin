@@ -2,14 +2,13 @@ MultiPatternWithBase
     multiPattern
         @Pattern(regexp = "([0-3])|([7-9])")
     multiPatternInheritMultiBase
-        @NotNull
         @Pattern.List({@Pattern(regexp = "([U-W])|([J-L])"), @Pattern(regexp = "([0-3])|([7-9])")})
     multiPatternInheritSingleBase
         @Pattern.List({@Pattern(regexp = "[Y-Z]"), @Pattern(regexp = "([0-3])|([7-9])")})
     multiplePatternsWithBase
         @Pattern.List({@Pattern(regexp = "[Y-Z]\\p{InBasicLatin}"), @Pattern(regexp = "([0-9])|([A-B])")})
     singlePattern
-        @Pattern(regexp = "[0-3]")
+        @Pattern(regexp = "[0-3]", message = "overridden")
     singlePatternInheritMultiBase
         @Pattern.List({@Pattern(regexp = "([U-W])|([J-L])"), @Pattern(regexp = "[0-3]")})
     singlePatternInheritSingleBase

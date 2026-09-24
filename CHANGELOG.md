@@ -2,6 +2,9 @@
 
 ## 1.0.0-SNAPSHOT
 
+- Fix `patternList=true` with overrides: collected `@Pattern.List` annotations retain their nested patterns during replay instead of throwing an NPE. Overrides on other annotations of the same property still apply.
+- Translate `xs:list` item patterns through the XML Schema-to-Java regex compatibility check, omitting unsupported expressions with a warning rather than emitting invalid regexes.
+
 - First release of the standalone plugin. It was carried inside `com.fillumina:krasa-jaxb-tools`
   until 2.8.0, in the same jar and the same service file as the primitives plugin.
 - Jakarta only: built for JDK 21 and XJC 4, the Jakarta XML Binding 4 line, and it writes Jakarta

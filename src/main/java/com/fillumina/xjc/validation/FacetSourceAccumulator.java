@@ -130,7 +130,8 @@ class FacetSourceAccumulator extends FacetSource {
         return multiPatterns;
     }
 
-    /** Translates raw schema patterns before quoted enumeration expressions are added to their group. */
+    /** Translates raw schema patterns, recording unsupported ones for a warning on use. Called
+     * separately for a list type and its item facet before enumeration expressions are combined. */
     void translatePatterns() {
         LinkedHashSet<LinkedHashSet<String>> translatedGroups = new LinkedHashSet<>();
         for (LinkedHashSet<String> patterns : multiPatterns) {

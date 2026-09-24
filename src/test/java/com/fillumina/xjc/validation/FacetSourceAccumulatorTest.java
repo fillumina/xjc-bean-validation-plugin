@@ -26,6 +26,23 @@ class FacetSourceAccumulatorTest {
                 log.warnings);
     }
 
+    @Test
+    void listItemPatternsAreTranslatedAndUnsupportedOnesWarn() {
+        FacetSourceAccumulator list = new FacetSourceAccumulator();
+        FacetSourceAccumulator item = list.createItemFacet();
+        item.apply(new PatternFacet("\\d+"));
+        item.apply(new PatternFacet("\\q"));
+        RecordingLog log = new RecordingLog();
+
+        FacetGatherer.translatePatterns(list);
+        LinkedHashSet<LinkedHashSet<String>> patterns = item.translatedMultiPatterns(log);
+
+        assertEquals(List.of("\\p{Nd}+"), List.copyOf(patterns.iterator().next()));
+        assertTrue(patterns.stream().noneMatch(group -> group.contains("\\q")));
+        assertEquals(List.of("skipping XML Schema pattern '\\q': its Java translation does not compile"),
+                log.warnings);
+    }
+
     private static final class PatternFacet extends FacetSource {
         private final String pattern;
 

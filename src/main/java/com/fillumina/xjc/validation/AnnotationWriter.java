@@ -14,6 +14,7 @@ import java.util.Set;
 
 /**
  * Writes annotations with their parameters on a {@link JFieldVar}, keeping duplicates out.
+ * When collecting for overrides, retains nested annotation-array members for later replay.
  *
  * @author Francesco Illuminati
  */
@@ -73,12 +74,23 @@ class AnnotationWriter {
         private final boolean active;
         private final boolean typeArgument;
         private final Map<String, String> parameterMap = new LinkedHashMap<>();
+        private String nestedParameter;
+        private final List<Annotate> nestedAnnotations = new ArrayList<>();
 
         Annotate(JAnnotationUse annotationUse) {
             this.annotationClass = null;
             this.annotationUse = annotationUse;
             this.active = annotationUse != null;
             this.typeArgument = false;
+        }
+
+        /** A nested annotation collected for a container, without a codemodel target yet. */
+        Annotate(Class<? extends Annotation> annotation, List<Annotate> nested) {
+            this.annotationClass = annotation;
+            this.annotationUse = null;
+            this.active = true;
+            this.typeArgument = AnnotationWriter.this.typeArgument;
+            nested.add(this);
         }
 
         Annotate(Class<? extends Annotation> annotation) {
@@ -182,9 +194,19 @@ class AnnotationWriter {
             }
         }
 
+        /** Collects nested annotations until replay, or writes them into codemodel immediately. */
         MultipleAnnotation multipleAnnotationContainer(String paramName) {
-            JAnnotationArrayMember array = annotationUse.paramArray(paramName);
+            nestedParameter = paramName;
+            JAnnotationArrayMember array = annotationUse == null ? null : annotationUse.paramArray(paramName);
             return new MultipleAnnotation(array);
+        }
+
+        String nestedParameter() {
+            return nestedParameter;
+        }
+
+        List<Annotate> nestedAnnotations() {
+            return nestedAnnotations;
         }
 
         class MultipleAnnotation {
@@ -195,8 +217,10 @@ class AnnotationWriter {
             }
 
             Annotate annotate(Class<? extends Annotation> annotationClass) {
-                JAnnotationUse annotationUse = array.annotate(annotationClass);
-                return new Annotate(annotationUse);
+                if (array == null) {
+                    return new Annotate(annotationClass, nestedAnnotations);
+                }
+                return new Annotate(array.annotate(annotationClass));
             }
         }
     }

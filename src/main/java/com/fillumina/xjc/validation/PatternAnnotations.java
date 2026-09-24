@@ -34,10 +34,9 @@ final class PatternAnnotations {
     }
 
     /**
-     * Uses @Pattern.List to list all patterns.
-     * If a type definition with patterns has a base type with patterns the two different set of
-     * patterns are not alternatives (OR) but equally mandatory (AND) so a @Pattern.List
-     * must be used.
+     * Writes each inherited pattern group as a nested {@code @Pattern} in {@code @Pattern.List}.
+     * Groups from a derived type and its base are both mandatory (AND); alternatives within a group
+     * are consolidated (OR). The writer also collects the nested values when an override applies.
      * <p>
      * see https://www.w3.org/TR/2011/CR-xmlschema11-2-20110721/datatypes.html#rf-pattern
      */

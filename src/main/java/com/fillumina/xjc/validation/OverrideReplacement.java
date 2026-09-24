@@ -122,6 +122,7 @@ class OverrideReplacement {
 
     /**
      * Writes the annotation the plugin computed, with the parameters a statement set on top of them.
+     * A collected container's nested annotations are replayed unchanged after its scalar parameters.
      */
     static void writeComputed(AnnotationWriter writer, AnnotationWriter.Annotate computed,
             Map<String, String> overrides, AnnotationLog logger) {
@@ -131,6 +132,17 @@ class OverrideReplacement {
         parameters.putAll(overrides);
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
             writeParameter(annotation, type, parameter.getKey(), parameter.getValue());
+        }
+        if (computed.nestedParameter() != null) {
+            AnnotationWriter.Annotate.MultipleAnnotation nested =
+                    annotation.multipleAnnotationContainer(computed.nestedParameter());
+            for (AnnotationWriter.Annotate child : computed.nestedAnnotations()) {
+                AnnotationWriter.Annotate written = nested.annotate(child.getAnnotationClass());
+                for (Map.Entry<String, String> parameter : child.getParameters().entrySet()) {
+                    writeParameter(written, child.getAnnotationClass(), parameter.getKey(), parameter.getValue());
+                }
+                written.log();
+            }
         }
         annotation.log();
     }
