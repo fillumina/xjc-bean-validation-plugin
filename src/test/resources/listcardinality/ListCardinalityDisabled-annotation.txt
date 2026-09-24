@@ -1,5 +1,6 @@
 ContainerType
     optionalCappedTags
+        @Size(max = 3)
     optionalTags
     repeatedNames
         @Size(max = 3)
@@ -7,6 +8,7 @@ ContainerType
         @Size(max = 3)
     requiredCappedTags
         @NotNull
+        @Size(max = 3)
     requiredTags
         @NotNull
     singleName

@@ -91,8 +91,10 @@ enum BeanValidationOption {
             (p) -> p.isVerbose()),
     generateItemAnnotations(
             Boolean.class,
-            "writes the constraints of the items of a collection on its type argument, as in "
-                    + "List<@Size(max = 5) String>: that is the form a current provider enforces",
+            "writes the constraints of collection items on their type argument (including exact "
+                    + "xs:length as @Size(min = n, max = n), even with inherited length bounds); "
+                    + "disabling it retains field-level "
+                    + "xs:list length constraints",
             (p,v) -> setBoolean(v, r -> p.itemAnnotations(r)),
             (p) -> p.isItemAnnotations()),
     generateValidOnCollections(

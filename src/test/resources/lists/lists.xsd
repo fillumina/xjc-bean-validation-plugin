@@ -15,12 +15,40 @@
 
                 <xsd:element name="listOfPercentage" type="a:Percentage"
                              minOccurs="2" maxOccurs="4"/>
+                <xsd:element name="listOfExactString" type="a:ExactString" minOccurs="0" maxOccurs="3"/>
+                <xsd:element name="listOfDerivedExactString" type="a:DerivedExactString" minOccurs="0" maxOccurs="3"/>
+                <xsd:element name="listOfExactInteger" type="a:ExactListOfIntegerType"/>
                 <xsd:element name="listOfString" type="a:ListOfStringType"/>
                 <xsd:element name="derivedListOfInteger" type="a:DerivedListOfIntegerType"/>
                 <xsd:element name="listOfPatternedString" type="a:ListOfPatternedStringType"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:simpleType name="ExactString">
+        <xsd:restriction base="xsd:string">
+            <xsd:length value="3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RangeString">
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="5"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DerivedExactString">
+        <xsd:restriction base="a:RangeString">
+            <xsd:length value="3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ExactListOfIntegerType">
+        <xsd:restriction base="a:ListOfIntegerType">
+            <xsd:length value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:simpleType name="LongStringNotNull">
         <xsd:restriction base="xsd:normalizedString">

@@ -31,6 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 class EnforcementTest {
 
     private static final Path SCHEMA = Path.of("src", "test", "resources", "validation.xsd");
+    private static final Path LISTS_SCHEMA = Path.of("src", "test", "resources", "lists", "lists.xsd");
     private static final Path XSD_REGEXP_SCHEMA =
             Path.of("src", "test", "resources", "xsdRegexp", "xsdRegexp.xsd");
 
@@ -63,6 +64,50 @@ class EnforcementTest {
 
         assertTrue(messages.stream().anyMatch(m -> m.startsWith("name[1]")
                 && m.contains("size must be between 0 and 5")), messages.toString());
+    }
+
+    @Test
+    void exactListLengthsAreEnforcedWithAndWithoutItemAnnotations() throws Exception {
+        for (boolean itemsEnabled : List.of(true, false)) {
+            Class<?> container = generateAndLoad(LISTS_SCHEMA, "a.Container",
+                    FixtureTest.option("generateItemAnnotations", itemsEnabled));
+            Object instance = container.getConstructor().newInstance();
+            @SuppressWarnings("unchecked")
+            List<String> exactStrings = (List<String>) container.getMethod("getListOfExactString")
+                    .invoke(instance);
+            exactStrings.add("ab");
+            exactStrings.add("abc");
+            @SuppressWarnings("unchecked")
+            List<String> derived = (List<String>) container.getMethod("getListOfDerivedExactString")
+                    .invoke(instance);
+            derived.add("ab");
+            derived.add("abcd");
+            @SuppressWarnings("unchecked")
+            List<java.math.BigInteger> integers = (List<java.math.BigInteger>) container
+                    .getMethod("getListOfExactInteger").invoke(instance);
+            integers.add(java.math.BigInteger.ONE);
+
+            Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+            List<String> messages = messagesOf(validate(validator, instance));
+            assertTrue(messages.stream().anyMatch(m -> m.startsWith("listOfExactInteger ")
+                    && m.contains("size must be between 2 and 2")), messages.toString());
+            assertEquals(itemsEnabled, messages.stream().anyMatch(m -> m.startsWith("listOfExactString[0]")
+                    && m.contains("size must be between 3 and 3")), messages.toString());
+            assertEquals(itemsEnabled, messages.stream().anyMatch(m -> m.startsWith("listOfDerivedExactString[0]")
+                    && m.contains("size must be between 3 and 3")), messages.toString());
+            assertEquals(itemsEnabled, messages.stream().anyMatch(m -> m.startsWith("listOfDerivedExactString[1]")
+                    && m.contains("size must be between 3 and 3")), messages.toString());
+            integers.add(java.math.BigInteger.TWO);
+            derived.clear();
+            derived.add("abc");
+            exactStrings.clear();
+            exactStrings.add("abc");
+            assertTrue(validator.validateProperty(instance, "listOfExactInteger").isEmpty());
+            assertTrue(validator.validateProperty(instance, "listOfExactString").isEmpty());
+            assertTrue(validator.validateProperty(instance, "listOfDerivedExactString").isEmpty());
+            loader.close();
+            loader = null;
+        }
     }
 
     @Test
@@ -137,13 +182,14 @@ class EnforcementTest {
         return generateAndLoad(SCHEMA, className);
     }
 
-    private Class<?> generateAndLoad(Path schema, String className) throws Exception {
+    private Class<?> generateAndLoad(Path schema, String className, String... pluginOptions) throws Exception {
         Path generated = Files.createDirectories(workDirectory.resolve("generated"));
         Path classes = Files.createDirectories(workDirectory.resolve("classes"));
 
-        List<String> arguments = List.of("-quiet", "-extension",
-                "-" + BeanValidationPlugin.PLUGIN_NAME, "-d", generated.toString(),
-                schema.toAbsolutePath().toString());
+        List<String> arguments = new ArrayList<>(List.of("-quiet", "-extension",
+                "-" + BeanValidationPlugin.PLUGIN_NAME, "-d", generated.toString()));
+        arguments.addAll(List.of(pluginOptions));
+        arguments.add(schema.toAbsolutePath().toString());
         ByteArrayOutputStream messageOutput = new ByteArrayOutputStream();
         try (PrintStream stream = new PrintStream(messageOutput, true, StandardCharsets.UTF_8)) {
             int exitCode = Driver.run(arguments.toArray(String[]::new), stream, stream);
@@ -167,7 +213,7 @@ class EnforcementTest {
 
         loader = new URLClassLoader(new URL[] { classes.toUri().toURL() },
                 getClass().getClassLoader());
-        return loader.loadClass("com.example.validation." + className);
+        return loader.loadClass(className.contains(".") ? className : "com.example.validation." + className);
     }
 
     /**

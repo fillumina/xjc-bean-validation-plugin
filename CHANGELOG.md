@@ -2,6 +2,8 @@
 
 ## 1.0.0-SNAPSHOT
 
+- Keep field-level `xs:list` length constraints when `generateItemAnnotations=false`; translate exact `xs:length` on repeating items to `@Size(min = n, max = n)` on the item type argument, taking precedence over inherited `minLength`/`maxLength`.
+
 - Fix `patternList=true` with overrides: collected `@Pattern.List` annotations retain their nested patterns during replay instead of throwing an NPE. Overrides on other annotations of the same property still apply.
 - Translate `xs:list` item patterns through the XML Schema-to-Java regex compatibility check, omitting unsupported expressions with a warning rather than emitting invalid regexes.
 

@@ -32,7 +32,17 @@ class ItemAnnotator {
     }
 
     void addSizeAnnotation(Integer minLength, Integer maxLength) {
-        if (isSet(minLength) || isSet(maxLength)) {
+        addSizeAnnotation(minLength, maxLength, null);
+    }
+
+    /** Exact {@code xs:length} takes precedence over inherited range facets on an item. */
+    void addSizeAnnotation(Integer minLength, Integer maxLength, Integer length) {
+        if (FieldAnnotator.isValidLength(length)) {
+            annotator.annotate(ValidationAnnotations.SIZE)
+                    .param("min", length)
+                    .param("max", length)
+                    .log();
+        } else if (isSet(minLength) || isSet(maxLength)) {
             annotator.annotate(ValidationAnnotations.SIZE)
                     .paramIf(isSet(minLength), "min", minLength)
                     .paramIf(isSet(maxLength), "max", maxLength)

@@ -12,6 +12,17 @@ Container
         @Size(min = 3, max = 7)
         items
             @Valid
+    listOfDerivedExactString
+        @Size(max = 3)
+        items
+            @Size(min = 3, max = 3)
+    listOfExactInteger
+        @NotNull
+        @Size(min = 2, max = 2)
+    listOfExactString
+        @Size(max = 3)
+        items
+            @Size(min = 3, max = 3)
     listOfNotNullString
         @Size(max = 5)
         items
