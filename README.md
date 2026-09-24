@@ -220,12 +220,22 @@ Pass one statement per option. Statements are processed in the order given:
 
 | Part                   | Meaning                                                                                                                                                                          |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ClassGlob`            | Qualified generated class name. `*` matches any sequence, `?` one character and `[...]` one character of a set, a range or a negated set; all other characters are literal. |
+| `ClassGlob`            | Qualified generated class name. |
 | `#PropertyGlob`        | Optional generated property name. Without it, the statement applies to every property of the matching class.                                                                     |
 | `@AnnotationGlob`      | Optional simple annotation name, with the same glob rules. It selects a matching annotation on the field; for example, `@Size` selects a collection-cardinality `@Size`. Without it, every computed annotation of the selected property is covered. |
 | `@List.AnnotationGlob` | Selects only annotations of collection items, which are written on the type argument. `@List.Size` matches the `@Size` in `List<@Size(max = 5) String>`. |
 
-The three globs share one syntax: `*` matches any sequence, `?` matches one character, and `[...]` matches one character out of a set, a range, or a negated set.
+The three globs are matched with the same syntax:
+
+- `*` matches any sequence of characters;
+- `?` matches exactly one character;
+- `[...]` matches one character of a set, of a range, or of a negated set, as in `[abc]`, `[a-z]`,
+  `[!0-9]` and `[^0-9]`;
+- inside the brackets `*`, `?` and `\` are literal, `-` is a range unless it comes first or last,
+  and the first `]` closes the set, so a `]` cannot be part of one;
+- everything else is literal, so the `.` of a qualified name is not the "any character" of a
+  regular expression;
+- an unclosed `[`, an empty `[]` and a set a pattern cannot read are errors on the option.
 
 ```text
 *#cod[e]         matches code
@@ -233,8 +243,6 @@ The three globs share one syntax: `*` matches any sequence, `?` matches one char
 *#item[!0-9]     matches itemx but not item7
 *#item[^0-9]     the same, with the caret a regular expression uses
 ```
-
-Inside the brackets `*`, `?` and `\` are literal, and `-` is a range unless it comes first or last. The first `]` closes the set, so a `]` cannot be part of one. An unclosed `[`, an empty `[]` and a set a regular expression cannot read are reported as errors. Only the characters a generated name is made of are written as they are, so the `.` of a qualified name is not the "any character" of a regular expression.
 
 The annotation name must be one the plugin manages: `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`, `DecimalMax`, `Pattern`, `AssertTrue`, or `AssertFalse`.
 
