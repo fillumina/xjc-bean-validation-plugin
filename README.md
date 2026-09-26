@@ -39,7 +39,11 @@ did, are in
 
 ## Version and status
 
-The current development version is **1.0.0-SNAPSHOT**.
+[![Maven Central](https://img.shields.io/maven-central/v/com.fillumina/xjc-bean-validation-plugin.svg)](https://central.sonatype.com/artifact/com.fillumina/xjc-bean-validation-plugin)
+
+The released version is **1.0.0**, published on Maven Central. The option name and the annotations
+this plugin writes stay the same within 1.x; a schema pattern it cannot translate, or a
+constraint it puts in the wrong place, is a bug fixed in a patch release.
 
 ## Compatibility
 
@@ -94,7 +98,7 @@ With `org.jvnet.jaxb:jaxb-maven-plugin`, declare this artifact as an XJC plugin 
       <plugin>
         <groupId>com.fillumina</groupId>
         <artifactId>xjc-bean-validation-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
       </plugin>
     </plugins>
   </configuration>

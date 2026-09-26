@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0-SNAPSHOT
+## 1.0.0
 
 - Fix `notNullAnnotationsCustomMessages` given more than once: the value asked for last is the one
   in force. Only the boolean values left the prefix of an earlier `FieldName` or `ClassName` in the
