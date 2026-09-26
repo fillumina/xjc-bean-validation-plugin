@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.fillumina/xjc-bean-validation-plugin.svg)](https://central.sonatype.com/artifact/com.fillumina/xjc-bean-validation-plugin)
+
 # xjc-bean-validation-plugin
 
 Generate standard Jakarta Bean Validation 3.1 annotations from an XML Schema while XJC generates its Java model. Jakarta Bean Validation is the Jakarta successor to Bean Validation 2.0 (JSR 380).
@@ -38,8 +40,6 @@ did, are in
 - [Changelog, license, and contributing](#changelog-license-and-contributing)
 
 ## Version and status
-
-[![Maven Central](https://img.shields.io/maven-central/v/com.fillumina/xjc-bean-validation-plugin.svg)](https://central.sonatype.com/artifact/com.fillumina/xjc-bean-validation-plugin)
 
 The released version is **1.0.0**, published on Maven Central. The option name and the annotations
 this plugin writes stay the same within 1.x; a schema pattern it cannot translate, or a
