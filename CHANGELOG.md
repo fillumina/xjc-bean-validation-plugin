@@ -7,6 +7,16 @@
   message, so the option set to `ClassName` and then to `true` still produced the class-name message.
 - Report a schema pattern that cannot be translated on a plain field as well, not only on the items
   of a collection: the field path took the patterns without the logger that reports the skip.
+- A boolean an element or an attribute pins with `fixed` gets `@AssertTrue` or `@AssertFalse`, so a
+  schema that admits one value says so in the generated model. A null stays valid, so an optional
+  element needs nothing else.
+- The `verbose` option works on its own: the plugin no longer overwrites it with the value of
+  XJC's global `-verbose`, which only ever turns it on.
+- XML Schema patterns are translated into the Java regular expressions `@Pattern` takes: the
+  character-class shorthands, the XML name classes, the Unicode categories and blocks, the
+  character-class subtraction and the metacharacters whose meanings differ. A pattern whose
+  translation does not compile in Java is left out with a warning rather than written as an invalid
+  expression. The matrix is in [docs/pattern-compatibility.md](docs/pattern-compatibility.md).
 - Keep field-level `xs:list` length constraints when `generateItemAnnotations=false`; translate exact `xs:length` on repeating items to `@Size(min = n, max = n)` on the item type argument, taking precedence over inherited `minLength`/`maxLength`.
 - Fix `patternList=true` with overrides: collected `@Pattern.List` annotations retain their nested patterns during replay instead of throwing an NPE. Overrides on other annotations of the same property still apply.
 - Translate `xs:list` item patterns through the XML Schema-to-Java regex compatibility check, omitting unsupported expressions with a warning rather than emitting invalid regexes.

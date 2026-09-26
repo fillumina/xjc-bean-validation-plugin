@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * The facets one type of the hierarchy states, read from the schema model.
  *
  * @author Francesco Illuminati
  */

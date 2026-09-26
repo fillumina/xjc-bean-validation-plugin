@@ -12,10 +12,17 @@ protected List<@Size(max = 5) String> name;
 This is the Jakarta-only successor to the Bean Validation part of
 [`com.fillumina:krasa-jaxb-tools`](https://github.com/fillumina/krasa-jaxb-tools).
 
+The other two pieces of that line are
+[`xjc-primitives-plugin`](https://github.com/fillumina/xjc-primitives-plugin), which boxes the
+generated primitives so that a constraint such as `@NotNull` can mean something on them, and
+[`cxf-validation-frontend`](https://github.com/fillumina/cxf-validation-frontend), which puts
+`@Valid` on the service interface generated from a WSDL. A constraint on a primitive field can
+never fail, so a build that wants `@NotNull` to be enforced wants the primitives plugin as well.
+
 An example of it inside a real build, with the test of that wiring, is
-[`xjc-bean-validation-plugin-example`](https://github.com/fillumina/xjc-bean-validation-plugin-example).
-The three plugins of this line together in one build, which is where the split is shown to do what
-the single plugin did, are in
+[`xjc-bean-validation-plugin-example`](https://github.com/fillumina/xjc-bean-validation-plugin-example);
+all three together in one build, which is where the split is shown to do what the single plugin
+did, are in
 [`xjc-plugins-example`](https://github.com/fillumina/xjc-plugins-example).
 
 ## Contents
@@ -194,17 +201,17 @@ Every option follows the plugin name, for example:
 On by default: `generateNotNullAnnotations`, `generateItemAnnotations`, and
 `generateValidOnCollections`. Off by default: `omitJavaTypeBounds`, `patternList`, and `verbose`.
 
-| Option                             | Default      | Effect                                                                                                                                                             |
-| ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `targetNamespace`                  | unrestricted | Adds `@Valid` only to complex elements whose schema namespace begins with the supplied text. An empty value or the literal `null` leaves every namespace eligible. |
-| `generateNotNullAnnotations`       | `true`       | Writes `@NotNull` for required elements and attributes.                                                                                                            |
-| `notNullAnnotationsCustomMessages` | `false`      | Sets the `@NotNull` message. Use `true`, `false`, `FieldName`, `ClassName`, or literal text containing `{ClassName}` and `{FieldName}`.                            |
-| `generateItemAnnotations`          | `true`       | Writes the constraints of a collection's items (including exact `xs:length` as `@Size(min = n, max = n)`, even when a base type has length bounds) on its type argument; disabling it does not suppress field-level `xs:list` length facets.                                                                                               |
-| `generateValidOnCollections`       | `true`       | Writes `@Valid` on a collection's complex-item type argument. Turning it off stops cascading through those collections.                                            |
-| `omitJavaTypeBounds`               | `false`      | Leaves out a numeric bound that is already the natural limit of the Java type, such as `Integer.MIN_VALUE`.                                                        |
-| `patternList`                      | `false`      | Writes one `@Pattern.List` instead of repeatable `@Pattern` annotations for inherited pattern groups. Both forms are valid.                                        |
-| `override`                         | none         | Removes, changes, or replaces a computed annotation. Repeat the option to supply multiple statements. See [Override statements](#override-statements).             |
-| `verbose`                          | `false`      | Prints the resolved options and every annotation the plugin writes. XJC's global `-verbose` also enables this output.                                              |
+| Option                             | Default      | Effect                                                                                                                                                                                                                                       |
+| ---------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `targetNamespace`                  | unrestricted | Adds `@Valid` only to complex elements whose schema namespace begins with the supplied text. An empty value or the literal `null` leaves every namespace eligible.                                                                           |
+| `generateNotNullAnnotations`       | `true`       | Writes `@NotNull` for required elements and attributes.                                                                                                                                                                                      |
+| `notNullAnnotationsCustomMessages` | `false`      | Sets the `@NotNull` message. Use `true`, `false`, `FieldName`, `ClassName`, or literal text containing `{ClassName}` and `{FieldName}`.                                                                                                      |
+| `generateItemAnnotations`          | `true`       | Writes the constraints of a collection's items (including exact `xs:length` as `@Size(min = n, max = n)`, even when a base type has length bounds) on its type argument; disabling it does not suppress field-level `xs:list` length facets. |
+| `generateValidOnCollections`       | `true`       | Writes `@Valid` on a collection's complex-item type argument. Turning it off stops cascading through those collections.                                                                                                                      |
+| `omitJavaTypeBounds`               | `false`      | Leaves out a numeric bound that is already the natural limit of the Java type, such as `Integer.MIN_VALUE`.                                                                                                                                  |
+| `patternList`                      | `false`      | Writes one `@Pattern.List` instead of repeatable `@Pattern` annotations for inherited pattern groups. Both forms are valid.                                                                                                                  |
+| `override`                         | none         | Removes, changes, or replaces a computed annotation. Repeat the option to supply multiple statements. See [Override statements](#override-statements).                                                                                       |
+| `verbose`                          | `false`      | Prints the resolved options and every annotation the plugin writes. XJC's global `-verbose` also enables this output.                                                                                                                        |
 
 ## Override statements
 
@@ -218,12 +225,12 @@ Pass one statement per option. Statements are processed in the order given:
 
 ### Select what to change
 
-| Part                   | Meaning                                                                                                                                                                          |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ClassGlob`            | Qualified generated class name. |
-| `#PropertyGlob`        | Optional generated property name. Without it, the statement applies to every property of the matching class.                                                                     |
+| Part                   | Meaning                                                                                                                                                                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ClassGlob`            | Qualified generated class name.                                                                                                                                                                                                                     |
+| `#PropertyGlob`        | Optional generated property name. Without it, the statement applies to every property of the matching class.                                                                                                                                        |
 | `@AnnotationGlob`      | Optional simple annotation name, with the same glob rules. It selects a matching annotation on the field; for example, `@Size` selects a collection-cardinality `@Size`. Without it, every computed annotation of the selected property is covered. |
-| `@List.AnnotationGlob` | Selects only annotations of collection items, which are written on the type argument. `@List.Size` matches the `@Size` in `List<@Size(max = 5) String>`. |
+| `@List.AnnotationGlob` | Selects only annotations of collection items, which are written on the type argument. `@List.Size` matches the `@Size` in `List<@Size(max = 5) String>`.                                                                                            |
 
 The three globs are matched with the same syntax:
 
@@ -243,6 +250,11 @@ The three globs are matched with the same syntax:
 *#item[!0-9]     matches itemx but not item7
 *#item[^0-9]     the same, with the caret a regular expression uses
 ```
+
+The same syntax is what the `include` and `exclude` options of the sibling
+[`xjc-primitives-plugin`](https://github.com/fillumina/xjc-primitives-plugin) use to choose which
+fields are boxed, with the matcher copied from this one, so a selector written here reads the same
+there.
 
 The annotation name must be one the plugin manages: `Valid`, `NotNull`, `Size`, `Digits`, `DecimalMin`, `DecimalMax`, `Pattern`, `AssertTrue`, or `AssertFalse`.
 
@@ -503,6 +515,7 @@ protected String note;
 - This coverage is broad but not a formal proof of equivalence. Unusual legal expressions, Unicode-version changes, or differences between XML Schema validator implementations can still expose an edge case. Please report one with a minimal schema and values it should accept and reject; the plugin can then add it to its compatibility matrix.
 - The plugin reports unmatched `override` statements and schema patterns it cannot translate to compilable Java regexes as warnings, including `xs:list` item patterns. Skipped alternatives may weaken the generated Bean Validation constraint; schema validation is still needed. Add `:verbose` or XJC's `-verbose` to see the resolved options and every annotation written.
 - XJC generates properties as protected fields. The plugin annotates those generated properties rather than enumeration constants or JAXB implementation details.
+- A boolean the schema pins with `fixed` gets `@AssertTrue` or `@AssertFalse`, and both consider a null valid, so the assertion says which value the schema admits without making the element required. A repeated element of such a type gets no assertion, because the field holds a list and the value inside it is out of reach.
 - An element that repeats and whose type is an `xs:list` is generated as a list of `JAXBElement`, one list of items each, because JAXB cannot map a list of lists. Its cardinality is written on the outer list, where it counts the occurrences, and the items inside the `JAXBElement` carry no constraint: a provider refuses a constraint written there, because `JAXBElement` is not a container and has no value extractor.
 
 ## Building

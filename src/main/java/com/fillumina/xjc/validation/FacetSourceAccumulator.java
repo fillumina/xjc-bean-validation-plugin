@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
+ * The facets gathered from a type and everything it inherits. The patterns of each level stay in
+ * their own group, so one inherited pattern group becomes one constraint.
  *
  * @author Francesco Illuminati
  */

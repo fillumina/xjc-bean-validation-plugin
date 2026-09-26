@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.function.Predicate;
 
 /**
+ * One source of schema facets: the type XJC hands over, or the facets gathered from the types
+ * below it. The accessors are the ones Processor reads, whatever produced the values.
  *
  * @author Francesco Illuminati
  */
