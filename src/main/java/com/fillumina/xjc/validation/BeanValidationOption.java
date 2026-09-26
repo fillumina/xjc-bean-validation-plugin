@@ -55,7 +55,12 @@ enum BeanValidationOption {
                 Boolean b = toBoolean(v);
 
                 if (b != null) {
+                    // the last value given is the one in force, so the prefixes an earlier
+                    // FieldName or ClassName left behind have to go with it
                     p.notNullCustomMessage(b);
+                    p.notNullPrefixFieldName(false);
+                    p.notNullPrefixClassName(false);
+                    p.notNullCustomMessageText(null);
                 } else if ("ClassName".equalsIgnoreCase(v)) {
                     p.notNullCustomMessage(true);
                     p.notNullPrefixFieldName(false);
@@ -86,7 +91,8 @@ enum BeanValidationOption {
                 }
             }),
     verbose(Boolean.class,
-            "increases verbosity",
+            "prints the options in use and every annotation the plugin writes, which XJC's global "
+                    + "-verbose does as well",
             (p,v) -> setBoolean(v, r -> p.verbose(r)),
             (p) -> p.isVerbose()),
     generateItemAnnotations(
@@ -106,9 +112,9 @@ enum BeanValidationOption {
             (p) -> p.isGenerateValidOnCollections()),
     override(
             String.class,
-            "leaves the given class or property out of the generated annotations: a glob for the class, "
-                    + "optionally # and a glob for the property, optionally = and the annotation to write "
-                    + "instead of the computed one",
+            "removes, changes or replaces a computed annotation: a glob for the class, optionally # and "
+                    + "a glob for the property, optionally @ and a glob for the annotation, optionally "
+                    + ":parameter = value, and optionally = and the annotation to write in its place",
             (p, v) -> {
                 String error = OverrideStatements.validate(v);
                 if (error != null) {

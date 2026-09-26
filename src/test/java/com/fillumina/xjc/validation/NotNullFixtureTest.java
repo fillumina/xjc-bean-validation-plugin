@@ -27,6 +27,9 @@ class NotNullFixtureTest extends FixtureTest {
                 Case.of("NotNullMessageText", option("targetNamespace", "a"),
                         option(MESSAGES, "{FieldName} in {ClassName} should be not null")),
                 Case.of("NotNullMessageTrue", option("targetNamespace", "a"),
-                        option(MESSAGES, "true")));
+                        option(MESSAGES, "true")),
+                // the option twice: the value asked for last is the one that has to be in force
+                Case.of("NotNullMessageTrueAfterClassName", option("targetNamespace", "a"),
+                        option(MESSAGES, "ClassName"), option(MESSAGES, "true")));
     }
 }
