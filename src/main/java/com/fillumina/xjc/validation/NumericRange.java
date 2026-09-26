@@ -1,7 +1,6 @@
 package com.fillumina.xjc.validation;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,14 +11,11 @@ import java.util.Objects;
  * @author Francesco Illuminati
  */
 class NumericRange {
-    private static final Map<String, NumericRange> MAP = new HashMap<>();
-
-    static {
-        MAP.put(Byte.class.getCanonicalName(), new NumericRange(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        MAP.put(Short.class.getCanonicalName(), new NumericRange(Short.MIN_VALUE, Short.MAX_VALUE));
-        MAP.put(Integer.class.getCanonicalName(), new NumericRange(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        MAP.put(Long.class.getCanonicalName(), new NumericRange(Long.MIN_VALUE, Long.MAX_VALUE));
-    }
+    private static final Map<String, NumericRange> MAP = Map.of(
+            Byte.class.getCanonicalName(), new NumericRange(Byte.MIN_VALUE, Byte.MAX_VALUE),
+            Short.class.getCanonicalName(), new NumericRange(Short.MIN_VALUE, Short.MAX_VALUE),
+            Integer.class.getCanonicalName(), new NumericRange(Integer.MIN_VALUE, Integer.MAX_VALUE),
+            Long.class.getCanonicalName(), new NumericRange(Long.MIN_VALUE, Long.MAX_VALUE));
 
     final BigDecimal min;
     final BigDecimal max;
