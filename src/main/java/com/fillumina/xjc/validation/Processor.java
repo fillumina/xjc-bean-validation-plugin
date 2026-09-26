@@ -197,7 +197,7 @@ class Processor {
         }
 
         /**
-         * parses xsd:element
+         * The element behind a property, and the field XJC generated for it.
          */
         private void processElement(CElementPropertyInfo property) {
             String propertyName = property.getName(false);
@@ -272,7 +272,7 @@ class Processor {
         }
 
         /**
-         * parses xsd:element
+         * The required-ness, the cardinality, the cascading and the facets of one element declaration.
          */
         private void processElementDecl(
                 CElementPropertyInfo property,
@@ -414,7 +414,7 @@ class Processor {
         }
 
         /**
-         * parses xsd:attribute
+         * The required-ness and the facets of one attribute, whose type is a simple type.
          */
         private void processAttribute(CAttributePropertyInfo property) {
             String propertyName = property.getName(false);
@@ -462,9 +462,8 @@ class Processor {
         }
 
         /**
-         * parses values
-         *
-         * NOTE: needed to process complexTypes extending a simpleType
+         * The value of a complex type with simple content, which XJC generates as a property of
+         * its own: a complex type extending a simple type carries the facets of that base type here.
          */
         private void processAttribute(CValuePropertyInfo property) {
             String propertyName = property.getName(false);
@@ -492,7 +491,8 @@ class Processor {
         }
 
         /**
-         * Process types which are not collections
+         * The constraints of a property holding one value: its length, its pattern, its numeric
+         * bounds and its digits.
          */
         private void processType(
                 FieldHelper fieldHelper,
@@ -504,7 +504,7 @@ class Processor {
             }
 
             if (fieldHelper.isString()) {
-                annotator.addPatterns(facet.multiPatterns(), options.isPatternList());
+                annotator.addPatterns(facet.translatedMultiPatterns(logger), options.isPatternList());
             }
 
             if (fieldHelper.isNumber() || fieldHelper.isString()) {
