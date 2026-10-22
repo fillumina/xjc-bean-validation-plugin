@@ -5,7 +5,7 @@
 
   <groupId>com.fillumina</groupId>
   <artifactId>xjc-bean-validation-plugin</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>xjc-bean-validation-plugin</name>
 

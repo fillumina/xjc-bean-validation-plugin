@@ -2,6 +2,7 @@ package com.fillumina.xjc.validation;
 
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFormatter;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JTypeVar;
@@ -33,10 +34,33 @@ class TypeUse extends JClass {
 
     @Override
     public void generate(JFormatter formatter) {
+        JClass enclosing = enclosingClass();
+        if (enclosing == null) {
+            writeAnnotations(formatter);
+            formatter.t(element);
+            return;
+        }
+        formatter.t(enclosing).p(".");
+        writeAnnotations(formatter);
+        formatter.p(element.name());
+    }
+
+    private void writeAnnotations(JFormatter formatter) {
         for (JAnnotationUse annotation : annotations) {
             formatter.g(annotation).p(" ");
         }
-        formatter.t(element);
+    }
+
+    /**
+     * @return the class that holds the element when the element is a nested class, or null. A type
+     *     annotation applies to the simple name it stands in front of, so on a nested class it has to
+     *     be written between the enclosing class and the name of the element: {@code Outer.@Valid
+     *     Inner}. Written in front of the whole qualified name it marks the enclosing class instead,
+     *     which for a static nested class javac refuses and which for an inner class is silently an
+     *     annotation on another type.
+     */
+    private JClass enclosingClass() {
+        return element instanceof JDefinedClass defined ? defined.outer() : null;
     }
 
     @Override

@@ -105,6 +105,8 @@ Battery
     areBatteriesRequired
     batterySubgroup
         @Size(max = 3)
+        items
+            @Valid
 Battery.BatterySubgroup
     batteryType
         @NotNull
@@ -441,6 +443,8 @@ PromotionDataType
     component
         @NotNull
         @Size(min = 1)
+        items
+            @Valid
     promotionClaimCode
         @NotNull
         @Size(min = 6, max = 12)

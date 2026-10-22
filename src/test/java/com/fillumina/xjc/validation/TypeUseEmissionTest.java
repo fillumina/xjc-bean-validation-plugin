@@ -59,14 +59,14 @@ class TypeUseEmissionTest {
     void theAnnotationIsPrintedAfterTheEnclosingClassOfAStaticNestedItemType() throws Exception {
         String generated = generateNested(JMod.PUBLIC | JMod.STATIC);
 
-        assertTrue(generated.contains("protected List<example.Outer.@Valid Inner> names;"), generated);
+        assertTrue(generated.contains("protected List<Outer.@Valid Inner> names;"), generated);
     }
 
     @Test
     void theAnnotationIsPrintedAfterTheEnclosingClassOfAnInnerItemType() throws Exception {
         String generated = generateNested(JMod.PUBLIC);
 
-        assertTrue(generated.contains("protected List<example.Outer.@Valid Inner> names;"), generated);
+        assertTrue(generated.contains("protected List<Outer.@Valid Inner> names;"), generated);
     }
 
     @Test

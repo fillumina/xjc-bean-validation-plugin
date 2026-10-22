@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1-SNAPSHOT
+
+- Write the annotations of a collection item on the name of the item when its type is a nested class:
+  `List<Battery.@Valid BatterySubgroup>` instead of `List<@Valid Battery.BatterySubgroup>`. javac
+  refuses the old form for a static nested class, which is what XJC generates for an anonymous complex
+  type, and for an inner class the same form marks the enclosing class instead of the item, so a
+  provider cascades nowhere and the items are silently unvalidated.
+
 ## 1.0.0
 
 - Fix `notNullAnnotationsCustomMessages` given more than once: the value asked for last is the one
