@@ -1,0 +1,43 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="a"
+    xmlns:a="a"
+    elementFormDefault="qualified">
+
+    <xsd:element name="nested" type="a:Holder"/>
+
+    <xsd:complexType name="Holder">
+        <xsd:sequence>
+            <xsd:element name="plain" type="a:PlainType" minOccurs="0" maxOccurs="3"/>
+
+            <xsd:element name="nestedOnce" minOccurs="1" maxOccurs="3">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="note" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="nestedTwice" minOccurs="0" maxOccurs="2">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="deepest" minOccurs="0" maxOccurs="2">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="note" type="xsd:string"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PlainType">
+        <xsd:sequence>
+            <xsd:element name="note" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

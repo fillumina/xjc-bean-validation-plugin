@@ -3,15 +3,22 @@ package com.fillumina.xjc.validation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.sun.tools.xjc.Driver;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.tools.ToolProvider;
 
 /**
  * One fixture: a schema under {@code src/test/resources}, one run of the plugin over it, and the
@@ -57,8 +64,9 @@ class XjcFixture {
         this.schemaName = schemaName;
     }
 
-    void check() throws Exception {
-        String actual = SourceAnnotations.of(generate());
+    void check(boolean compiles) throws Exception {
+        List<Path> sources = generate();
+        String actual = SourceAnnotations.of(sources);
 
         Path expectedFile = expectedFile();
         if (Boolean.getBoolean(RECORD)) {
@@ -67,6 +75,56 @@ class XjcFixture {
         assertEquals(Files.readString(expectedFile), actual,
                 () -> "the annotations of " + caseName + " are not the expected ones, see "
                         + expectedFile);
+
+        if (compiles) {
+            compile(sources);
+        }
+    }
+
+    /**
+     * Compiles the generated sources, because the expectation file records which annotation is on the
+     * items without recording where on the type it was written: a type-use annotation in front of a
+     * nested name reads the same in the tree of the items and is refused by javac, so only a
+     * compilation says the emission is legal.
+     */
+    private void compile(List<Path> sources) throws Exception {
+        Path classes = Path.of("target", "generated-classes", folder);
+        deleteRecursively(classes);
+        Files.createDirectories(classes);
+
+        List<String> arguments = new ArrayList<>(List.of(
+                "-proc:none",
+                "-classpath", annotationClassPath(),
+                "-d", classes.toString()));
+        sources.forEach(source -> arguments.add(source.toString()));
+
+        ByteArrayOutputStream messages = new ByteArrayOutputStream();
+        try (PrintStream stream = new PrintStream(messages, true, StandardCharsets.UTF_8)) {
+            int exitCode = ToolProvider.getSystemJavaCompiler()
+                    .run(null, stream, stream, arguments.toArray(String[]::new));
+            assertEquals(0, exitCode,
+                    () -> "the generated sources of " + caseName + " do not compile:\n" + messages);
+        }
+    }
+
+    /**
+     * @return the jars the generated code compiles against, taken from classes this run already has,
+     *     because the class path of a forked test run is the booter jar and not the real one
+     */
+    private static String annotationClassPath() {
+        return Stream.of(BeanValidationPlugin.class, Valid.class, Size.class, XmlElement.class)
+                .map(XjcFixture::location)
+                .distinct()
+                .map(Path::toString)
+                .collect(Collectors.joining(File.pathSeparator));
+    }
+
+    private static Path location(Class<?> type) {
+        try {
+            return Path.of(type.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("no location for " + type, e);
+        }
     }
 
     /** @return the generated sources, sorted by file name. */

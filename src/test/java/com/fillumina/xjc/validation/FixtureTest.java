@@ -38,7 +38,16 @@ abstract class FixtureTest {
     @MethodSource("cases")
     void theAnnotationsAreTheExpectedOnes(Case testCase) throws Exception {
         new XjcFixture(fixture(), testCase.name(), testCase.arguments(), bindingDirectory(),
-                schemaName()).check();
+                schemaName()).check(compilesGeneratedSources());
+    }
+
+    /**
+     * @return true when the generated sources must compile as well as carry the expected annotations,
+     *     which is what an annotation on a nested item type needs: the expectation file cannot show
+     *     where on the type it was written
+     */
+    boolean compilesGeneratedSources() {
+        return false;
     }
 
     /** @return the directory of binding files this fixture needs, or null when it needs none. */

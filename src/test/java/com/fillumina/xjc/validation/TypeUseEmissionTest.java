@@ -56,6 +56,20 @@ class TypeUseEmissionTest {
     }
 
     @Test
+    void theAnnotationIsPrintedAfterTheEnclosingClassOfAStaticNestedItemType() throws Exception {
+        String generated = generateNested(JMod.PUBLIC | JMod.STATIC);
+
+        assertTrue(generated.contains("protected List<example.Outer.@Valid Inner> names;"), generated);
+    }
+
+    @Test
+    void theAnnotationIsPrintedAfterTheEnclosingClassOfAnInnerItemType() throws Exception {
+        String generated = generateNested(JMod.PUBLIC);
+
+        assertTrue(generated.contains("protected List<example.Outer.@Valid Inner> names;"), generated);
+    }
+
+    @Test
     void nothingIsChangedWhenTheItemsCarryNoAnnotation() throws Exception {
         String generated = generate(field -> {
             new ItemAnnotator(field, AnnotationLogWarning.INSTANCE, null).apply();
@@ -68,6 +82,27 @@ class TypeUseEmissionTest {
 
     private interface FieldSetup {
         void apply(JFieldVar field);
+    }
+
+    /**
+     * Builds a one-field class whose field holds a nested element type and returns the file it wrote.
+     *
+     * @param modifiers the modifiers of the nested class: {@code STATIC} for a nested class as XJC
+     *     generates it, and none for an inner class, which no schema can produce but which the
+     *     emission has to place the same way
+     */
+    private String generateNested(int modifiers) throws Exception {
+        JCodeModel codeModel = new JCodeModel();
+        JDefinedClass bean = codeModel._class("example.Bean");
+        JDefinedClass outer = codeModel._class("example.Outer");
+        JDefinedClass inner = outer._class(modifiers, "Inner");
+        JFieldVar field = bean.field(JMod.PROTECTED,
+                codeModel.ref(List.class).narrow(inner), "names");
+        ItemAnnotator items = new ItemAnnotator(field, AnnotationLogWarning.INSTANCE, null);
+        items.addValidAnnotation();
+        items.apply();
+        codeModel.build(outputDirectory.toFile());
+        return Files.readString(outputDirectory.resolve("example/Bean.java"));
     }
 
     /** Builds a one-field class through codemodel and returns the file it wrote. */

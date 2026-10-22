@@ -1,0 +1,22 @@
+Holder
+    nestedOnce
+        @NotNull
+        @Size(min = 1, max = 3)
+    nestedTwice
+        @Size(max = 2)
+    plain
+        @Size(max = 3)
+        items
+            @Valid
+Holder.NestedOnce
+    note
+        @NotNull
+Holder.NestedTwice
+    deepest
+        @Size(max = 2)
+Holder.NestedTwice.Deepest
+    note
+        @NotNull
+PlainType
+    note
+        @NotNull

@@ -105,6 +105,14 @@ Battery
     areBatteriesRequired
     batterySubgroup
         @Size(max = 3)
+Battery.BatterySubgroup
+    batteryType
+        @NotNull
+        @Pattern(regexp = "(\\Qbattery_type_2/3A\\E)|(\\Qbattery_type_4/3A\\E)|(\\Qbattery_type_4/5A\\E)|(\\Qbattery_type_9v\\E)|(\\Qbattery_type_12v\\E)|(\\Qbattery_type_a\\E)|(\\Qbattery_type_a76\\E)|(\\Qbattery_type_aa\\E)|(\\Qbattery_type_aaa\\E)|(\\Qbattery_type_aaaa\\E)|(\\Qbattery_type_c\\E)|(\\Qbattery_type_cr123a\\E)|(\\Qbattery_type_cr2\\E)|(\\Qbattery_type_cr5\\E)|(\\Qbattery_type_d\\E)|(\\Qbattery_type_lithium_ion\\E)|(\\Qbattery_type_lithium_metal\\E)|(\\Qbattery_type_L-SC\\E)|(\\Qbattery_type_p76\\E)|(\\Qbattery_type_product_specific\\E)|(\\Qbattery_type_SC\\E)|(\\Qnonstandard_battery\\E)|(\\Qlr44\\E)|(\\Qunknown\\E)|(\\Qcr2032\\E)|(\\Qlr41\\E)")
+        @Size(min = 1, max = 50)
+    numberOfBatteries
+        @DecimalMin(value = "1", inclusive = true)
+        @NotNull
 BatteryAverageLifeUnitOfMeasure
 BatteryCellTypeValues
 BatteryLifeDimension
@@ -436,6 +444,12 @@ PromotionDataType
     promotionClaimCode
         @NotNull
         @Size(min = 6, max = 12)
+PromotionDataType.Component
+    amount
+        @NotNull
+        @Valid
+    type
+        @NotNull
 RelatedProductID
     type
         @NotNull

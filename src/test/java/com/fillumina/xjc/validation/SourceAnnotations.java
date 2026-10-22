@@ -68,6 +68,15 @@ final class SourceAnnotations {
     }
 
     private static void appendClass(StringBuilder text, ClassTree type) {
+        appendClass(text, type, "");
+    }
+
+    /**
+     * Writes a class with the name it has inside its enclosing class, then its own fields, then the
+     * classes it holds: without the recursion the fields of a nested class are never compared, which
+     * is where the items of a collection of a nested type carry their constraints.
+     */
+    private static void appendClass(StringBuilder text, ClassTree type, String prefix) {
         List<VariableTree> fields = new ArrayList<>();
         for (Tree member : type.getMembers()) {
             if (member instanceof VariableTree field && isAProperty(field)) {
@@ -78,7 +87,8 @@ final class SourceAnnotations {
         // information
         fields.sort(Comparator.comparing(field -> field.getName().toString()));
 
-        text.append(type.getSimpleName()).append('\n');
+        String name = prefix + type.getSimpleName();
+        text.append(name).append('\n');
         for (VariableTree field : fields) {
             text.append("    ").append(field.getName()).append('\n');
             for (String annotation : annotationsOf(field.getModifiers().getAnnotations())) {
@@ -90,6 +100,11 @@ final class SourceAnnotations {
                 for (String annotation : items) {
                     text.append("            ").append(annotation).append('\n');
                 }
+            }
+        }
+        for (Tree member : type.getMembers()) {
+            if (member instanceof ClassTree nested) {
+                appendClass(text, nested, name + ".");
             }
         }
     }
