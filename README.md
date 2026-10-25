@@ -45,6 +45,13 @@ The released version is **1.0.1**, published on Maven Central. The option name a
 this plugin writes stay the same within 1.x; a schema pattern it cannot translate, or a
 constraint it puts in the wrong place, is a bug fixed in a patch release.
 
+- Item constraints on nested and qualified types, `List<Order.@Valid Line>`, compile and cascade.
+- The strongest numeric bound wins when inclusive and exclusive restrictions meet.
+- An exact `length` takes precedence over an inherited range, and a zero `maxLength` on an item is kept.
+- An absent digit facet no longer invents a limit.
+- Empty enumeration values are kept.
+- List-valued attributes and simple content carry their constraints.
+
 ## Compatibility
 
 - **JDK:** 21 or newer.
