@@ -53,17 +53,17 @@ class FieldAnnotator {
         fields.annotate(ValidationAnnotations.ASSERT_FALSE).log();
     }
 
+    /** An exact length takes precedence over inherited minimum and maximum lengths. */
     void addSizeAnnotation(Integer minLength, Integer maxLength, Integer length) {
-        if (isValidLength(minLength) || isValidLength(maxLength)) {
-            fields.annotate(ValidationAnnotations.SIZE)
-                    .paramIf(isValidLength(minLength), MIN, minLength)
-                    .paramIf(isValidLength(maxLength), MAX, maxLength)
-                    .log();
-
-        } else if (isValidLength(length)) {
+        if (isValidLength(length)) {
             fields.annotate(ValidationAnnotations.SIZE)
                     .param(MIN, length)
                     .param(MAX, length)
+                    .log();
+        } else if (isValidLength(minLength) || isValidLength(maxLength)) {
+            fields.annotate(ValidationAnnotations.SIZE)
+                    .paramIf(isValidLength(minLength), MIN, minLength)
+                    .paramIf(isValidLength(maxLength), MAX, maxLength)
                     .log();
         }
     }

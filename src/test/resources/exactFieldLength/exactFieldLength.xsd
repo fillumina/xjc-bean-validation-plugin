@@ -1,0 +1,14 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="a" targetNamespace="a">
+    <xs:simpleType name="TextRange"><xs:restriction base="xs:string"><xs:minLength value="1"/><xs:maxLength value="5"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="ExactText"><xs:restriction base="a:TextRange"><xs:length value="3"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="BinaryRange"><xs:restriction base="xs:base64Binary"><xs:minLength value="1"/><xs:maxLength value="5"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="ExactBinary"><xs:restriction base="a:BinaryRange"><xs:length value="3"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="Tokens"><xs:list itemType="xs:string"/></xs:simpleType>
+    <xs:simpleType name="TokenRange"><xs:restriction base="a:Tokens"><xs:minLength value="1"/><xs:maxLength value="5"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="ExactTokens"><xs:restriction base="a:TokenRange"><xs:length value="3"/></xs:restriction></xs:simpleType>
+    <xs:complexType name="ExactLengths"><xs:sequence>
+        <xs:element name="text" type="a:ExactText" minOccurs="0"/>
+        <xs:element name="binary" type="a:ExactBinary" minOccurs="0"/>
+        <xs:element name="tokens" type="a:ExactTokens" minOccurs="0"/>
+    </xs:sequence><xs:attribute name="textAttribute" type="a:ExactText"/><xs:attribute name="binaryAttribute" type="a:ExactBinary"/></xs:complexType>
+</xs:schema>

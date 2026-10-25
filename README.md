@@ -127,6 +127,8 @@ Numeric bounds use the strongest inherited restriction. An exclusive bound wins 
 
 String enumeration alternatives are quoted literally, including an empty string. An empty alternative does not make an optional field required; it remains one of the values its pattern accepts.
 
+An exact `length` facet takes precedence over inherited `minLength` and `maxLength` on fields as well as items. For an `xs:list`, it constrains the number of items in the field.
+
 A collection has two distinct places for constraints:
 
 ```java

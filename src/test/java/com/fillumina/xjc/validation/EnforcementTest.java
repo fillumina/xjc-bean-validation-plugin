@@ -148,6 +148,30 @@ class EnforcementTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldPrioritizeExactFieldLengthsOverInheritedRanges(boolean itemsEnabled) throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/exactFieldLength/exactFieldLength.xsd"),
+                "a.ExactLengths", FixtureTest.option("generateItemAnnotations", itemsEnabled));
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            for (String field : List.of("text", "textAttribute")) {
+                assertProperty(type, validator, field, "ab", false);
+                assertProperty(type, validator, field, "abc", true);
+                assertProperty(type, validator, field, "abcd", false);
+                assertProperty(type, validator, field, null, true);
+            }
+            for (String field : List.of("binary", "binaryAttribute")) {
+                assertProperty(type, validator, field, new byte[2], false);
+                assertProperty(type, validator, field, new byte[3], true);
+                assertProperty(type, validator, field, new byte[4], false);
+            }
+            assertProperty(type, validator, "tokens", List.of("a", "b"), false);
+            assertProperty(type, validator, "tokens", List.of("a", "b", "c"), true);
+            assertProperty(type, validator, "tokens", List.of("a", "b", "c", "d"), false);
+        }
+    }
+
     @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");

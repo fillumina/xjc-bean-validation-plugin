@@ -2,6 +2,8 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Give exact field lengths precedence over inherited length ranges, including strings, binary
+  fields, attributes and list containers, with item annotations enabled or disabled.
 - Preserve empty strings as enumeration alternatives, including an enumeration whose only value
   is empty, on fields, attributes and collection items.
 - Treat absent digit facets as unconstrained on fields and items. Fraction-only restrictions now
