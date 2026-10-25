@@ -103,10 +103,15 @@ class FieldAnnotator {
     }
 
     void addDigitsAnnotation(Integer totalDigits, Integer fractionDigits) {
-        if (totalDigits != null) {
-            fields.annotate(ValidationAnnotations.DIGITS)
-                    .param(INTEGER, valueOrZero(totalDigits))
-                    .param(FRACTION, valueOrZero(fractionDigits))
+        addDigitsAnnotation(fields, totalDigits, fractionDigits);
+    }
+
+    /** Missing digit facets impose no limit on that part of the decimal. */
+    static void addDigitsAnnotation(AnnotationWriter writer, Integer totalDigits, Integer fractionDigits) {
+        if (totalDigits != null || fractionDigits != null) {
+            writer.annotate(ValidationAnnotations.DIGITS)
+                    .param(INTEGER, totalDigits == null ? Integer.MAX_VALUE : totalDigits)
+                    .param(FRACTION, fractionDigits == null ? Integer.MAX_VALUE : fractionDigits)
                     .log();
         }
     }
@@ -129,7 +134,4 @@ class FieldAnnotator {
         return length != null && length != -1;
     }
 
-    static Integer valueOrZero(Integer value) {
-        return value == null ? Integer.valueOf(0) : value;
-    }
 }

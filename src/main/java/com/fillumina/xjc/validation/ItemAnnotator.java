@@ -51,12 +51,7 @@ class ItemAnnotator {
     }
 
     void addDigitsAnnotation(Integer totalDigits, Integer fractionDigits) {
-        if (isSet(totalDigits) || isSet(fractionDigits)) {
-            annotator.annotate(ValidationAnnotations.DIGITS)
-                    .param("integer", totalDigits, 0)
-                    .param("fraction", fractionDigits, 0)
-                    .log();
-        }
+        FieldAnnotator.addDigitsAnnotation(annotator, totalDigits, fractionDigits);
     }
 
     void addDecimalMinAnnotation(BigDecimal minInclusive, BigDecimal minExclusive) {

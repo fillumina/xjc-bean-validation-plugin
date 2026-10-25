@@ -2,19 +2,24 @@ NumericValue
     fixedAtTheTypeLimit
         @DecimalMax(value = "-2147483648", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     fixedAttribute
         @DecimalMax(value = "1", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
     fixedValue
         @DecimalMax(value = "1", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     multiEnumerated
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     singleEnumerated
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull

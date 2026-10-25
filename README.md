@@ -123,6 +123,8 @@ The defaults write every supported restriction the schema states. Options narrow
 
 Numeric bounds use the strongest inherited restriction. An exclusive bound wins over an equal inclusive bound; a tighter inclusive bound wins over a weaker exclusive one. A fixed numeric value replaces both bounds.
 
+`@Digits` leaves a missing integer or fraction limit at `Integer.MAX_VALUE`. A fraction-only restriction is enforced on fields and items. XML Schema's combined significant-digit count cannot be expressed exactly by `@Digits`: `totalDigits` limits integer digits, but does not invent a fractional limit.
+
 A collection has two distinct places for constraints:
 
 ```java

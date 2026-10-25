@@ -1,4 +1,5 @@
 Invoice
     amount
         @DecimalMin(value = "0", inclusive = false)
+        @Digits(integer = 2147483647, fraction = 2)
         @NotNull

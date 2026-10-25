@@ -2,18 +2,23 @@ Numbers
     decimalValue
         @NotNull
     integerValue
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     negativeIntegerValue
         @DecimalMax(value = "-1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     nonNegativeIntegerValue
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     nonPositiveIntegerValue
         @DecimalMax(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     positiveIntegerValue
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     valueDimension
         @Digits(integer = 12, fraction = 2)

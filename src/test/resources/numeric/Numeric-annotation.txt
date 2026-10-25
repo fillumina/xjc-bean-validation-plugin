@@ -2,48 +2,61 @@ Numeric
     abyte
         @DecimalMax(value = "127", inclusive = true)
         @DecimalMin(value = "-128", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     adecimal
         @NotNull
     aint
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     ainteger
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     along
         @DecimalMax(value = "9223372036854775807", inclusive = true)
         @DecimalMin(value = "-9223372036854775808", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     anegativeInteger
         @DecimalMax(value = "-1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     anonNegativeInteger
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     anonPositiveInteger
         @DecimalMax(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     apositiveInteger
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     ashort
         @DecimalMax(value = "32767", inclusive = true)
         @DecimalMin(value = "-32768", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     aunsignedByte
         @DecimalMax(value = "255", inclusive = true)
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     aunsignedInt
         @DecimalMax(value = "4294967295", inclusive = true)
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     aunsignedLong
         @DecimalMax(value = "18446744073709551615", inclusive = true)
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     aunsignedShort
         @DecimalMax(value = "65535", inclusive = true)
         @DecimalMin(value = "0", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull

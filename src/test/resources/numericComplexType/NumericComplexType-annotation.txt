@@ -2,12 +2,16 @@ ClassWithValidation
     intField
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
     longField
         @DecimalMax(value = "9223372036854775807", inclusive = true)
         @DecimalMin(value = "1", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
     otherIntField
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
     otherLongField
         @DecimalMax(value = "9223372036854775807", inclusive = true)
         @DecimalMin(value = "-9223372036854775808", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)

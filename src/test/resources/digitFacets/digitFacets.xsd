@@ -1,0 +1,14 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="a" targetNamespace="a">
+    <xs:simpleType name="TotalOnly"><xs:restriction base="xs:decimal"><xs:totalDigits value="3"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="FractionOnly"><xs:restriction base="xs:decimal"><xs:fractionDigits value="2"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="WholeOnly"><xs:restriction base="xs:decimal"><xs:fractionDigits value="0"/></xs:restriction></xs:simpleType>
+    <xs:complexType name="DigitFacets"><xs:sequence>
+        <xs:element name="total" type="a:TotalOnly" minOccurs="0"/>
+        <xs:element name="fraction" type="a:FractionOnly" minOccurs="0"/>
+        <xs:element name="whole" type="a:WholeOnly" minOccurs="0"/>
+        <xs:element name="totalItems" type="a:TotalOnly" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="fractionItems" type="a:FractionOnly" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="wholeItems" type="a:WholeOnly" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="free" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence></xs:complexType>
+</xs:schema>

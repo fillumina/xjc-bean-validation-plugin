@@ -1,6 +1,9 @@
 NumericPattern
     patternedInteger
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     patternedIntegerList
         @NotNull
         @Size(min = 2, max = 4)
+        items
+            @Digits(integer = 2147483647, fraction = 0)

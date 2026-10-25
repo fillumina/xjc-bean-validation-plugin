@@ -2,6 +2,8 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Treat absent digit facets as unconstrained on fields and items. Fraction-only restrictions now
+  write a constraint, including a zero fraction limit, without inventing an integer-digit limit.
 - Resolve inclusive and exclusive numeric bounds to the strongest effective restriction before
   writing annotations, including integer items and attributes. A fixed value replaces both bounds.
 - Keep item annotations after the package qualifier when class names collide across namespaces.

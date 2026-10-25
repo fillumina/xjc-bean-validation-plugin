@@ -5,6 +5,7 @@ NumericBounds
         items
             @DecimalMax(value = "9999", inclusive = true)
             @DecimalMin(value = "0", inclusive = true)
+            @Digits(integer = 2147483647, fraction = 0)
     decimalList
         @Size(max = 3)
         items
@@ -13,9 +14,11 @@ NumericBounds
     plainInt
         @DecimalMax(value = "2147483647", inclusive = true)
         @DecimalMin(value = "-2147483648", inclusive = true)
+        @Digits(integer = 2147483647, fraction = 0)
         @NotNull
     plainIntList
         @Size(max = 5)
         items
             @DecimalMax(value = "2147483647", inclusive = true)
             @DecimalMin(value = "-2147483648", inclusive = true)
+            @Digits(integer = 2147483647, fraction = 0)

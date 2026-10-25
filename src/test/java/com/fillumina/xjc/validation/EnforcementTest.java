@@ -99,6 +99,34 @@ class EnforcementTest {
     }
 
     @Test
+    void shouldLeaveMissingDigitFacetsUnconstrainedOnFieldsAndItems() throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/digitFacets/digitFacets.xsd"), "a.DigitFacets");
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            for (String field : List.of("total", "fraction", "whole")) {
+                var accepted = switch (field) {
+                    case "total" -> List.of("1.2", "0.0001", "123");
+                    case "fraction" -> List.of("12.34", "123456789.12");
+                    default -> List.of("123456789");
+                };
+                for (String value : accepted) {
+                    var number = new java.math.BigDecimal(value);
+                    assertProperty(type, validator, field, number, true);
+                    assertProperty(type, validator, field + "Items", List.of(number), true);
+                }
+                var rejected = new java.math.BigDecimal(switch (field) {
+                    case "total" -> "1234";
+                    case "fraction" -> "1.234";
+                    default -> "1.2";
+                });
+                assertProperty(type, validator, field, rejected, false);
+                assertProperty(type, validator, field + "Items", List.of(rejected), false);
+            }
+            assertProperty(type, validator, "free", new java.math.BigDecimal("123456789.123456789"), true);
+        }
+    }
+
+    @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");
         Object instance = order.getConstructor().newInstance();

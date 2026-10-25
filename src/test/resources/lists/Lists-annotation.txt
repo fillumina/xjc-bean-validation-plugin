@@ -7,6 +7,8 @@ Container
     derivedListOfInteger
         @NotNull
         @Size(max = 5)
+        items
+            @Digits(integer = 2147483647, fraction = 0)
     listOfAddress
         @NotNull
         @Size(min = 3, max = 7)
@@ -19,6 +21,8 @@ Container
     listOfExactInteger
         @NotNull
         @Size(min = 2, max = 2)
+        items
+            @Digits(integer = 2147483647, fraction = 0)
     listOfExactString
         @Size(max = 3)
         items
