@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1-SNAPSHOT
+## 1.0.1
 
 - Preserve a zero maximum length on collection items. A nonempty item is rejected just as it is
   for an exact zero length; disabling item annotations still omits both constraints.
