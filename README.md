@@ -41,7 +41,7 @@ did, are in
 
 ## Version and status
 
-The released version is **1.0.0**, published on Maven Central. The option name and the annotations
+The released version is **1.0.1**, published on Maven Central. The option name and the annotations
 this plugin writes stay the same within 1.x; a schema pattern it cannot translate, or a
 constraint it puts in the wrong place, is a bug fixed in a patch release.
 
@@ -98,7 +98,7 @@ With `org.jvnet.jaxb:jaxb-maven-plugin`, declare this artifact as an XJC plugin 
       <plugin>
         <groupId>com.fillumina</groupId>
         <artifactId>xjc-bean-validation-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
       </plugin>
     </plugins>
   </configuration>
