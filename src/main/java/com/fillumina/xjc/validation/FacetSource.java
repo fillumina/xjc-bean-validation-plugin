@@ -46,13 +46,18 @@ abstract class FacetSource {
         return patterns;
     }
 
-    /** @return the enumeration facets, each value quoted as a literal regexp. */
+    /** @return enumeration facets quoted as literal regexps, including empty values. */
     LinkedHashSet<String> enumerations() {
-        final LinkedHashSet<String> enumerations = enumerationList();
-        addIfNotNullOrEmpty(enumerations, enumeration(), String::isEmpty);
-        if (enumerations != null && !enumerations.isEmpty()) {
+        LinkedHashSet<String> enumerations = enumerationList();
+        if (enumerations == null) {
+            enumerations = new LinkedHashSet<>();
+        }
+        if (enumeration() != null) {
+            enumerations.add(enumeration());
+        }
+        if (!enumerations.isEmpty()) {
             return enumerations.stream()
-                    .filter(p -> p != null && !p.isEmpty())
+                    .filter(p -> p != null)
                     .map(p -> XsdRegexp.quote(p))
                     .collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
         }

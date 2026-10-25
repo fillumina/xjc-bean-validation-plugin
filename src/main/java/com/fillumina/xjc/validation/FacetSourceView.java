@@ -91,7 +91,7 @@ class FacetSourceView extends FacetSource {
         if (facets != null) {
             return facets.stream()
                     .map(facet -> facet.getValue().value)
-                    .filter(v -> v != null && !v.isEmpty())
+                    .filter(v -> v != null && (XSFacet.FACET_ENUMERATION.equals(param) || !v.isEmpty()))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         return new LinkedHashSet<>();

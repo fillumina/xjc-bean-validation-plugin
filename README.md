@@ -125,6 +125,8 @@ Numeric bounds use the strongest inherited restriction. An exclusive bound wins 
 
 `@Digits` leaves a missing integer or fraction limit at `Integer.MAX_VALUE`. A fraction-only restriction is enforced on fields and items. XML Schema's combined significant-digit count cannot be expressed exactly by `@Digits`: `totalDigits` limits integer digits, but does not invent a fractional limit.
 
+String enumeration alternatives are quoted literally, including an empty string. An empty alternative does not make an optional field required; it remains one of the values its pattern accepts.
+
 A collection has two distinct places for constraints:
 
 ```java

@@ -127,6 +127,28 @@ class EnforcementTest {
     }
 
     @Test
+    void shouldPreserveEmptyEnumerationAlternativesOnFieldsAttributesAndItems() throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/emptyEnumeration/emptyEnumeration.xsd"),
+                "a.EmptyEnumeration");
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            for (String field : List.of("mixed", "mixedAttribute")) {
+                for (String value : List.of("", "A", "a.b")) {
+                    assertProperty(type, validator, field, value, true);
+                }
+                assertProperty(type, validator, field, "B", false);
+                assertProperty(type, validator, field, "axb", false);
+            }
+            assertProperty(type, validator, "only", "", true);
+            assertProperty(type, validator, "only", "A", false);
+            assertProperty(type, validator, "mixedItems", List.of("", "A", "a.b"), true);
+            assertProperty(type, validator, "mixedItems", List.of("B"), false);
+            assertProperty(type, validator, "onlyItems", List.of(""), true);
+            assertProperty(type, validator, "onlyItems", List.of("A"), false);
+        }
+    }
+
+    @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");
         Object instance = order.getConstructor().newInstance();

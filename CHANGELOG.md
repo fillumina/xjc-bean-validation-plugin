@@ -2,6 +2,8 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Preserve empty strings as enumeration alternatives, including an enumeration whose only value
+  is empty, on fields, attributes and collection items.
 - Treat absent digit facets as unconstrained on fields and items. Fraction-only restrictions now
   write a constraint, including a zero fraction limit, without inventing an integer-digit limit.
 - Resolve inclusive and exclusive numeric bounds to the strongest effective restriction before

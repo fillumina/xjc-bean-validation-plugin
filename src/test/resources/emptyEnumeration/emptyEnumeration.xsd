@@ -1,0 +1,10 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="a" targetNamespace="a">
+    <xs:simpleType name="Mixed"><xs:restriction base="xs:string"><xs:enumeration value=""/><xs:enumeration value="A"/><xs:enumeration value="a.b"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="EmptyOnly"><xs:restriction base="xs:string"><xs:enumeration value=""/></xs:restriction></xs:simpleType>
+    <xs:complexType name="EmptyEnumeration"><xs:sequence>
+        <xs:element name="mixed" type="a:Mixed" minOccurs="0"/>
+        <xs:element name="only" type="a:EmptyOnly" minOccurs="0"/>
+        <xs:element name="mixedItems" type="a:Mixed" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="onlyItems" type="a:EmptyOnly" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence><xs:attribute name="mixedAttribute" type="a:Mixed"/></xs:complexType>
+</xs:schema>
