@@ -172,6 +172,56 @@ class EnforcementTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldConstrainListAttributesAndTheirItems(boolean itemsEnabled) throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/listAttributes/listAttributes.xsd"),
+                "a.ListAttributes", FixtureTest.option("generateItemAnnotations", itemsEnabled));
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            assertProperty(type, validator, "codes", List.of("AA", "BB"), true);
+            assertProperty(type, validator, "codes", List.of("AA"), false);
+            assertProperty(type, validator, "codes", List.of("AA", "BB", "CC"), false);
+            assertProperty(type, validator, "codes", List.of("a", "BB"), !itemsEnabled);
+            assertProperty(type, validator, "codes", List.of("ABCD", "BB"), !itemsEnabled);
+            assertProperty(type, validator, "codes", null, true);
+            assertProperty(type, validator, "required", null, false);
+            Class<?> content = loader.loadClass("a.ListContent");
+            assertProperty(content, validator, "value", List.of("AA", "BB"), true);
+            assertProperty(content, validator, "value", List.of("AA"), false);
+            assertProperty(content, validator, "value", List.of("a", "BB"), !itemsEnabled);
+            Class<?> enumType = loader.loadClass("a.CodeEnum");
+            assertTrue(enumType.isEnum());
+            Object[] values = enumType.getEnumConstants();
+            assertProperty(type, validator, "enumCodes", List.of(values[0], values[1]), true);
+            assertProperty(type, validator, "enumCodes", List.of(values[0]), false);
+            Class<?> enumContent = loader.loadClass("a.EnumContent");
+            assertProperty(enumContent, validator, "value", List.of(values[0], values[1]), true);
+            assertProperty(enumContent, validator, "value", List.of(values[0]), false);
+            var one = new java.math.BigDecimal("1.2");
+            var two = new java.math.BigDecimal("3.4");
+            assertProperty(type, validator, "numbers", List.of(one, two), true);
+            assertProperty(type, validator, "numbers", List.of(one), false);
+            for (String invalid : List.of("0", "1.23", "123.4")) {
+                assertProperty(type, validator, "numbers", List.of(new java.math.BigDecimal(invalid), two),
+                        !itemsEnabled);
+            }
+        }
+    }
+
+    @Test
+    void shouldApplyOverridesToListAttributeConstraints() throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/listAttributes/listAttributes.xsd"),
+                "a.ListAttributes", FixtureTest.option("override", "*#codes@Size=@Size(min = 1, max = 3)"),
+                FixtureTest.option("override", "*#codes@List.Pattern"));
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            assertProperty(type, validator, "codes", List.of("a"), true);
+            assertProperty(type, validator, "codes", List.of("abcd"), false);
+            assertProperty(type, validator, "codes", List.of("A", "B", "C", "D"), false);
+        }
+    }
+
     @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");

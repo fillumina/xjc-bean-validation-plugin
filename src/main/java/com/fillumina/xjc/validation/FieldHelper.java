@@ -79,6 +79,10 @@ class FieldHelper {
         return isList() && String.class.getCanonicalName().equals(itemTypeName());
     }
 
+    boolean isArrayList() {
+        return isList() && typeArguments().get(0).isArray();
+    }
+
     boolean isList() {
         return isType(List.class) && itemTypeName() != null;
     }

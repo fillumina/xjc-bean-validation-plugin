@@ -129,6 +129,8 @@ String enumeration alternatives are quoted literally, including an empty string.
 
 An exact `length` facet takes precedence over inherited `minLength` and `maxLength` on fields as well as items. For an `xs:list`, it constrains the number of items in the field.
 
+List-valued attributes follow the same rules as list-valued elements: list length constrains the field, item restrictions constrain its type argument, and `generateItemAnnotations=false` leaves the field's length constraint intact. Required attributes still receive `@NotNull`. Item length constraints apply to strings and arrays, not generated enum types.
+
 A collection has two distinct places for constraints:
 
 ```java

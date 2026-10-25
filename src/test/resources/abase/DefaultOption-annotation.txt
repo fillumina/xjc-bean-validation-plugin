@@ -28,7 +28,6 @@ AddressType
     phoneNumber
         @Size(max = 3)
         items
-            @Size(max = 50)
             @Valid
     postalCode
         @Size(max = 50)

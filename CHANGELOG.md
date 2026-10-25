@@ -2,6 +2,9 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Write list length and item constraints for list-valued attributes and simple-content values,
+  using the same item options and override handling as list-valued elements.
+  Item length constraints are written only on strings and arrays, never on generated enums.
 - Give exact field lengths precedence over inherited length ranges, including strings, binary
   fields, attributes and list containers, with item annotations enabled or disabled.
 - Preserve empty strings as enumeration alternatives, including an enumeration whose only value

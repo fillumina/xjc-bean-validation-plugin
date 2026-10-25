@@ -373,9 +373,11 @@ class Processor {
             }
         }
 
-        /** The constraints of the items of a collection: they end up on its type argument. */
+        /** Item constraints use supported Java types, not the lexical type of an enum's values. */
         private void setItemAnnotations(FieldHelper fieldHelper, ItemAnnotator items, FacetSourceAccumulator facet) {
-            items.addSizeAnnotation(facet.minLength(), facet.maxLength(), facet.length());
+            if (fieldHelper.isStringList() || fieldHelper.isArrayList()) {
+                items.addSizeAnnotation(facet.minLength(), facet.maxLength(), facet.length());
+            }
             items.addDigitsAnnotation(facet.totalDigits(), facet.fractionDigits());
             items.addDecimalMinAnnotation(
                     itemBound(fieldHelper, facet.minInclusive()),
@@ -491,13 +493,22 @@ class Processor {
         }
 
         /**
-         * The constraints of a property holding one value: its length, its pattern, its numeric
-         * bounds and its digits.
+         * The constraints of a simple value: scalar facets on the field, or list
+         * length on the field and item facets on its type argument.
          */
         private void processType(
                 FieldHelper fieldHelper,
                 FieldAnnotator annotator,
                 FacetSourceAccumulator facet) {
+
+            if (fieldHelper.isList() && facet.itemFacet() != null) {
+                annotator.addSizeAnnotation(facet.minLength(), facet.maxLength(), facet.length());
+                if (options.isItemAnnotations()) {
+                    setItemAnnotations(fieldHelper, annotator.items(), facet.itemFacet());
+                }
+                annotator.applyItemAnnotations();
+                return;
+            }
 
             if (fieldHelper.isArray() || fieldHelper.isString()) {
                 annotator.addSizeAnnotation(facet.minLength(), facet.maxLength(), facet.length());
