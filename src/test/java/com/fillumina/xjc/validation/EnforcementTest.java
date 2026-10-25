@@ -222,6 +222,22 @@ class EnforcementTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldEnforceZeroMaximumItemLength(boolean itemsEnabled) throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/zeroItemLength/zeroItemLength.xsd"),
+                "a.ZeroItemLength", FixtureTest.option("generateItemAnnotations", itemsEnabled));
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            for (String field : List.of("maximum", "exact", "tokens", "attributeTokens")) {
+                assertProperty(type, validator, field, List.of(), true);
+                assertProperty(type, validator, field, List.of("x"), !itemsEnabled);
+            }
+            assertProperty(type, validator, "maximum", List.of(""), true);
+            assertProperty(type, validator, "exact", List.of(""), true);
+        }
+    }
+
     @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");

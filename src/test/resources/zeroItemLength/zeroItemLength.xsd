@@ -1,0 +1,10 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="a" targetNamespace="a">
+    <xs:simpleType name="EmptyMax"><xs:restriction base="xs:string"><xs:maxLength value="0"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="EmptyExact"><xs:restriction base="xs:string"><xs:length value="0"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="EmptyTokens"><xs:list itemType="a:EmptyMax"/></xs:simpleType>
+    <xs:complexType name="ZeroItemLength"><xs:sequence>
+        <xs:element name="maximum" type="a:EmptyMax" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="exact" type="a:EmptyExact" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="tokens" type="a:EmptyTokens" minOccurs="0"/>
+    </xs:sequence><xs:attribute name="attributeTokens" type="a:EmptyTokens"/></xs:complexType>
+</xs:schema>

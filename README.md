@@ -131,6 +131,8 @@ An exact `length` facet takes precedence over inherited `minLength` and `maxLeng
 
 List-valued attributes follow the same rules as list-valued elements: list length constrains the field, item restrictions constrain its type argument, and `generateItemAnnotations=false` leaves the field's length constraint intact. Required attributes still receive `@NotNull`. Item length constraints apply to strings and arrays, not generated enum types.
 
+An item `maxLength="0"` is a real constraint, not an unset facet: it accepts only empty items, like `length="0"`. A zero minimum alone imposes no restriction.
+
 A collection has two distinct places for constraints:
 
 ```java

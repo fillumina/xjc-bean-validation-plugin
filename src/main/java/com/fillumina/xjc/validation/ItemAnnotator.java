@@ -35,17 +35,17 @@ class ItemAnnotator {
         addSizeAnnotation(minLength, maxLength, null);
     }
 
-    /** Exact {@code xs:length} takes precedence over inherited range facets on an item. */
+    /** Exact length wins over ranges; a zero maximum constrains an item to be empty. */
     void addSizeAnnotation(Integer minLength, Integer maxLength, Integer length) {
         if (FieldAnnotator.isValidLength(length)) {
             annotator.annotate(ValidationAnnotations.SIZE)
                     .param("min", length)
                     .param("max", length)
                     .log();
-        } else if (isSet(minLength) || isSet(maxLength)) {
+        } else if (isSet(minLength) || FieldAnnotator.isValidLength(maxLength)) {
             annotator.annotate(ValidationAnnotations.SIZE)
                     .paramIf(isSet(minLength), "min", minLength)
-                    .paramIf(isSet(maxLength), "max", maxLength)
+                    .paramIf(FieldAnnotator.isValidLength(maxLength), "max", maxLength)
                     .log();
         }
     }
