@@ -1,0 +1,19 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="a" targetNamespace="a">
+    <xs:simpleType name="Positive"><xs:restriction base="xs:int"><xs:minExclusive value="0"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="BelowTen"><xs:restriction base="xs:int"><xs:maxExclusive value="10"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="Between"><xs:restriction base="a:Positive"><xs:maxExclusive value="10"/></xs:restriction></xs:simpleType>
+    <xs:simpleType name="Tighter"><xs:restriction base="a:Between"><xs:minInclusive value="2"/><xs:maxInclusive value="8"/></xs:restriction></xs:simpleType>
+    <xs:complexType name="Bounds">
+        <xs:sequence>
+            <xs:element name="lower" type="a:Positive" minOccurs="0"/>
+            <xs:element name="upper" type="a:BelowTen" minOccurs="0"/>
+            <xs:element name="lowerItems" type="a:Positive" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="upperItems" type="a:BelowTen" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="tighter" type="a:Tighter" minOccurs="0"/>
+            <xs:element name="tighterItems" type="a:Tighter" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="fixed" type="a:Between" fixed="5" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="lowerAttribute" type="a:Positive"/>
+        <xs:attribute name="upperAttribute" type="a:BelowTen"/>
+    </xs:complexType>
+</xs:schema>

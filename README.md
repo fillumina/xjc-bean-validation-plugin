@@ -121,6 +121,8 @@ The defaults write every supported restriction the schema states. Options narrow
 | a boolean element or attribute fixed to `true`, `false`, `1`, or `0` | `@AssertTrue` or `@AssertFalse`             |
 | complex element or complex collection item                           | `@Valid` on the field or item type argument |
 
+Numeric bounds use the strongest inherited restriction. An exclusive bound wins over an equal inclusive bound; a tighter inclusive bound wins over a weaker exclusive one. A fixed numeric value replaces both bounds.
+
 A collection has two distinct places for constraints:
 
 ```java

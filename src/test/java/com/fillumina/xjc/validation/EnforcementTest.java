@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -66,6 +68,36 @@ class EnforcementTest {
                     .map(v -> v.getPropertyPath().toString()).collect(java.util.stream.Collectors.toSet()));
         }
     }
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldEnforceTheStrongestNumericBounds(boolean omitJavaTypeBounds) throws Exception {
+        Class<?> type = generateAndLoad(Path.of("src/test/resources/numericExclusive/numericExclusive.xsd"),
+                "a.Bounds", FixtureTest.option("omitJavaTypeBounds", omitJavaTypeBounds));
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            for (String field : List.of("lower", "lowerAttribute")) {
+                assertProperty(type, validator, field, 0, false);
+                assertProperty(type, validator, field, 1, true);
+            }
+            for (String field : List.of("upper", "upperAttribute")) {
+                assertProperty(type, validator, field, 10, false);
+                assertProperty(type, validator, field, 9, true);
+            }
+            assertProperty(type, validator, "lowerItems", List.of(0), false);
+            assertProperty(type, validator, "lowerItems", List.of(1), true);
+            assertProperty(type, validator, "upperItems", List.of(10), false);
+            assertProperty(type, validator, "upperItems", List.of(9), true);
+            assertProperty(type, validator, "tighter", 1, false);
+            assertProperty(type, validator, "tighter", 2, true);
+            assertProperty(type, validator, "tighter", 8, true);
+            assertProperty(type, validator, "tighter", 9, false);
+            assertProperty(type, validator, "tighterItems", List.of(1, 9), false);
+            assertProperty(type, validator, "tighterItems", List.of(2, 8), true);
+            assertProperty(type, validator, "fixed", 5, true);
+            assertProperty(type, validator, "fixed", 4, false);
+        }
+    }
+
     @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");
@@ -176,6 +208,16 @@ class EnforcementTest {
                 "withoutVowels", "latinOne", "literalAnchors", "whitespace", "wildcard", "uppercase")) {
             assertTrue(messages.stream().anyMatch(m -> m.startsWith(property + " ")), messages.toString());
         }
+    }
+
+    private static void assertProperty(Class<?> type, Validator validator, String name, Object value,
+            boolean valid) throws Exception {
+        Object bean = type.getConstructor().newInstance();
+        var field = type.getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(bean, value);
+        var violations = validator.validateProperty(bean, name);
+        assertEquals(valid, violations.isEmpty(), () -> name + "=" + value + ": " + violations);
     }
 
     private static void set(Class<?> type, Object instance, String property, String value) throws Exception {

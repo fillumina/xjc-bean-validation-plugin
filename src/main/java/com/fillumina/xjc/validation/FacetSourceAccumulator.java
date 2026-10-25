@@ -7,6 +7,8 @@ import java.util.LinkedHashSet;
 /**
  * The facets gathered from a type and everything it inherits. The patterns of each level stay in
  * their own group, so one inherited pattern group becomes one constraint.
+ * Numeric accessors expose only the strongest lower and upper bounds, so one
+ * annotation cannot hide a tighter inherited restriction.
  *
  * @author Francesco Illuminati
  */
@@ -45,6 +47,8 @@ class FacetSourceAccumulator extends FacetSource {
     void setFixedValue(BigDecimal value) {
         this.minInclusive = value;
         this.maxInclusive = value;
+        this.minExclusive = null;
+        this.maxExclusive = null;
     }
 
     void apply(FacetSource facet) {
@@ -193,22 +197,26 @@ class FacetSourceAccumulator extends FacetSource {
 
     @Override
     BigDecimal minInclusive() {
-        return minInclusive;
+        return minExclusive != null && (minInclusive == null || minExclusive.compareTo(minInclusive) >= 0)
+                ? null : minInclusive;
     }
 
     @Override
     BigDecimal minExclusive() {
-        return minExclusive;
+        return minInclusive != null && minExclusive != null && minInclusive.compareTo(minExclusive) > 0
+                ? null : minExclusive;
     }
 
     @Override
     BigDecimal maxInclusive() {
-        return maxInclusive;
+        return maxExclusive != null && (maxInclusive == null || maxExclusive.compareTo(maxInclusive) <= 0)
+                ? null : maxInclusive;
     }
 
     @Override
     BigDecimal maxExclusive() {
-        return maxExclusive;
+        return maxInclusive != null && maxExclusive != null && maxInclusive.compareTo(maxExclusive) < 0
+                ? null : maxExclusive;
     }
 
     @Override

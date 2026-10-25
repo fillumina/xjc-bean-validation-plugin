@@ -2,6 +2,8 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Resolve inclusive and exclusive numeric bounds to the strongest effective restriction before
+  writing annotations, including integer items and attributes. A fixed value replaces both bounds.
 - Keep item annotations after the package qualifier when class names collide across namespaces.
   Annotated top-level items use fully qualified names; generated sources compile without relying on
   an unambiguous import.
