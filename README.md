@@ -155,6 +155,8 @@ Annotated top-level item types are fully qualified, for example `List<java.lang.
 
 The item annotations are type-use annotations, which is the form a current Bean Validation provider enforces. `@Valid` is put on a collection's type argument only when its items are complex types; there is nothing to cascade into for strings or enumerations. An `xs:list` is different: its length facets describe the field itself even with `generateItemAnnotations=false`, while its item facets describe the type argument when enabled, and the number of times the element occurs is not written there, because that count is not the number of items the field holds. Item patterns use the same XML Schema-to-Java regex translation as ordinary string patterns; alternatives in one restriction are combined with OR. Unsupported translated expressions are skipped with a warning rather than emitted as invalid Java regexes.
 
+How those spellings behave, and what happens when an annotation is legal Java but sits on the wrong part of a type, is worked through in [type-annotation-placement](https://github.com/fillumina/type-annotation-placement). `@Valid` itself is not deprecated: Hibernate Validator warns (HV000271) about the container spelling and asks for the annotation on the type argument instead.
+
 ### Example: from schema to generated Java
 
 Given this schema fragment:
