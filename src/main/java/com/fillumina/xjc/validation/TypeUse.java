@@ -2,7 +2,6 @@ package com.fillumina.xjc.validation;
 
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFormatter;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JTypeVar;
@@ -10,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A type that prints its annotations before itself, so that a type argument can carry them:
- * {@code List<@Size(max = 5) String>}. Used as the type argument of a collection field.
+ * A type that prints annotations immediately before its simple name, so that a
+ * type argument can carry them: {@code List<java.lang.@Size(max = 5) String>}.
  *
  * <p>This is the only way to write a constraint on the items of a collection: an annotation on the
  * field constrains the collection itself, so the constraints of the items have to travel with the
@@ -34,13 +33,14 @@ class TypeUse extends JClass {
 
     @Override
     public void generate(JFormatter formatter) {
-        JClass enclosing = enclosingClass();
-        if (enclosing == null) {
-            writeAnnotations(formatter);
-            formatter.t(element);
-            return;
+        JClass enclosing = element.outer();
+        if (enclosing != null) {
+            formatter.t(enclosing).p(".");
+        } else if (element._package() != null && !element._package().isUnnamed()) {
+            // The formatter may qualify a type after resolving import collisions. Write the
+            // package explicitly so annotations always precede the type name, not its package.
+            formatter.p(element._package().name()).p(".");
         }
-        formatter.t(enclosing).p(".");
         writeAnnotations(formatter);
         formatter.p(element.name());
     }
@@ -51,17 +51,6 @@ class TypeUse extends JClass {
         }
     }
 
-    /**
-     * @return the class that holds the element when the element is a nested class, or null. A type
-     *     annotation applies to the simple name it stands in front of, so on a nested class it has to
-     *     be written between the enclosing class and the name of the element: {@code Outer.@Valid
-     *     Inner}. Written in front of the whole qualified name it marks the enclosing class instead,
-     *     which for a static nested class javac refuses and which for an inner class is silently an
-     *     annotation on another type.
-     */
-    private JClass enclosingClass() {
-        return element instanceof JDefinedClass defined ? defined.outer() : null;
-    }
 
     @Override
     public String name() {

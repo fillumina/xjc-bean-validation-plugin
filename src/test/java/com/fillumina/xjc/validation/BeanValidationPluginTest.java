@@ -38,14 +38,14 @@ class BeanValidationPluginTest {
 
         // xs:element name="name" type="t:ShortText" maxOccurs="unbounded",
         // with ShortText restricted to xs:maxLength value="5"
-        assertTrue(generated.contains("protected List<@Size(max = 5) String> name;"), generated);
+        assertTrue(generated.contains("protected List<java.lang.@Size(max = 5) String> name;"), generated);
 
         // a required element and a required attribute
         assertTrue(generated.contains("@NotNull protected String code;"), generated);
         assertTrue(generated.contains("@NotNull protected String id;"), generated);
 
         // a collection of a complex type cascades into its elements, a single one does not need to
-        assertTrue(generated.contains("protected List<@Valid Tag> tag;"), generated);
+        assertTrue(generated.contains("protected List<com.example.validation.@Valid Tag> tag;"), generated);
         assertTrue(generated.contains("@Valid protected Note note;"), generated);
 
         assertTrue(generated.contains("import jakarta.validation.constraints.Size;"), generated);

@@ -1,0 +1,12 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:l="http://example.org/left" xmlns:r="http://example.org/right"
+           targetNamespace="http://example.org/holder">
+    <xs:import namespace="http://example.org/left" schemaLocation="left.xsd"/>
+    <xs:import namespace="http://example.org/right" schemaLocation="right.xsd"/>
+    <xs:complexType name="Holder">
+        <xs:sequence>
+            <xs:element name="left" type="l:Item" maxOccurs="unbounded"/>
+            <xs:element name="right" type="r:Item" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

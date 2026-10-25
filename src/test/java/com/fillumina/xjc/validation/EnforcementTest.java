@@ -48,6 +48,24 @@ class EnforcementTest {
         }
     }
 
+
+    @Test
+    void shouldCompileAndCascadeIntoSameNamedItemsFromDifferentNamespaces() throws Exception {
+        Class<?> holder = generateAndLoad(Path.of("src/test/resources/qualified/qualified.xsd"),
+                "org.example.holder.Holder");
+        Object bean = holder.getConstructor().newInstance();
+        for (String side : List.of("left", "right")) {
+            Object item = loader.loadClass("org.example." + side + ".Item").getConstructor().newInstance();
+            var field = holder.getDeclaredField(side);
+            field.setAccessible(true);
+            field.set(bean, List.of(item));
+        }
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            var violations = factory.getValidator().validate(bean);
+            assertEquals(Set.of("left[0].note", "right[0].note"), violations.stream()
+                    .map(v -> v.getPropertyPath().toString()).collect(java.util.stream.Collectors.toSet()));
+        }
+    }
     @Test
     void aListItemOutsideItsSizeIsReported() throws Exception {
         Class<?> order = generateAndLoad("Order");

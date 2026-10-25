@@ -35,7 +35,7 @@ class TypeUseEmissionTest {
         });
 
         assertTrue(generated.contains("import jakarta.validation.constraints.Size;"), generated);
-        assertTrue(generated.contains("protected List<@Size(max = 5) String> names;"), generated);
+        assertTrue(generated.contains("protected List<java.lang.@Size(max = 5) String> names;"), generated);
     }
 
     @Test
@@ -51,7 +51,7 @@ class TypeUseEmissionTest {
         });
 
         assertTrue(generated.contains("@NotNull"), generated);
-        assertTrue(generated.contains("protected List<@Size(min = 1, max = 5) @Valid String> names;"),
+        assertTrue(generated.contains("protected List<java.lang.@Size(min = 1, max = 5) @Valid String> names;"),
                 generated);
     }
 

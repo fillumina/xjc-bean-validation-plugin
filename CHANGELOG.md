@@ -2,6 +2,9 @@
 
 ## 1.0.1-SNAPSHOT
 
+- Keep item annotations after the package qualifier when class names collide across namespaces.
+  Annotated top-level items use fully qualified names; generated sources compile without relying on
+  an unambiguous import.
 - Write the annotations of a collection item on the name of the item when its type is a nested class:
   `List<Battery.@Valid BatterySubgroup>` instead of `List<@Valid Battery.BatterySubgroup>`. javac
   refuses the old form for a static nested class, which is what XJC generates for an anonymous complex
