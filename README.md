@@ -228,7 +228,7 @@ Every option follows the plugin name, for example:
 ```
 
 On by default: `generateNotNullAnnotations`, `generateItemAnnotations`, and
-`generateValidOnCollections`. Off by default: `omitJavaTypeBounds`, `patternList`, and `verbose`.
+`generateValidOnCollections`. Off by default: `keepDigitEscapesInPatterns`, `omitJavaTypeBounds`, `patternList`, and `verbose`.
 
 | Option                             | Default      | Effect                                                                                                                                                                                                                                       |
 | ---------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -238,6 +238,7 @@ On by default: `generateNotNullAnnotations`, `generateItemAnnotations`, and
 | `generateItemAnnotations`          | `true`       | Writes the constraints of a collection's items (including exact `xs:length` as `@Size(min = n, max = n)`, even when a base type has length bounds) on its type argument; disabling it does not suppress field-level `xs:list` length facets. |
 | `generateValidOnCollections`       | `true`       | Writes `@Valid` on a collection's complex-item type argument. Turning it off stops cascading through those collections.                                                                                                                      |
 | `omitJavaTypeBounds`               | `false`      | Leaves out a numeric bound that is already the natural limit of the Java type, such as `Integer.MIN_VALUE`.                                                                                                                                  |
+| `keepDigitEscapesInPatterns`       | `false`      | Writes the XSD `\d` and `\D` as Java's ASCII-only `\d` and `\D` instead of `\p{Nd}` and `\P{Nd}`, for engines without Unicode property support. Stricter than the XSD: digits other than `0`-`9` are rejected.                               |
 | `patternList`                      | `false`      | Writes one `@Pattern.List` instead of repeatable `@Pattern` annotations for inherited pattern groups. Both forms are valid.                                                                                                                  |
 | `override`                         | none         | Removes, changes, or replaces a computed annotation. Repeat the option to supply multiple statements. See [Override statements](#override-statements).                                                                                       |
 | `verbose`                          | `false`      | Prints the resolved options and every annotation the plugin writes. XJC's global `-verbose` also enables this output.                                                                                                                        |

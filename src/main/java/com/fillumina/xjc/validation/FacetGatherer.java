@@ -14,13 +14,13 @@ import java.util.LinkedHashSet;
  */
 class FacetGatherer {
 
-    static FacetSourceAccumulator gather(XSSimpleType type) {
+    static FacetSourceAccumulator gather(XSSimpleType type, boolean keepDigitEscapesInPatterns) {
         if (type == null) {
             return FacetSourceAccumulator.EMPTY;
         }
         FacetSourceAccumulator facet = new FacetSourceAccumulator();
         navigateUpTheHierarchy(facet, type);
-        translatePatterns(facet);
+        translatePatterns(facet, keepDigitEscapesInPatterns);
         consolidatePatterns(facet);
         return facet;
     }
@@ -43,10 +43,10 @@ class FacetGatherer {
     }
 
     /** Translates both list-level and item-level raw patterns before they are written. */
-    static void translatePatterns(FacetSourceAccumulator facet) {
-        facet.translatePatterns();
+    static void translatePatterns(FacetSourceAccumulator facet, boolean keepDigitEscapesInPatterns) {
+        facet.translatePatterns(keepDigitEscapesInPatterns);
         if (facet.itemFacet() != null) {
-            facet.itemFacet().translatePatterns();
+            facet.itemFacet().translatePatterns(keepDigitEscapesInPatterns);
         }
     }
 

@@ -335,7 +335,8 @@ class Processor {
 
                 // a complex type can contribute the facet of only one of its possibilities; the
                 // items of a collection are annotated on its type argument
-                FacetSourceAccumulator facet = FacetGatherer.gather(simpleType);
+                FacetSourceAccumulator facet = FacetGatherer.gather(simpleType,
+                        options.isKeepDigitEscapesInPatterns());
                 if (property.isCollection()) {
 
                     FacetSourceAccumulator itemFacet = facet.itemFacet();
@@ -441,7 +442,8 @@ class Processor {
                     if (fieldHelper.isBoolean()) {
                         addFixedBooleanAnnotation(annotator, particle.getDecl().getFixedValue());
                     }
-                    FacetSourceAccumulator facet = FacetGatherer.gather(type);
+                    FacetSourceAccumulator facet = FacetGatherer.gather(type,
+                            options.isKeepDigitEscapesInPatterns());
                     BigDecimal fixedBound =
                             fixedBoundOf(fieldHelper, particle.getDecl().getFixedValue());
                     if (fixedBound != null) {
@@ -487,7 +489,7 @@ class Processor {
         }
 
         private void processType(XSSimpleType simpleType, JFieldVar field, FieldAnnotator annotator) {
-            FacetSourceAccumulator facet = FacetGatherer.gather(simpleType);
+            FacetSourceAccumulator facet = FacetGatherer.gather(simpleType, options.isKeepDigitEscapesInPatterns());
             FieldHelper fieldHelper = new FieldHelper(field);
             processType(fieldHelper, annotator, facet);
         }

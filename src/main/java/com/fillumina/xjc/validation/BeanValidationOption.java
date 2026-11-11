@@ -43,6 +43,12 @@ enum BeanValidationOption {
                     + "int at Integer.MIN_VALUE: they say nothing the type does not already say",
             (p,v) -> setBoolean(v, r -> p.omitJavaTypeBounds(r)),
             (p) -> p.isOmitJavaTypeBounds()),
+    keepDigitEscapesInPatterns(
+            Boolean.class,
+            "writes the XML Schema \\d and \\D in a @Pattern as the ASCII-only \\d and \\D instead of "
+                    + "\\p{Nd} and \\P{Nd}, for regex engines without Unicode property support",
+            (p, v) -> setBoolean(v, r -> p.keepDigitEscapesInPatterns(r)),
+            p -> p.isKeepDigitEscapesInPatterns()),
     generateNotNullAnnotations(
             Boolean.class,
             "adds a @NotNull when an element has minOccurs not 0, is required or is not nillable",

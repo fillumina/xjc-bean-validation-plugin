@@ -15,7 +15,7 @@ The XSD pattern facet and the generated Java constraint both apply to the whole 
 | XSD construct | XSD meaning | Java default or syntax | Generated Java expression |
 | --- | --- | --- | --- |
 | literals, grouping, alternation, `?`, `*`, `+`, `{m,n}`, ranges, and negated character classes | Same regular-language operations | Compatible | Unchanged |
-| `\d` / `\D` | Unicode decimal digits, or their complement | Java defaults to ASCII digits | `\p{Nd}` / `\P{Nd}` |
+| `\d` / `\D` | Unicode decimal digits, or their complement | Java defaults to ASCII digits | `\p{Nd}` / `\P{Nd}`; `\d` / `\D` with `keepDigitEscapesInPatterns=true` |
 | `\w` / `\W` | Every character except Unicode punctuation, separators, and other characters, or its complement | Java's `\w` is ASCII letters, digits, and `_` unless a Unicode flag is enabled | `[^\p{P}\p{Z}\p{C}]` / `[\p{P}\p{Z}\p{C}]` |
 | `\s` / `\S` | Space, tab, line feed, and carriage return, or its complement | Java also treats other control characters as whitespace | `[ \t\n\r]` / `[^ \t\n\r]` |
 | `.` | Every character except line feed and carriage return | Java's dot also excludes its line terminators | `[^\n\r]` |

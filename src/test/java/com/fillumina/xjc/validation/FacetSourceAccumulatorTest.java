@@ -16,7 +16,7 @@ class FacetSourceAccumulatorTest {
     void warnsAndOmitsAPatternWhoseJavaTranslationDoesNotCompile() {
         FacetSourceAccumulator accumulator = new FacetSourceAccumulator();
         accumulator.apply(new PatternFacet("\\q"));
-        accumulator.translatePatterns();
+        accumulator.translatePatterns(false);
         RecordingLog log = new RecordingLog();
 
         LinkedHashSet<LinkedHashSet<String>> patterns = accumulator.translatedMultiPatterns(log);
@@ -34,7 +34,7 @@ class FacetSourceAccumulatorTest {
         item.apply(new PatternFacet("\\q"));
         RecordingLog log = new RecordingLog();
 
-        FacetGatherer.translatePatterns(list);
+        FacetGatherer.translatePatterns(list, false);
         LinkedHashSet<LinkedHashSet<String>> patterns = item.translatedMultiPatterns(log);
 
         assertEquals(List.of("\\p{Nd}+"), List.copyOf(patterns.iterator().next()));

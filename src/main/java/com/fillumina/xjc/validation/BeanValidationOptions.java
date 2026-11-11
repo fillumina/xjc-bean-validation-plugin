@@ -16,6 +16,7 @@ class BeanValidationOptions {
     private final boolean patternList;
     private final boolean verbose;
     private final boolean omitJavaTypeBounds;
+    private final boolean keepDigitEscapesInPatterns;
     private final boolean notNullAnnotations;
     private final boolean notNullCustomMessage;
     private final boolean notNullPrefixFieldName;
@@ -41,6 +42,11 @@ class BeanValidationOptions {
     /** @return whether the bounds that are the Java type's own limits are left out. */
     boolean isOmitJavaTypeBounds() {
         return omitJavaTypeBounds;
+    }
+
+    /** @return whether the XML Schema {@code \d} and {@code \D} are written as Java's ASCII-only ones. */
+    boolean isKeepDigitEscapesInPatterns() {
+        return keepDigitEscapesInPatterns;
     }
 
     boolean isNotNullAnnotations() {
@@ -82,6 +88,7 @@ class BeanValidationOptions {
         private boolean patternList = false;
         private boolean verbose = false;
         private boolean omitJavaTypeBounds = false;
+        private boolean keepDigitEscapesInPatterns = false;
         private boolean notNullAnnotations = true;
         private boolean notNullCustomMessage = false;
         private boolean notNullPrefixFieldName = false;
@@ -151,6 +158,11 @@ class BeanValidationOptions {
             return this;
         }
 
+        Builder keepDigitEscapesInPatterns(final boolean value) {
+            this.keepDigitEscapesInPatterns = value;
+            return this;
+        }
+
         Builder notNullCustomMessage(final boolean value) {
             this.notNullCustomMessage = value;
             return this;
@@ -189,7 +201,8 @@ class BeanValidationOptions {
 
         BeanValidationOptions build() {
             return new BeanValidationOptions(targetNamespace, patternList,
-                    verbose, omitJavaTypeBounds, notNullAnnotations, notNullCustomMessage,
+                    verbose, omitJavaTypeBounds, keepDigitEscapesInPatterns, notNullAnnotations,
+                    notNullCustomMessage,
                     notNullPrefixFieldName, notNullPrefixClassName, notNullCustomMessageText,
                     itemAnnotations, generateValidOnCollections,
                     overrides);
@@ -201,7 +214,8 @@ class BeanValidationOptions {
     }
 
     private BeanValidationOptions(final String targetNamespace, final boolean patternList, final boolean verbose,
-            final boolean omitJavaTypeBounds, final boolean notNullAnnotations,
+            final boolean omitJavaTypeBounds, final boolean keepDigitEscapesInPatterns,
+            final boolean notNullAnnotations,
             final boolean notNullCustomMessage, final boolean notNullPrefixFieldName,
             final boolean notNullPrefixClassName, final String notNullCustomMessageText,
             final boolean itemAnnotations,
@@ -211,6 +225,7 @@ class BeanValidationOptions {
         this.patternList = patternList;
         this.verbose = verbose;
         this.omitJavaTypeBounds = omitJavaTypeBounds;
+        this.keepDigitEscapesInPatterns = keepDigitEscapesInPatterns;
         this.notNullAnnotations = notNullAnnotations;
         this.notNullCustomMessage = notNullCustomMessage;
         this.notNullPrefixFieldName = notNullPrefixFieldName;
