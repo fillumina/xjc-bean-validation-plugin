@@ -138,13 +138,13 @@ class FacetSourceAccumulator extends FacetSource {
 
     /** Translates raw schema patterns, recording unsupported ones for a warning on use. Called
      * separately for a list type and its item facet before enumeration expressions are combined. */
-    void translatePatterns() {
+    void translatePatterns(boolean keepDigitEscapesInPatterns) {
         LinkedHashSet<LinkedHashSet<String>> translatedGroups = new LinkedHashSet<>();
         for (LinkedHashSet<String> patterns : multiPatterns) {
             LinkedHashSet<String> translated = new LinkedHashSet<>();
             for (String pattern : patterns) {
                 if (XsdRegexp.isSupported(pattern)) {
-                    translated.add(XsdRegexp.translate(pattern));
+                    translated.add(XsdRegexp.translate(pattern, keepDigitEscapesInPatterns));
                 } else {
                     skippedPatterns.add(pattern);
                 }

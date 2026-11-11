@@ -10,6 +10,7 @@ class XsdRegexpFixtureTest extends FixtureTest {
     }
 
     static Stream<Case> cases() {
-        return Stream.of(Case.of("XsdRegexp"));
+        return Stream.of(Case.of("XsdRegexp"),
+                Case.of("XsdRegexpKeepDigitEscapesInPatterns", option("keepDigitEscapesInPatterns", "true")));
     }
 }

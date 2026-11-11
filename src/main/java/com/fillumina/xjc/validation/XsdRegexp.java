@@ -32,12 +32,19 @@ final class XsdRegexp {
 
     /** @return the XML Schema pattern rewritten into Java regular-expression syntax. */
     static String translate(String pattern) {
+        return translate(pattern, false);
+    }
+
+    /**
+     * @param keepDigitEscapesInPatterns keeps {@code \d} and {@code \D} instead of {@code \p{Nd}} and {@code \P{Nd}}
+     */
+    static String translate(String pattern, boolean keepDigitEscapesInPatterns) {
         StringBuilder java = new StringBuilder();
         int characterClassDepth = 0;
         for (int index = 0; index < pattern.length(); index++) {
             char character = pattern.charAt(index);
             if (character == '\\' && index + 1 < pattern.length()) {
-                index = translateEscape(pattern, index, java);
+                index = translateEscape(pattern, index, java, keepDigitEscapesInPatterns);
                 continue;
             }
             if (character == '[') {
@@ -60,8 +67,13 @@ final class XsdRegexp {
         return java.toString();
     }
 
-    private static int translateEscape(String pattern, int index, StringBuilder java) {
+    private static int translateEscape(String pattern, int index, StringBuilder java,
+            boolean keepDigitEscapesInPatterns) {
         char escaped = pattern.charAt(index + 1);
+        if (keepDigitEscapesInPatterns && (escaped == 'd' || escaped == 'D')) {
+            java.append('\\').append(escaped);
+            return index + 1;
+        }
         switch (escaped) {
             case 'i' -> java.append(XML_NAME_START);
             case 'I' -> appendComplement(java, XML_NAME_START);
